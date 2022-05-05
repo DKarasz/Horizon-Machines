@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+  <BodyPartDef>
+    <permanentInjuryChanceFactor>0</permanentInjuryChanceFactor>
+    <skinCovered>false</skinCovered>
+    <solid>true</solid>
+    <alive>false</alive>
+    <bleedRate>0</bleedRate>
+    <defName>Armor</defName>
+    <label>Armor Plate</label>
+    <hitPoints>30</hitPoints>
+  </BodyPartDef>
+	
+	
+	
+</Defs>

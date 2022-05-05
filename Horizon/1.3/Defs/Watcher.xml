@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+  
+  <ThingDef ParentName="BaseMechanoidWalker" Name="HorizonBase" Abstract="true">
+    <defName>Watcher</defName>
+    <label>Watcher</label>
+    <devNote>watcher</devNote>
+    <description>Watcher</description>
+    <statBases>
+      <MarketValue>750</MarketValue>
+	  <ArmorRating_Heat>0.5</ArmorRating_Heat>
+	  <ToxicSensitivity>0.5</ToxicSensitivity>
+      <Flammability>0.5</Flammability>
+    </statBases>
+    <race>
+	  <intelligence inherit="false">Animal</intelligence>
+      <thinkTreeMain>Animal</thinkTreeMain>
+	  <thinkTreeConstant>AnimalConstant</thinkTreeConstant>
+      <baseHealthScale>1</baseHealthScale>
+      <trainability>Advanced</trainability>
+      <wildness>0.5</wildness>
+	  <herdAnimal>false</herdAnimal>
+	  <soundMeleeHitPawn>Pawn_Melee_MechanoidSlash_HitPawn</soundMeleeHitPawn>
+      <soundMeleeHitBuilding>Pawn_Melee_MechanoidSlash_HitBuilding</soundMeleeHitBuilding>
+      <soundMeleeMiss>Pawn_Melee_MechanoidSlash_Miss</soundMeleeMiss>
+    </race>
+    <thingCategories>
+      <li>Animals</li>
+    </thingCategories>
+	<modExtensions>
+		<li Class="Horizon.MechAnimal">
+		</li>
+	</modExtensions>  </ThingDef>
+  
+  
+  <ThingDef ParentName="HorizonBase">
+    <defName>Watcher</defName>
+    <label>Watcher</label>
+    <devNote>watcher</devNote>
+    <description>Watcher</description>
+    <race>
+	  <wildBiomes>
+		<ColdBog>1</ColdBog>
+		<BorealForest>1</BorealForest>
+		<Tundra>1</Tundra>				
+		<IceSheet>1</IceSheet>
+		<SeaIce>1</SeaIce>
+		<TemperateSwamp>1</TemperateSwamp>
+		<TemperateForest>1</TemperateForest>		
+		<TropicalSwamp>1</TropicalSwamp>					
+		<TropicalRainforest>1</TropicalRainforest>
+		<AridShrubland>1</AridShrubland>
+		<Desert>1</Desert>
+		<ExtremeDesert>1</ExtremeDesert>				
+	  </wildBiomes>
+      <body>Watcher</body>
+	  <herdAnimal>false</herdAnimal>
+	  <manhunterOnTameFailChance>0.30</manhunterOnTameFailChance>
+	  <manhunterOnDamageChance>0.50</manhunterOnDamageChance>
+    </race>
+    <tools>
+      <li>
+        <label>Leg Claw</label>
+        <capacities>
+          <li>Scratch</li>
+        </capacities>
+        <power>20</power>
+        <cooldownTime>2</cooldownTime>
+        <linkedBodyPartsGroup>Legs</linkedBodyPartsGroup>
+		<alwaysTreatAsWeapon>true</alwaysTreatAsWeapon>
+      </li>
+      <li>
+        <label>Eye Flash</label>
+        <capacities>
+          <li>Blunt</li>
+        </capacities>
+        <power>1</power>
+        <cooldownTime>1.5</cooldownTime>
+        <linkedBodyPartsGroup>HeadAttackTool</linkedBodyPartsGroup>
+        <ensureLinkedBodyPartsGroupAlwaysUsable>true</ensureLinkedBodyPartsGroupAlwaysUsable>
+        <chanceFactor>0.2</chanceFactor>
+      </li>
+    </tools>
+  </ThingDef>
+
+  <PawnKindDef ParentName="AnimalKindBase">
+    <defName>Watcher</defName>
+    <label>Watcher</label>
+    <race>Watcher</race>
+    <combatPower>150</combatPower>
+    <ecoSystemWeight>0.30</ecoSystemWeight>
+    <lifeStages>
+      <li>
+        <bodyGraphicData>
+          <texPath>Things/Pawn/Animal/Chicken/Chicken</texPath>
+          <drawSize>1.5</drawSize>
+		  <shadowData>
+            <volume>(0.4, 0.8, 0.4)</volume>
+          </shadowData>
+        </bodyGraphicData>
+      </li>
+    </lifeStages>
+  </PawnKindDef>
+  
+</Defs>
