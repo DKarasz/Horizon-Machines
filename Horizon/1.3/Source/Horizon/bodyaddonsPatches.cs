@@ -13,7 +13,7 @@ using Verse;
 
 namespace Horizon
 {
-    internal class bodyaddons
+    internal class bodyaddonsPatches
     {
         public static bool ResolveAllGraphicsPrefix(PawnGraphicSet __instance)
         {
