@@ -11,6 +11,11 @@ using System.Reflection.Emit;
 
 namespace Horizon
 {
+    //isflesh
+    //animal, getlabelfor(humanlike), kill pretraded prekidnapped(relations)
+
+    //ismechanoid
+    //
 
     //check caravanhealth.dorow, questnodeismechanoid.matches, statworker.shouldshowfor(statrequest), mechkindsuitableforcluster
     //notify_pawnkilled/pawndowned kills count both mech and animal
