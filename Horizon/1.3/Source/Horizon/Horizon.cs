@@ -11,27 +11,18 @@ using System.Reflection.Emit;
 
 namespace Horizon
 {
-    //isflesh
-    //animal, getlabelfor(humanlike), kill pretraded prekidnapped(relations)
-
-    //ismechanoid
-    //
-
-    //check caravanhealth.dorow, questnodeismechanoid.matches, statworker.shouldshowfor(statrequest), mechkindsuitableforcluster
-    //notify_pawnkilled/pawndowned kills count both mech and animal
-    //specialdisplaystats(thingdef, statrequest), randompawnforcombat
+    //(not changed but potentially)
+    //pawn_healthtracker.healthtick(machines dont heal, requires more advanced transpiler to change), toxicfallout(immune), isacceptableprey(not prey),TryAnestize(cant anestize), diseasecontractchancefactor(immune), immunitychangepertick(immune)
+    //tickrare(doesnt push out heat), corpseingestiblenow(not edible)
+    //checkdrugaddictionteachopportunity (swap isflesh to !ismech, maybe)(ignorefor now), prepostingested(swap !isflesh to ismech maybe), postingested(isflesh to !ismech),
+    //disease.potentialvictims(immune),
+    //debugoutputseconomy.wool, animaleconomy, animalbreeding(unsure)
+    //recipedefgenerator.drugadmminiserdefs(swap isflesh with ismech if want to administer drug bills)
+    //mindstatetick(weather related mood debuff), generateaddictionsandtolerancesfor(!sflesh to ismech, unless not wanted)(Ignorefor now)
 
     [StaticConstructorOnStartup]
     public static class Horizon
     {
-        //public static bool IsAnimal()
-        //{
-        //    return RaceProperties.IsFlesh || RaceProperties.Animal;
-        //}
-        //public static bool IsNotAnimal()
-        //{
-        //    return !IsAnimal();
-        //}
         static Horizon()
         {
             new Harmony("Horizon.Mod").PatchAll();
@@ -39,110 +30,132 @@ namespace Horizon
     }
     public class MechAnimal : DefModExtension{}
 
-
-    [HarmonyPatch(typeof(RaceProperties), "Animal", MethodType.Getter)]
-    public static class MechAnimal_Patch
+    [HarmonyPatch(typeof(RaceProperties),"IsMechanoid", MethodType.Getter)]
+    public static class MechAnimalPatch
     {
-        public static bool Prefix(RaceProperties __instance, ref bool __result)
+        public static bool Prefix(ref bool __result, RaceProperties __instance)
         {
-            __result = !__instance.ToolUser;
-            return false;
-        }
-    }
-    
-    [HarmonyPatch(typeof(PawnComponentsUtility), "AddAndRemoveDynamicComponents")]
-    public static class DynamicComponents_Patch
-    {
-        public static bool Prefix(Pawn pawn, bool actAsIfSpawned = false)
-        {
-            var mechanimal = pawn.kindDef.race.GetModExtension<MechAnimal>();
-            if (mechanimal != null)
+            if (__instance.AnyPawnKind.HasModExtension<MechAnimal>())
             {
-                bool flag = pawn.Faction != null && pawn.Faction.IsPlayer;
-                bool flag2 = pawn.HostFaction != null && pawn.HostFaction.IsPlayer;
-                if (pawn.RaceProps.Humanlike && !pawn.Dead)
-                {
-                    if (pawn.mindState.wantsToTradeWithColony)
-                    {
-                        if (pawn.trader == null)
-                        {
-                            pawn.trader = new Pawn_TraderTracker(pawn);
-                        }
-                    }
-                    else
-                    {
-                        pawn.trader = null;
-                    }
-                }
-                if (pawn.RaceProps.Humanlike)
-                {
-                    if ((flag || flag2) && pawn.foodRestriction == null)
-                    {
-                        pawn.foodRestriction = new Pawn_FoodRestrictionTracker(pawn);
-                    }
-                    if (flag)
-                    {
-                        if (pawn.outfits == null)
-                        {
-                            pawn.outfits = new Pawn_OutfitTracker(pawn);
-                        }
-                        if (pawn.drugs == null)
-                        {
-                            pawn.drugs = new Pawn_DrugPolicyTracker(pawn);
-                        }
-                        if (pawn.timetable == null)
-                        {
-                            pawn.timetable = new Pawn_TimetableTracker(pawn);
-                        }
-                        if (pawn.inventoryStock == null)
-                        {
-                            pawn.inventoryStock = new Pawn_InventoryStockTracker(pawn);
-                        }
-                        if ((pawn.Spawned || actAsIfSpawned) && pawn.drafter == null)
-                        {
-                            pawn.drafter = new Pawn_DraftController(pawn);
-                        }
-                    }
-                    else
-                    {
-                        pawn.drafter = null;
-                    }
-                }
-                if ((flag || flag2) && pawn.playerSettings == null)
-                {
-                    pawn.playerSettings = new Pawn_PlayerSettings(pawn);
-                }
-                if ((int)pawn.RaceProps.intelligence <= 1 && pawn.Faction != null && pawn.training == null)
-                {
-                    pawn.training = new Pawn_TrainingTracker(pawn);
-                }
-                if (pawn.needs != null)
-                {
-                    pawn.needs.AddOrRemoveNeedsAsAppropriate();
-                }
+                __result = false;
                 return false;
             }
-           return true;
+            return true;
         }
     }
 
-    //[HarmonyPatch(typeof(RaceProperties), "BloodDef", MethodType.Getter)]
-    //public static class BloodDef_Patch
-    //{
-    //    public static bool Prefix(RaceProperties __instance, ref ThingDef __result)
-    //    {
-    //        if (__instance.BloodDef != null)
-    //        {
-    //            __result = __instance.BloodDef;
-    //        }
-    //        if (!__instance.IsMechanoid)
-    //        {
-    //            __result = ThingDefOf.Filth_Blood;
-    //        }
-    //        __result = null;
-    //        return false;
-    //    }
-    //}
+    [HarmonyPatch(typeof(PawnCapacityDef), "GetLabelFor", new Type[] { typeof(bool), typeof(bool) })]
+    public static class PawnCapacityDef_GetLabelFor_Patch
+    {
+        public static void Postfix(ref string __result, bool isFlesh, PawnCapacityDef __instance)
+        {
+            if (!isFlesh && !__instance.labelMechanoids.NullOrEmpty())
+            {
+                __result = __instance.labelMechanoids;
+            }
+        }
+    }
+
+    [HarmonyPatch]
+    [HarmonyDebug]
+    public static class Isflesh_to_Isnotmech_Patch
+    {
+        static IEnumerable<MethodBase> TargetMethods()
+        {
+            yield return AccessTools.Method(typeof(PawnComponentsUtility), "CreateInitialComponents");
+            yield return AccessTools.Method(typeof(PawnComponentsUtility), "AddComponentsForSpawn");
+            yield return AccessTools.PropertyGetter(typeof(RaceProperties), "Animal");
+            yield return AccessTools.Method(typeof(Hediff_Pregnant), "DoBirthSpawn");
+            yield return AccessTools.Method(typeof(Pawn), "SpawnSetup");
+            yield return AccessTools.Method(typeof(Pawn), "Kill");
+            yield return AccessTools.Method(typeof(Pawn), "PreTraded");
+            yield return AccessTools.Method(typeof(Pawn), "PreKidnapped");
+            yield return AccessTools.Method(typeof(PawnGenerator), "IsValidCandidateToRedress");
+            yield return AccessTools.Method(typeof(PawnGenerator), "WorldPawnSelectionWeight");
+            yield return AccessTools.Method(typeof(Pawn_HealthTracker), "PreApplyDamage");
+            yield return AccessTools.Method(typeof(DebugToolsPawns), "AddRemovePawnRelation");
+            yield return AccessTools.Method(typeof(JobGiver_MarryAdjacentPawn), "TryGiveJob");
+            yield return AccessTools.Method(typeof(WorkGiver_TakeToBedToOperate), "HasJobOnThing");
+            yield return AccessTools.Method(typeof(Bill_Medical), "Notify_IterationCompleted");
+            yield return AccessTools.Method(typeof(PawnDiedOrDownedThoughtsUtility), "AppendThoughts_Relations");
+            yield return AccessTools.Method(typeof(PawnApparelGenerator), "GenerateStartingApparelFor");
+            yield return AccessTools.Method(typeof(LovePartnerRelationUtility), "ExistingLeastLikedRel");
+            yield return AccessTools.Method(typeof(LovePartnerRelationUtility), "ExistingMostLikedLovePartnerRel");
+            yield return AccessTools.Method(typeof(ParentRelationUtility), "GetMother");
+            yield return AccessTools.Method(typeof(ParentRelationUtility), "GetFather");
+            yield return AccessTools.Method(typeof(PawnRelationUtility), "Notify_PawnsSeenByPlayer");
+            yield return AccessTools.Method(typeof(SpouseRelationUtility), "GetFirstSpouse");
+            yield return AccessTools.Method(typeof(SpouseRelationUtility), "GetSpouses");
+            yield return AccessTools.Method(typeof(SpouseRelationUtility), "GetMostLikedSpouseRelation");
+            yield return AccessTools.Method(typeof(SpouseRelationUtility), "GetLeastLikedSpouseRelation");
+            yield return AccessTools.Method(typeof(SpouseRelationUtility), "GetSpouseCount");
+            yield return AccessTools.Method(typeof(RelationsUtility), "PawnsKnowEachOther");
+            yield return AccessTools.Method(typeof(Faction), "TryGenerateNewLeader");
+            yield return AccessTools.Method(typeof(CompHatcher), "Hatch");
+            yield return AccessTools.Method(typeof(ReleaseAnimalToWildUtility), "CheckWarnAboutBondedAnimal");
+            yield return AccessTools.Method(typeof(SlaughterDesignatorUtility), "CheckWarnAboutBondedAnimal");
+            yield return AccessTools.Method(typeof(PawnRelationUtility), "GetRelations");
+            yield return AccessTools.Method(typeof(HealthCardUtility), "CreateSurgeryBill");
+            yield return AccessTools.Method(typeof(ITab_Pawn_Health), "ShouldAllowOperations");
+            yield return AccessTools.PropertyGetter(typeof(ITab_Pawn_Social), "IsVisible");
+            yield return AccessTools.Method(typeof(PawnColumnWorker_Hunt), "HasCheckbox");
+            yield return AccessTools.Method(typeof(PawnColumnWorker_ReleaseAnimalToWild), "HasCheckbox");
+            yield return AccessTools.Method(typeof(PawnColumnWorker_Slaughter), "HasCheckbox");
+            yield return AccessTools.Method(typeof(CompRitualHediffGiverInRoom), "CompTick");
+            yield return AccessTools.Method(typeof(RimWorld.Planet.WITab_Caravan_Social), "DoRows");
+
+        }
+        public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> codes) =>
+            codes.MethodReplacer(AccessTools.PropertyGetter(typeof(RaceProperties), "IsFlesh"), AccessTools.Method(typeof(Isflesh_to_Isnotmech_Patch), "IsNotMechanoid"));
+        static bool IsNotMechanoid(RaceProperties RaceProps) => !RaceProps.IsMechanoid;
+    }
+
+    [HarmonyPatch(typeof(HealthCardUtility), "DrawOverviewTab")]
+    public static class HealthCaravanUtility_DrawOverviewTab_Patch
+    {
+        public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+        {
+            bool firstfound = false;
+            MethodBase from = AccessTools.PropertyGetter(typeof(RaceProperties), "IsFlesh");
+            MethodBase to = AccessTools.Method(typeof(Isflesh_to_Isnotmech_Patch), "IsNotMechanoid");
+            foreach (CodeInstruction instruction in instructions)
+            {
+                if (instruction.operand as MethodBase == from && firstfound == false)
+                {
+                    instruction.opcode = (to.IsConstructor ? OpCodes.Newobj : OpCodes.Call);
+                    instruction.operand = to;
+                    firstfound = true;
+                }
+                yield return instruction;
+            }
+        }
+    }
+
+    [HarmonyPatch]
+    public static class Ismech_to_Isnotflesh_Patch
+    {
+        static IEnumerable<MethodBase> TargetMethods()
+        {
+            yield return AccessTools.Method(typeof(PawnBreathMoteMaker), "BreathMoteMakerTick");
+            yield return AccessTools.Method(typeof(RimWorld.Planet.WITab_Caravan_Health), "DoRow");
+            yield return AccessTools.Method(typeof(HealthCardUtility), "DrawHealthSummary");
+            yield return AccessTools.Method(typeof(CompGiveHediffSeverity), "AppliesTo");
+            yield return AccessTools.PropertyGetter(typeof(StunHandler), "EMPAdaptationTicksDuration");
+            yield return AccessTools.Method(typeof(Recipe_RemoveBodyPart), "GetLabelWhenUsedOn");
+            yield return AccessTools.Method(typeof(CompAbilityEffect_Neuroquake), "Apply");
+            yield return AccessTools.Method(typeof(CompAbilityEffect_GiveMentalState), "Apply");
+            yield return AccessTools.Method(typeof(ArmorUtility), "ApplyArmor");
+
+        }
+        public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> codes) =>
+            codes.MethodReplacer(AccessTools.PropertyGetter(typeof(RaceProperties), "IsMechanoid"), AccessTools.Method(typeof(Ismech_to_Isnotflesh_Patch), "IsNotFlesh"));
+        static bool IsNotFlesh(RaceProperties RaceProps) => !RaceProps.IsFlesh;
+    }
+
+    //[HarmonyPatch(typeof(ITab_Pawn_Social), "IsVisible", MethodType.Getter)]
+
+    
+   
 
 
 

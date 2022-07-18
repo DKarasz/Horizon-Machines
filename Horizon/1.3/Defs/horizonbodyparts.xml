@@ -1,16 +1,106 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <Defs>
   <BodyPartDef>
+    <defName>Armor</defName>
+    <label>Armor Plate</label>
     <permanentInjuryChanceFactor>0</permanentInjuryChanceFactor>
     <skinCovered>false</skinCovered>
     <solid>true</solid>
     <alive>false</alive>
     <bleedRate>0</bleedRate>
-    <defName>Armor</defName>
-    <label>Armor Plate</label>
     <hitPoints>30</hitPoints>
   </BodyPartDef>
 	
+  <BodyPartDef>
+    <defName>ArmorChild</defName>
+    <label>Armor Plate</label>
+    <permanentInjuryChanceFactor>0</permanentInjuryChanceFactor>
+    <skinCovered>false</skinCovered>
+    <solid>true</solid>
+    <alive>false</alive>
+    <bleedRate>0</bleedRate>
+    <hitPoints>30</hitPoints>
+  </BodyPartDef>
+  
+  <BodyPartDef Name="horizonPart">
+    <defName>removeableBodyPart</defName>
+    <label>Deattachable Part</label>
+    <permanentInjuryChanceFactor>0</permanentInjuryChanceFactor>
+    <skinCovered>false</skinCovered>
+    <solid>true</solid>
+    <alive>false</alive>
+    <bleedRate>0</bleedRate>
+    <hitPoints>30</hitPoints>
+  </BodyPartDef>
+  
+  <BodyPartDef ParentName="horizonPart">
+	<defName>explosiveBodyPart</defName>
+  </BodyPartDef>
+  
+  <BodyPartDef ParentName="horizonPart">
+	<defName>HorizonWeapon</defName>
+  </BodyPartDef>
+  
+  <BodyPartDef ParentName="horizonPart">
+	<defName>Radar</defName>
+	<label>Radar</label>
+  </BodyPartDef>
+  
+  <BodyPartDef>
+    <defName>bodypartClamp</defName>
+    <label>Bodypart Clamp</label>
+    <permanentInjuryChanceFactor>0</permanentInjuryChanceFactor>
+    <skinCovered>false</skinCovered>
+    <solid>true</solid>
+    <alive>false</alive>
+    <bleedRate>0</bleedRate>
+    <hitPoints>20</hitPoints>
+  </BodyPartDef>
 	
-	
+  <BodyPartDef>
+    <defName>cargoCrate</defName>
+    <label>Cargo Crate</label>
+    <permanentInjuryChanceFactor>0</permanentInjuryChanceFactor>
+    <skinCovered>false</skinCovered>
+    <solid>true</solid>
+    <alive>false</alive>
+    <bleedRate>0</bleedRate>
+    <hitPoints>40</hitPoints>
+  </BodyPartDef>
+  
+  <BodyPartDef>
+    <defName>canisterStorage</defName>
+    <label>Canister Storage</label>
+    <hitPoints>40</hitPoints>
+    <permanentInjuryChanceFactor>0</permanentInjuryChanceFactor>
+    <skinCovered>false</skinCovered>
+    <solid>true</solid>
+    <alive>false</alive>
+    <bleedRate>0</bleedRate>
+	<destroyableByDamage>false</destroyableByDamage>
+  </BodyPartDef>
+  
+  <BodyPartDef Name="canister">
+    <defName>Canister</defName>
+    <label>Canister</label>
+    <hitPoints>10</hitPoints>
+    <permanentInjuryChanceFactor>0</permanentInjuryChanceFactor>
+    <skinCovered>false</skinCovered>
+    <solid>true</solid>
+    <alive>false</alive>
+    <bleedRate>0</bleedRate>
+  </BodyPartDef>
+  
+  <BodyPartDef ParentName="canister">
+	<defName>Canister1</defName>
+  </BodyPartDef>
+  
+  <BodyPartDef ParentName="canister">
+	<defName>Canister2</defName>
+  </BodyPartDef>
+  
+  <BodyPartDef ParentName="canister">
+	<defName>Canister3</defName>
+  </BodyPartDef>
+  
 </Defs>
