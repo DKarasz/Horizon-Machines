@@ -27,10 +27,7 @@
     <thingCategories>
       <li>Animals</li>
     </thingCategories>
-	<modExtensions>
-		<li Class="Horizon.MechAnimal">
-		</li>
-	</modExtensions>  </ThingDef>
+  </ThingDef>
   
   
   <ThingDef ParentName="HorizonBase">
@@ -100,6 +97,9 @@
         </bodyGraphicData>
       </li>
     </lifeStages>
+	<modExtensions>
+		<li Class="Horizon.MechAnimal"/>
+	</modExtensions>
   </PawnKindDef>
   
 </Defs>

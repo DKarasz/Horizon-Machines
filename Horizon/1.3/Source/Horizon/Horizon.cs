@@ -8,6 +8,8 @@ using Verse;
 using HarmonyLib;
 using System.Reflection;
 using System.Reflection.Emit;
+using UnityEngine;
+using Verse.AI.Group;
 
 namespace Horizon
 {
@@ -25,6 +27,7 @@ namespace Horizon
     {
         static Horizon()
         {
+            Harmony.DEBUG = true;
             new Harmony("Horizon.Mod").PatchAll();
         }
     }
@@ -57,7 +60,6 @@ namespace Horizon
     }
 
     [HarmonyPatch]
-    [HarmonyDebug]
     public static class Isflesh_to_Isnotmech_Patch
     {
         static IEnumerable<MethodBase> TargetMethods()
@@ -137,13 +139,13 @@ namespace Horizon
         static IEnumerable<MethodBase> TargetMethods()
         {
             yield return AccessTools.Method(typeof(PawnBreathMoteMaker), "BreathMoteMakerTick");
-            yield return AccessTools.Method(typeof(RimWorld.Planet.WITab_Caravan_Health), "DoRow");
+            yield return AccessTools.Method(typeof(RimWorld.Planet.WITab_Caravan_Health), "DoRow", new Type[] { typeof(Rect), typeof(Pawn) });
             yield return AccessTools.Method(typeof(HealthCardUtility), "DrawHealthSummary");
             yield return AccessTools.Method(typeof(CompGiveHediffSeverity), "AppliesTo");
             yield return AccessTools.PropertyGetter(typeof(StunHandler), "EMPAdaptationTicksDuration");
             yield return AccessTools.Method(typeof(Recipe_RemoveBodyPart), "GetLabelWhenUsedOn");
-            yield return AccessTools.Method(typeof(CompAbilityEffect_Neuroquake), "Apply");
-            yield return AccessTools.Method(typeof(CompAbilityEffect_GiveMentalState), "Apply");
+            yield return AccessTools.Method(typeof(CompAbilityEffect_Neuroquake), "Apply", new Type[] { typeof(LocalTargetInfo), typeof(LocalTargetInfo) });
+            yield return AccessTools.Method(typeof(CompAbilityEffect_GiveMentalState), "Apply", new Type[] { typeof(LocalTargetInfo), typeof(LocalTargetInfo) });
             yield return AccessTools.Method(typeof(ArmorUtility), "ApplyArmor");
 
         }
@@ -152,10 +154,114 @@ namespace Horizon
         static bool IsNotFlesh(RaceProperties RaceProps) => !RaceProps.IsFlesh;
     }
 
+    //RequiredNutritionPerFeed, nullcheck food need with needs.food ?? 0
+
+    [HarmonyPatch(typeof(ExecutionUtility), "ExecuteCutPart")]
+    public static class ExecutionUtility_ExecuteCutPart_Patch
+    {
+        public static bool Prefix(ref BodyPartRecord __result, Pawn pawn)
+        {
+            if (!pawn.kindDef.HasModExtension<MechAnimal>())
+            {
+                return true;
+            }
+            BodyPartRecord bodyPartRecord = pawn.health.hediffSet.GetNotMissingParts().FirstOrDefault((BodyPartRecord x) => x.def == MechPartDefOf.MechanicalNeck);
+            if (bodyPartRecord != null)
+            {
+                __result = bodyPartRecord;
+                return false;
+            }
+            bodyPartRecord = pawn.health.hediffSet.GetNotMissingParts().FirstOrDefault((BodyPartRecord x) => x.def == MechPartDefOf.MechanicalHead);
+            if (bodyPartRecord != null)
+            {
+                __result = bodyPartRecord;
+                return false;
+            }
+            bodyPartRecord = pawn.health.hediffSet.GetNotMissingParts().FirstOrDefault((BodyPartRecord x) => x.def == MechPartDefOf.MechanicalThorax);
+            if (bodyPartRecord != null)
+            {
+                __result = bodyPartRecord;
+                return false;
+            }
+            bodyPartRecord = pawn.health.hediffSet.GetNotMissingParts().FirstOrDefault((BodyPartRecord x) => x.def == MechPartDefOf.MechanicalThoraxCanManipulate);
+            if (bodyPartRecord != null)
+            {
+                __result = bodyPartRecord;
+                return false;
+            }
+            return true;
+        }
+    }
+    [HarmonyPatch(typeof(JobDriver_Blind), "Blind")]
+    public static class JobDriver_Blind_Blind_Patch
+    {
+        public static bool Prefix(Pawn pawn, Pawn doer)
+        {
+            Lord lord = pawn.GetLord();
+            IEnumerable<BodyPartRecord> enumerable = from p in pawn.health.hediffSet.GetNotMissingParts()
+                                                     where p.def == MechPartDefOf.SightSensor
+                                                     select p;
+            if (lord != null && lord.LordJob is LordJob_Ritual_Mutilation lordJob_Ritual_Mutilation && enumerable.Count() == 1)
+            {
+                lordJob_Ritual_Mutilation.mutilatedPawns.Add(pawn);
+            }
+            foreach (BodyPartRecord item in enumerable)
+            {
+                if (item.def == MechPartDefOf.SightSensor)
+                {
+                    pawn.TakeDamage(new DamageInfo(DamageDefOf.SurgicalCut, 99999f, 999f, -1f, null, item));
+                    break;
+                }
+            }
+            if (pawn.Dead)
+            {
+                ThoughtUtility.GiveThoughtsForPawnExecuted(pawn, doer, PawnExecutionKind.GenericBrutal);
+                return false;
+            }
+            return true;
+        }
+    }
+
+    [DefOf]
+    public static class MechPartDefOf
+    {
+        public static BodyPartDef Reactor;
+
+        public static BodyPartDef MechanicalLeg;
+
+        public static BodyPartDef FluidReprocessor;
+
+        public static BodyPartDef ArtificialBrain;
+
+        public static BodyPartDef SightSensor;
+
+        public static BodyPartDef SmellSensor;
+
+        public static BodyPartDef MechanicalArm;
+
+        public static BodyPartDef Jaw;
+
+        public static BodyPartDef MechanicalHand;
+
+        public static BodyPartDef MechanicalNeck;
+
+        public static BodyPartDef MechanicalHead;
+
+        public static BodyPartDef MechanicalThorax;
+
+        public static BodyPartDef MechanicalThoraxCanManipulate;
+
+        static MechPartDefOf()
+        {
+            DefOfHelper.EnsureInitializedInCtor(typeof(MechPartDefOf));
+        }
+    }
+
+
     //[HarmonyPatch(typeof(ITab_Pawn_Social), "IsVisible", MethodType.Getter)]
 
-    
-   
+
+
 
 
 

@@ -22,3 +22,20 @@ C:\Users\karasd3\Documents\GitHub\Horizon-Machines\Horizon\1.3\Source\Horizon\bi
 C:\Users\karasd3\Documents\GitHub\Horizon-Machines\Horizon\1.3\Source\Horizon\bin\Debug\System.Runtime.CompilerServices.Unsafe.xml
 C:\Users\karasd3\Documents\GitHub\Horizon-Machines\Horizon\1.3\Source\Horizon\bin\Debug\System.Threading.Tasks.Extensions.xml
 C:\Users\karasd3\Documents\GitHub\Horizon-Machines\Horizon\1.3\Source\Horizon\obj\Debug\Horizon.csproj.CopyComplete
+C:\Users\Donald Karasz\Documents\GitHub\Horizon-Machines\Horizon\1.3\Source\Horizon\bin\Debug\Horizon.dll.config
+C:\Users\Donald Karasz\Documents\GitHub\Horizon-Machines\Horizon\1.3\Source\Horizon\bin\Debug\Horizon.dll
+C:\Users\Donald Karasz\Documents\GitHub\Horizon-Machines\Horizon\1.3\Source\Horizon\bin\Debug\Horizon.pdb
+C:\Users\Donald Karasz\Documents\GitHub\Horizon-Machines\Horizon\1.3\Source\Horizon\bin\Debug\0Harmony.dll
+C:\Users\Donald Karasz\Documents\GitHub\Horizon-Machines\Horizon\1.3\Source\Horizon\bin\Debug\System.Runtime.CompilerServices.Unsafe.dll
+C:\Users\Donald Karasz\Documents\GitHub\Horizon-Machines\Horizon\1.3\Source\Horizon\bin\Debug\System.Threading.Tasks.Extensions.dll
+C:\Users\Donald Karasz\Documents\GitHub\Horizon-Machines\Horizon\1.3\Source\Horizon\bin\Debug\0Harmony.xml
+C:\Users\Donald Karasz\Documents\GitHub\Horizon-Machines\Horizon\1.3\Source\Horizon\bin\Debug\System.Runtime.CompilerServices.Unsafe.xml
+C:\Users\Donald Karasz\Documents\GitHub\Horizon-Machines\Horizon\1.3\Source\Horizon\bin\Debug\System.Threading.Tasks.Extensions.xml
+C:\Users\Donald Karasz\Documents\GitHub\Horizon-Machines\Horizon\1.3\Source\Horizon\obj\Debug\Horizon.csproj.AssemblyReference.cache
+C:\Users\Donald Karasz\Documents\GitHub\Horizon-Machines\Horizon\1.3\Source\Horizon\obj\Debug\Horizon.csproj.CoreCompileInputs.cache
+C:\Users\Donald Karasz\Documents\GitHub\Horizon-Machines\Horizon\1.3\Source\Horizon\obj\Debug\Horizon.csproj.CopyComplete
+C:\Users\Donald Karasz\Documents\GitHub\Horizon-Machines\Horizon\1.3\Source\Horizon\obj\Debug\Horizon.dll
+C:\Users\Donald Karasz\Documents\GitHub\Horizon-Machines\Horizon\1.3\Source\Horizon\obj\Debug\Horizon.pdb
+C:\Users\Donald Karasz\Documents\GitHub\Horizon-Machines\Horizon\1.3\Assemblies\Horizon.dll.config
+C:\Users\Donald Karasz\Documents\GitHub\Horizon-Machines\Horizon\1.3\Assemblies\Horizon.dll
+C:\Users\Donald Karasz\Documents\GitHub\Horizon-Machines\Horizon\1.3\Assemblies\Horizon.pdb
