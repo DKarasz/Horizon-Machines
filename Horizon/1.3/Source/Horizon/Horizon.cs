@@ -113,7 +113,7 @@ namespace Horizon
     }
 
     [HarmonyPatch(typeof(HealthCardUtility), "DrawOverviewTab")]
-    public static class HealthCaravanUtility_DrawOverviewTab_Patch
+    public static class HealthCardUtility_DrawOverviewTab_Patch
     {
         public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
         {
@@ -153,8 +153,76 @@ namespace Horizon
             codes.MethodReplacer(AccessTools.PropertyGetter(typeof(RaceProperties), "IsMechanoid"), AccessTools.Method(typeof(Ismech_to_Isnotflesh_Patch), "IsNotFlesh"));
         static bool IsNotFlesh(RaceProperties RaceProps) => !RaceProps.IsFlesh;
     }
+    public class HorizonFrameworkMod : Mod
+    {
+        public static HorizonFrameworkSettings settings;
+        public HorizonFrameworkMod(ModContentPack pack) : base(pack)
+        {
+            settings = GetSettings<HorizonFrameworkSettings>();
+        }
+        public override void DoSettingsWindowContents(Rect inRect)
+        {
+            base.DoSettingsWindowContents(inRect);
+            settings.DoSettingsWindowContents(inRect);
+        }
+        public override string SettingsCategory()
+        {
+            return this.Content.Name;
+        }
+    }
+    public class HorizonFrameworkSettings : ModSettings
+    {
+        private static HorizonFrameworkSettings settings;
+        public static bool AArmor
+        {
+            get => settings.AdvancedArmor;
+        }
+        public bool AdvancedArmor;
+        public override void ExposeData()
+        {
+            base.ExposeData();
+            Scribe_Values.Look(ref AdvancedArmor, "AdvancedArmor");
+        }
+        public void DoSettingsWindowContents(Rect inRect)
+        {
+            Rect rect = new Rect(inRect.x, inRect.y, inRect.width, inRect.height);
+            Listing_Standard listingStandard = new Listing_Standard();
+            listingStandard.Begin(rect);
+            listingStandard.GapLine();
+            listingStandard.Label("Hf.generaltab".Translate());
+            listingStandard.GapLine();
+            listingStandard.CheckboxLabeled("Hf.AdvanceArmor".Translate(), ref AdvancedArmor, "Hf.AAtooltip".Translate());
+            listingStandard.GapLine();
+
+            listingStandard.End();
+        }
+    }
+
+    [HarmonyPatch(typeof(ArmorUtility), "ApplyArmor")]
+    public static class ArmorUtility_ApplyArmor_Patch
+    {
+        public static bool Prefix(ref float armorPenetration, ref float armorRating)
+        {
+            if (HorizonFrameworkSettings.AArmor)
+            {
+                armorPenetration *= 4;
+                armorRating *= 2;
+            }
+            return true;
+        }
+    }
 
     //RequiredNutritionPerFeed, nullcheck food need with needs.food ?? 0
+    [HarmonyPatch(typeof(JobDriver_InteractAnimal), "RequiredNutritionPerFeed")]
+    public static class JobDriver_InteractAnimal_RequiredNutritionPerFeed_Patch
+    {
+        public static bool Prefix(ref float __result, Pawn animal)
+        {
+            __result= Mathf.Min((animal.needs.food?.MaxLevel ?? 0f) * 0.15f, 0.3f);
+            return false;
+        }
+    }
+    
 
     [HarmonyPatch(typeof(ExecutionUtility), "ExecuteCutPart")]
     public static class ExecutionUtility_ExecuteCutPart_Patch
@@ -257,9 +325,24 @@ namespace Horizon
         }
     }
 
-
-    //[HarmonyPatch(typeof(ITab_Pawn_Social), "IsVisible", MethodType.Getter)]
-
+    public class RemoveNeed : DefModExtension
+    {
+        public List<NeedDef> Need;
+    }
+    [HarmonyPatch(typeof(Pawn_NeedsTracker), "ShouldHaveNeed")]
+    public static class Pawn_NeedsTracker_ShouldHaveNeed_Patch
+    {
+        public static bool Prefix(ref bool __result, NeedDef nd, ref Pawn ___pawn)
+        {
+            var RemoveNeeds = ___pawn.def.GetModExtension<RemoveNeed>();
+            if (RemoveNeeds!=null && RemoveNeeds.Need.Contains(nd))
+            {
+                __result = false;
+                return false;
+            }
+            return true;
+        }
+    }
 
 
 

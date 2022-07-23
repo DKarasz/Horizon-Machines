@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<LanguageData>
+
+	<Hf.generaltab>General Settings</Hf.generaltab>
+	<Hf.AdvanceArmor>Enable advanced armor behavior</Hf.AdvanceArmor>
+	<Hf.AAtooltip>armor effectiveness is doubled and armor penetration of weapons is quadrupled (only weapon penetration is shown as doubled)</Hf.AAtooltip>
+</LanguageData>
