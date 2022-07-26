@@ -27,7 +27,8 @@ namespace Horizon
     {
         static Horizon()
         {
-            Harmony.DEBUG = true;
+
+            //Harmony.DEBUG = true;
             new Harmony("Horizon.Mod").PatchAll();
         }
     }
@@ -172,43 +173,65 @@ namespace Horizon
     }
     public class HorizonFrameworkSettings : ModSettings
     {
-        private static HorizonFrameworkSettings settings;
-        public static bool AArmor
-        {
-            get => settings.AdvancedArmor;
-        }
-        public bool AdvancedArmor;
+        public static bool AdvancedArmor = false;
         public override void ExposeData()
         {
             base.ExposeData();
-            Scribe_Values.Look(ref AdvancedArmor, "AdvancedArmor");
+            Scribe_Values.Look(ref AdvancedArmor, "AdvancedArmor", false, true);
         }
         public void DoSettingsWindowContents(Rect inRect)
         {
-            Rect rect = new Rect(inRect.x, inRect.y, inRect.width, inRect.height);
             Listing_Standard listingStandard = new Listing_Standard();
-            listingStandard.Begin(rect);
+            listingStandard.Begin(inRect);
             listingStandard.GapLine();
             listingStandard.Label("Hf.generaltab".Translate());
             listingStandard.GapLine();
             listingStandard.CheckboxLabeled("Hf.AdvanceArmor".Translate(), ref AdvancedArmor, "Hf.AAtooltip".Translate());
             listingStandard.GapLine();
-
             listingStandard.End();
+            Rect rect = inRect.BottomPart(0.1f).LeftPart(0.1f);
+            bool flag = Widgets.ButtonText(rect, "Apply Settings", true, true, true);
+            if (flag)
+            {
+                ApplySettings();
+            }
+        }
+        public static void ApplySettings()
+        {
+            ArmorUtility_ApplyArmor_Patch.AArmor = AdvancedArmor;
         }
     }
-
     [HarmonyPatch(typeof(ArmorUtility), "ApplyArmor")]
     public static class ArmorUtility_ApplyArmor_Patch
     {
+        public static bool AArmor;
         public static bool Prefix(ref float armorPenetration, ref float armorRating)
         {
-            if (HorizonFrameworkSettings.AArmor)
+            if (AArmor)
             {
-                armorPenetration *= 4;
+                armorPenetration *= 2;
                 armorRating *= 2;
             }
             return true;
+        }
+    }
+    [HarmonyPatch]
+    public static class AdvanceArmor_postfix
+    {
+        static IEnumerable<MethodBase> TargetMethods()
+        {
+            yield return AccessTools.Method(typeof(VerbProperties), nameof(VerbProperties.AdjustedArmorPenetration), parameters: new Type[] { typeof(Tool), typeof(Pawn), typeof(Thing), typeof(HediffComp_VerbGiver) });
+            yield return AccessTools.Method(typeof(VerbProperties), nameof(VerbProperties.AdjustedArmorPenetration), parameters: new Type[] { typeof(Tool), typeof(Pawn), typeof(ThingDef), typeof(ThingDef), typeof(HediffComp_VerbGiver) });
+            yield return AccessTools.Method(typeof(ExtraDamage), nameof(ExtraDamage.AdjustedArmorPenetration), parameters: new Type[] { });
+            yield return AccessTools.Method(typeof(ExtraDamage), nameof(ExtraDamage.AdjustedArmorPenetration), parameters: new Type[] { typeof(Verb), typeof(Pawn) });
+            yield return AccessTools.Method(typeof(ProjectileProperties), nameof(ProjectileProperties.GetArmorPenetration), parameters: new Type[] { typeof(float), typeof(StringBuilder) });
+        }
+        public static void Postfix(ref float __result)
+        {
+            if (ArmorUtility_ApplyArmor_Patch.AArmor)
+            {
+                __result *= 2;
+            }
         }
     }
 
@@ -307,8 +330,6 @@ namespace Horizon
 
         public static BodyPartDef MechanicalArm;
 
-        public static BodyPartDef Jaw;
-
         public static BodyPartDef MechanicalHand;
 
         public static BodyPartDef MechanicalNeck;
@@ -334,11 +355,11 @@ namespace Horizon
     {
         public static bool Prefix(ref bool __result, NeedDef nd, ref Pawn ___pawn)
         {
-            var RemoveNeeds = ___pawn.def.GetModExtension<RemoveNeed>();
-            if (RemoveNeeds!=null && RemoveNeeds.Need.Contains(nd))
+            var RemoveNeeds = ___pawn.kindDef.GetModExtension<RemoveNeed>();
+            if (RemoveNeeds != null && RemoveNeeds.Need.Contains(nd))
             {
                 __result = false;
-                return false;
+                return false;   
             }
             return true;
         }
