@@ -10,6 +10,7 @@ using System.Reflection;
 using System.Reflection.Emit;
 using UnityEngine;
 using Verse.AI.Group;
+using static Verse.DamageWorker;
 
 namespace Horizon
 {
@@ -368,32 +369,25 @@ namespace Horizon
         }
     }
 
-    [HarmonyPatch(typeof(DamageWorker_AddInjury), "GetExactPartFromDamageInfo")]
-    public static class DamageWorker_AddInjury_GetExactPartFromDamageInfo_Patch
+    [HarmonyPatch(typeof(DamageWorker_AddInjury), "FinalizeAndAddInjury", new Type[] {typeof(Pawn), typeof(float), 
+        typeof(DamageInfo), typeof(DamageResult)})]
+    public static class DamageWorker_AddInjury_FinalizeAndAddInjury_Patch
     {
-        public static void Postfix(ref BodyPartRecord __result, DamageInfo dinfo, Pawn pawn)
+        public static void Prefix(Pawn pawn, float totalDamage, ref DamageInfo dinfo, DamageResult result)
         {
-            var hitPart = __result;
-            var nonMissingParts = pawn.health.hediffSet.GetNotMissingParts();
-            var children = __result.GetDirectChildParts();
-            Log.Message("Children of " + __result + " - " + String.Join(", ", children));
-            if (children.TryRandomElementByWeight(x => x.coverage, out var child) 
-                && child.def == MechPartDefOf.Armor && nonMissingParts.Contains(child))
+            if (dinfo.HitPart.def.destroyableByDamage is false && pawn.health.hediffSet.GetPartHealth(dinfo.HitPart) == 1)
             {
-                __result = child;
-                Log.Message("Armor: Choosen: " + __result + " for damage: " + dinfo + " for pawn " + pawn);
-                return;
-            }
-            var siblings = __result.parent.GetDirectChildParts().Where(x => x != hitPart).ToList();
-            Log.Message("Siblings of " + __result + " - " + String.Join(", ", siblings));
-            if (siblings.Exists(x => x.def == MechPartDefOf.ArmorChild))
-            {
-                if (siblings.TryRandomElementByWeight(x => x.coverage, out var part) && nonMissingParts.Contains(part))
+                var hitPart = dinfo.HitPart;
+                var nonMissingParts = pawn.health.hediffSet.GetNotMissingParts();
+                var children = hitPart.GetDirectChildParts();
+                Log.Message("Children of " + hitPart + " - " + String.Join(", ", children));
+                if (children.TryRandomElementByWeight(x => x.coverage, out var child) && nonMissingParts.Contains(child))
                 {
-                    __result = part;
-                    Log.Message("Armor child: Choosen: " + __result + " for damage: " + dinfo + " for pawn " + pawn);
+                    dinfo.SetHitPart(child);
+                    Log.Message("Armor: Choosen: " + hitPart + " for damage: " + dinfo + " for pawn " + pawn);
                     return;
                 }
+                dinfo.SetHitPart(hitPart.parent);
             }
         }
     }
