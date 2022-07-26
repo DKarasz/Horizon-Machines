@@ -340,6 +340,9 @@ namespace Horizon
 
         public static BodyPartDef MechanicalThoraxCanManipulate;
 
+        public static BodyPartDef Armor;
+
+        public static BodyPartDef ArmorChild;
         static MechPartDefOf()
         {
             DefOfHelper.EnsureInitializedInCtor(typeof(MechPartDefOf));
@@ -365,10 +368,35 @@ namespace Horizon
         }
     }
 
-
-
-
-
+    [HarmonyPatch(typeof(DamageWorker_AddInjury), "GetExactPartFromDamageInfo")]
+    public static class DamageWorker_AddInjury_GetExactPartFromDamageInfo_Patch
+    {
+        public static void Postfix(ref BodyPartRecord __result, DamageInfo dinfo, Pawn pawn)
+        {
+            var hitPart = __result;
+            var nonMissingParts = pawn.health.hediffSet.GetNotMissingParts();
+            var children = __result.GetDirectChildParts();
+            Log.Message("Children of " + __result + " - " + String.Join(", ", children));
+            if (children.TryRandomElementByWeight(x => x.coverage, out var child) 
+                && child.def == MechPartDefOf.Armor && nonMissingParts.Contains(child))
+            {
+                __result = child;
+                Log.Message("Armor: Choosen: " + __result + " for damage: " + dinfo + " for pawn " + pawn);
+                return;
+            }
+            var siblings = __result.parent.GetDirectChildParts().Where(x => x != hitPart).ToList();
+            Log.Message("Siblings of " + __result + " - " + String.Join(", ", siblings));
+            if (siblings.Exists(x => x.def == MechPartDefOf.ArmorChild))
+            {
+                if (siblings.TryRandomElementByWeight(x => x.coverage, out var part) && nonMissingParts.Contains(part))
+                {
+                    __result = part;
+                    Log.Message("Armor child: Choosen: " + __result + " for damage: " + dinfo + " for pawn " + pawn);
+                    return;
+                }
+            }
+        }
+    }
 
     //public class CompProperties_ArmorPlate : CompProperties//adds comp for items
     //{
