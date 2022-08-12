@@ -27,6 +27,70 @@
     <thingCategories>
       <li>Animals</li>
     </thingCategories>
+	<modExtensions>
+		<li Class="Horizon.AnimalBodyAddons">
+			<bodyAddons>
+				<li>
+					<path>Things/Pawn/test/default</path>
+					<bodyPart>Central torso armor plate</bodyPart>
+					<!--<inFrontOfBody>true</inFrontOfBody>
+					<layerInvert>false</layerInvert>
+					<scaleWithPawnDrawsize>true</scaleWithPawnDrawsize>-->
+				</li>
+				<!--
+				<li>
+					<path>				</path>
+					<bodyPart>			</bodyPart>
+					<inFrontOfBody>			</inFrontOfBody>
+					<layerInvert>			</layerInvert>
+					<layerOffset>			</layerOffset>
+					<angle>				</angle>
+					<drawSize>			</drawSize>
+					<drawSizePortrait>		</drawSizePortrait> keep only for purposes of a mod adding animals to colonist bar
+					<drawRotated>			</drawRotated>
+					<scaleWithPawnDrawsize>		</scaleWithPawnDrawsize>
+					<drawnInBed>			</drawnInBed>
+					<drawnDesiccated>		</drawnDesiccated>
+					<colorChannel>			</colorChannel> low priority, would require addition of color channel options to rest of thing def
+					<linkVariantIndexWithPrevious>		</linkVariantIndexWithPrevious>
+					
+					<offsets>
+						<south>
+							<layerOffset>		</layerOffset>
+						</south>
+						<north>
+							
+						</north>
+						<east>
+							
+						</east>
+					</offsets>
+					
+					<hediffGraphics>
+						<(hediffDefName)>	Path	</(hediffDefName)>
+						<(hediffDefName)>
+							<path>		</path>
+							<severity>
+								<a(severityDecimal))>	Path	</a(severityDecimal)>
+							</severity>
+						</(hediffDefName)>
+					</hediffGraphics>
+					<genderGraphics>
+					</genderGraphics>
+					<ageGraphics>
+					</ageGraphics>
+					<damageGraphics>
+					</damageGraphics>
+					<prioritization>
+						<li>	</li>
+						<li>	</li>
+					</prioritization>
+					<shaderType>		</shaderType>
+				</li>
+				-->
+			</bodyAddons>
+		</li>
+	</modExtensions>
   </ThingDef>
   
   
