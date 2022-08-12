@@ -11,6 +11,7 @@ using System.Reflection.Emit;
 using UnityEngine;
 using Verse.AI.Group;
 using static Verse.DamageWorker;
+using MonoMod.Utils;
 
 namespace Horizon
 {
@@ -33,6 +34,7 @@ namespace Horizon
             new Harmony("Horizon.Mod").PatchAll();
         }
     }
+    //mechanimal extension
     public class MechAnimal : DefModExtension{}
 
     [HarmonyPatch(typeof(RaceProperties),"IsMechanoid", MethodType.Getter)]
@@ -48,7 +50,7 @@ namespace Horizon
             return true;
         }
     }
-
+    //isflesh patches
     [HarmonyPatch(typeof(PawnCapacityDef), "GetLabelFor", new Type[] { typeof(bool), typeof(bool) })]
     public static class PawnCapacityDef_GetLabelFor_Patch
     {
@@ -60,7 +62,6 @@ namespace Horizon
             }
         }
     }
-
     [HarmonyPatch]
     public static class Isflesh_to_Isnotmech_Patch
     {
@@ -134,7 +135,7 @@ namespace Horizon
             }
         }
     }
-
+    //ismech patches
     [HarmonyPatch]
     public static class Ismech_to_Isnotflesh_Patch
     {
@@ -155,6 +156,7 @@ namespace Horizon
             codes.MethodReplacer(AccessTools.PropertyGetter(typeof(RaceProperties), "IsMechanoid"), AccessTools.Method(typeof(Ismech_to_Isnotflesh_Patch), "IsNotFlesh"));
         static bool IsNotFlesh(RaceProperties RaceProps) => !RaceProps.IsFlesh;
     }
+    //settings
     public class HorizonFrameworkMod : Mod
     {
         public static HorizonFrameworkSettings settings;
@@ -171,14 +173,25 @@ namespace Horizon
         {
             return this.Content.Name;
         }
+        public override void WriteSettings()
+        {
+            base.WriteSettings();
+            settings.ApplySettings();
+        }
     }
     public class HorizonFrameworkSettings : ModSettings
     {
         public static bool AdvancedArmor = false;
+        public static bool AdvancedAccuracy = false;
+        public static bool bones = false;
         public override void ExposeData()
         {
             base.ExposeData();
             Scribe_Values.Look(ref AdvancedArmor, "AdvancedArmor", false, true);
+            Scribe_Values.Look(ref AdvancedArmor, "AdvancedAccuracy", false, true);
+            Scribe_Values.Look(ref AdvancedArmor, "Bones", false, true);
+
+
         }
         public void DoSettingsWindowContents(Rect inRect)
         {
@@ -189,19 +202,20 @@ namespace Horizon
             listingStandard.GapLine();
             listingStandard.CheckboxLabeled("Hf.AdvanceArmor".Translate(), ref AdvancedArmor, "Hf.AAtooltip".Translate());
             listingStandard.GapLine();
+            listingStandard.CheckboxLabeled("Hf.AdvanceAccuracy".Translate(), ref AdvancedAccuracy, "Hf.AAcctooltip".Translate());
+            listingStandard.GapLine();
+            listingStandard.CheckboxLabeled("Hf.lethalBones".Translate(), ref bones, "Hf.Bonestooltip".Translate());
+            listingStandard.GapLine();
             listingStandard.End();
-            Rect rect = inRect.BottomPart(0.1f).LeftPart(0.1f);
-            bool flag = Widgets.ButtonText(rect, "Apply Settings", true, true, true);
-            if (flag)
-            {
-                ApplySettings();
-            }
         }
-        public static void ApplySettings()
+        public void ApplySettings()
         {
             ArmorUtility_ApplyArmor_Patch.AArmor = AdvancedArmor;
+            ShotReport_HitReportFor_Patch.AAccuracy = AdvancedAccuracy;
+            Pawn_HealthTracker_ShouldBeDeadFromLethalDamageThreshold_Patch.lethalBones = bones;
         }
     }
+    //advanced armor patches (will be split off into separate mod)
     [HarmonyPatch(typeof(ArmorUtility), "ApplyArmor")]
     public static class ArmorUtility_ApplyArmor_Patch
     {
@@ -235,8 +249,42 @@ namespace Horizon
             }
         }
     }
+    //advanced accuracy patches (not yet working) (will be split off into separate mod)
+    [HarmonyPatch(typeof(ShotReport), "HitReportFor")]
+    public static class ShotReport_HitReportFor_Patch
+    {
+        public static bool AAccuracy;
+        public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+        {
+            MethodBase from = AccessTools.Method(typeof(VerbProperties), "GetHitChanceFactor");
+            MethodBase from1 = AccessTools.PropertyGetter(typeof(WeatherManager), "CurWeatherAccuracyMultiplier");
+            MethodBase to = AccessTools.Method(typeof(ShotReport_HitReportFor_Patch), "statBump");
 
-    //RequiredNutritionPerFeed, nullcheck food need with needs.food ?? 0
+            foreach (CodeInstruction instruction in instructions)
+            {
+                if (instruction.operand as MethodBase == from || instruction.operand as MethodBase == from1)//find method to replace
+                {
+                    yield return instruction;//add first instruction back
+                    yield return new CodeInstruction(OpCodes.Ldarg_0);//load in next argument
+                    yield return new CodeInstruction(OpCodes.Call, to);//execute new method
+                }
+                else
+                {
+                    yield return instruction;
+                }
+            }
+        }
+        public static float statBump(float factor,Thing caster)
+        {
+            if (AAccuracy)
+            {
+                float shootstat = Mathf.Max(1, (caster is Pawn) ? caster.GetStatValue(StatDefOf.ShootingAccuracyPawn, false): caster.GetStatValue(StatDefOf.ShootingAccuracyTurret,false));//StatDefOf.ShootingAccuracyPawn.Worker.GetValue(StatRequest.For(caster), false) : StatDefOf.ShootingAccuracyTurret.Worker.GetValue(StatRequest.For(caster), false)
+                factor = Mathf.Pow(factor, 1 / shootstat);
+            }
+            return factor;
+        }
+    }
+    //no food taming patches (wip)
     [HarmonyPatch(typeof(JobDriver_InteractAnimal), "RequiredNutritionPerFeed")]
     public static class JobDriver_InteractAnimal_RequiredNutritionPerFeed_Patch
     {
@@ -246,8 +294,7 @@ namespace Horizon
             return false;
         }
     }
-    
-
+    //mech part specific patches
     [HarmonyPatch(typeof(ExecutionUtility), "ExecuteCutPart")]
     public static class ExecutionUtility_ExecuteCutPart_Patch
     {
@@ -313,7 +360,6 @@ namespace Horizon
             return true;
         }
     }
-
     [DefOf]
     public static class MechPartDefOf
     {
@@ -349,7 +395,7 @@ namespace Horizon
             DefOfHelper.EnsureInitializedInCtor(typeof(MechPartDefOf));
         }
     }
-
+    //need remover (testing)
     public class RemoveNeed : DefModExtension
     {
         public List<NeedDef> Need;
@@ -368,14 +414,26 @@ namespace Horizon
             return true;
         }
     }
-
-    [HarmonyPatch(typeof(DamageWorker_AddInjury), "FinalizeAndAddInjury", new Type[] {typeof(Pawn), typeof(float), 
-        typeof(DamageInfo), typeof(DamageResult)})]
-    public static class DamageWorker_AddInjury_FinalizeAndAddInjury_Patch
+    [HarmonyPatch(typeof (Pawn_IdeoTracker), "CertaintyChangePerDay", MethodType.Getter)]
+    public static class Pawn_IdeoTracker_CertaintyChangePerDay_Patch
     {
-        public static void Prefix(Pawn pawn, float totalDamage, ref DamageInfo dinfo, DamageResult result)
+        public static bool Prefix(ref float __result, ref Pawn ___pawn)
         {
-            if (dinfo.HitPart.def.destroyableByDamage is false && pawn.health.hediffSet.GetPartHealth(dinfo.HitPart) == 1)
+            if (___pawn.needs.mood == null)
+            {
+                __result = 0;
+                return false;
+            }
+            return true;
+        }
+    }
+    //armor bones code
+    [HarmonyPatch(typeof(DamageWorker_AddInjury), "ApplyDamageToPart")]
+    public static class DamageWorker_AddInjury_ApplyDamageToPart_Patch
+    {
+        public static void Prefix(Pawn pawn, ref DamageInfo dinfo, DamageResult result)
+        {
+            if (dinfo.HitPart?.def.destroyableByDamage is false && pawn.health.hediffSet.GetPartHealth(dinfo.HitPart) == 1)
             {
                 var hitPart = dinfo.HitPart;
                 var nonMissingParts = pawn.health.hediffSet.GetNotMissingParts();
@@ -391,41 +449,111 @@ namespace Horizon
             }
         }
     }
-
-    //public class CompProperties_ArmorPlate : CompProperties//adds comp for items
-    //{
-    //    public bool hitSibling = true;
-    //    public CompProperties_ArmorPlate()
-    //    {
-    //        this.compClass = typeof(CompArmorPlate);
-    //    }
-    //}
-
-    //public class CompArmorPlate : ThingComp
-    //{
-    //    public CompProperties_ArmorPlate Props => base.props as CompProperties_ArmorPlate;
-    //    public bool Sibling => Props.hitSibling;
-    //    public override void SetHitPart(BodyPartRecord forceHitPart)
-    //    {
-    //        base.PostPreApplyDamage();
-    //        if (num2 != 0)
-    //        {
-    //            IEnumerable<BodyPartRecord> enumerable = dinfo.HitPart.GetDirectChildParts();
-    //            pawn.health.hediffSet.GetRandomNotMissingPart();
-    //            if (dinfo.HitPart.parent != null)
-    //            {
-    //                enumerable = enumerable.Concat(dinfo.HitPart.parent);
-    //                if (dinfo.HitPart.parent.parent != null)
-    //                {
-    //                    enumerable = enumerable.Concat(dinfo.HitPart.parent.GetDirectChildParts());
-    //                }
-    //            }
-    //            list2 = (from x in enumerable.Except(dinfo.HitPart).InRandomOrder().Take(num2)
-    //                     where !x.def.conceptual
-    //                     select x).ToList();
-    //        }
-    //        pawn.health.hediffSet.GetRandomNotMissingPart(dinfo.Def, dinfo.Height, dinfo.Depth, parent);
-    //        if
-    //    }
-    //}
+    [HarmonyPatch(typeof(Pawn_HealthTracker), "ShouldBeDeadFromLethalDamageThreshold")]
+    public static class Pawn_HealthTracker_ShouldBeDeadFromLethalDamageThreshold_Patch
+    {
+        public static bool lethalBones;
+        public static bool Prefix(ref bool __result, ref Pawn_HealthTracker __instance)
+        {
+            if (lethalBones)
+            {
+                return true;
+            }
+            float num = 0f;
+            for (int i = 0; i < __instance.hediffSet.hediffs.Count; i++)
+            {
+                if (__instance.hediffSet.hediffs[i] is Hediff_Injury)
+                {
+                    if (__instance.hediffSet.hediffs[i].Part.def.destroyableByDamage == true)
+                    {
+                        num += __instance.hediffSet.hediffs[i].Severity;
+                    }
+                }
+            }
+            bool flag = num >= __instance.LethalDamageThreshold;
+            if (flag && DebugViewSettings.logCauseOfDeath)
+            {
+                Log.Message("CauseOfDeath: lethal damage " + num + " >= " + __instance.LethalDamageThreshold);
+            }
+            __result= flag;
+            return false;
+        }
+    }
+    //social remover (wip, issues with NRE on createrelation)
+    public class NoSocial : DefModExtension { }
+    //remove relation creation
+    [HarmonyPatch]
+    public static class PawnRelationWorker_CreateRelation_NoSocialPatch
+    {
+        static IEnumerable<MethodBase> TargetMethods()
+        {
+            yield return AccessTools.Method(typeof(PawnRelationWorker), "CreateRelation");
+            yield return AccessTools.Method(typeof(PawnRelationWorker_Child), "CreateRelation");
+            yield return AccessTools.Method(typeof(PawnRelationWorker_ExLover), "CreateRelation");
+            yield return AccessTools.Method(typeof(PawnRelationWorker_ExSpouse), "CreateRelation");
+            yield return AccessTools.Method(typeof(PawnRelationWorker_Fiance), "CreateRelation");
+            yield return AccessTools.Method(typeof(PawnRelationWorker_Lover), "CreateRelation");
+            yield return AccessTools.Method(typeof(PawnRelationWorker_Parent), "CreateRelation");
+            yield return AccessTools.Method(typeof(PawnRelationWorker_Sibling), "CreateRelation");
+            yield return AccessTools.Method(typeof(PawnRelationWorker_Spouse), "CreateRelation");
+        }
+        public static bool Prefix(Pawn generated, Pawn other)
+        {
+            var pawnSocial = generated.kindDef.HasModExtension<NoSocial>();
+            var otherSocial = other.kindDef.HasModExtension<NoSocial>();
+            if (pawnSocial == true || otherSocial == true)
+            {
+                return false;
+            }
+            return true;
+        }
+    }
+    [HarmonyPatch(typeof(RelationsUtility), "TryDevelopBondRelation")]
+    public static class RelationsUtility_TryDevelopBondRelation_Patch
+    {
+        public static bool Prefix(Pawn humanlike, Pawn animal, ref bool __result)
+        {
+            var pawnSocial = humanlike.kindDef.HasModExtension<NoSocial>();
+            var otherSocial = animal.kindDef.HasModExtension<NoSocial>();
+            if (pawnSocial == true || otherSocial == true)
+            {
+                __result = false;
+                return false;
+            }
+            return true;
+        }
+    }
+    //other pawns dont think of pawn as anything
+    [HarmonyPatch(typeof(Pawn_RelationsTracker), "OpinionOf")]
+    public static class Pawn_RelationsTracker_OpinionOf_NoSocialPatch
+    {
+        public static bool Prefix(Pawn other, ref int __result, ref Pawn ___pawn)
+        {
+            var pawnSocial = ___pawn.kindDef.HasModExtension<NoSocial>();
+            var otherSocial = other.kindDef.HasModExtension<NoSocial>();
+            if (pawnSocial == true || otherSocial == true)
+            {
+                __result= 0;
+                return false;
+            }
+            return true;
+        }
+    }
+    //hide social tab
+    [HarmonyPatch(typeof(ITab_Pawn_Social), "IsVisible", MethodType.Getter)]
+    public static class ITab_Pawn_Social_IsVisible_NoSocialPatch
+    {
+        private static Func<ITab_Pawn_Social, Pawn> selPawn = AccessTools.PropertyGetter(typeof(ITab_Pawn_Social), "SelPawnForSocialInfo").CreateDelegate<Func<ITab_Pawn_Social, Pawn>>();
+        public static bool Prefix(ITab_Pawn_Social __instance, ref bool __result)
+        {
+            Pawn pawn = selPawn(__instance);
+            var pawnSocial = pawn.kindDef.HasModExtension<NoSocial>();
+            if (pawnSocial == true)
+            {
+                __result = false;
+                return false;
+            }
+            return true;
+        }
+    }
 }

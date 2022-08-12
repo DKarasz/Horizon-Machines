@@ -9,6 +9,7 @@
     <alive>false</alive>
     <bleedRate>0</bleedRate>
     <hitPoints>30</hitPoints>
+	<destroyableByDamage>false</destroyableByDamage>
   </BodyPartDef>
 	
   <BodyPartDef>
