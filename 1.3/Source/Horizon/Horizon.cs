@@ -558,6 +558,10 @@ namespace Horizon
             return true;
         }
     }
+
+
+
+
     [HarmonyPatch(typeof(HarmonyPatches), nameof(HarmonyPatches.DrawAddons))]
     public static class HarmonyPatches_DrawAddons_Patch
     {
@@ -666,64 +670,6 @@ namespace Horizon
         }
     }
 
-    public class AnimalBodyAddon : BodyAddon
-    {
-        public override Graphic GetPath(Pawn pawn, ref int sharedIndex, int? savedIndex = null)
-        {
-            string returnPath = string.Empty;
-            int variantCounting = 0;
-
-            if (!this.hediffGraphics.NullOrEmpty())
-                foreach (BodyAddonHediffGraphic bahg in this.hediffGraphics)
-                {
-
-                    foreach (Hediff h in pawn.health.hediffSet.hediffs.Where(predicate: h => h.def == bahg.hediff &&
-                                                                                             (h.Part == null ||
-                                                                                              this.bodyPart.NullOrEmpty() ||
-                                                                                              h.Part.untranslatedCustomLabel == this.bodyPart ||
-                                                                                              h.Part.def.defName == this.bodyPart)))
-                    {
-                        returnPath = bahg.path;
-                        variantCounting = bahg.variantCount;
-
-                        if (!bahg.severity.NullOrEmpty())
-                            foreach (BodyAddonHediffSeverityGraphic bahsg in bahg.severity)
-                            {
-                                if (h.Severity >= bahsg.severity)
-                                {
-                                    returnPath = bahsg.path;
-                                    variantCounting = bahsg.variantCount;
-                                    break;
-                                }
-                            }
-                        break;
-                    }
-                }
-
-            if (returnPath.NullOrEmpty())
-            {
-                returnPath = this.path;
-                variantCounting = this.variantCount;
-            }
-
-            if (variantCounting <= 0)
-                variantCounting = 1;
-            int tv;
-
-            return !returnPath.NullOrEmpty() ?
-                       GraphicDatabase.Get<Graphic_Multi_RotationFromData>(returnPath += (tv = (savedIndex.HasValue ? (sharedIndex = savedIndex.Value % variantCounting) :
-                                                                                         (this.linkVariantIndexWithPrevious ?
-                                                                                              sharedIndex % variantCounting :
-                                                                                              (sharedIndex = Rand.Range(min: 0, variantCounting))))) == 0 ? "" : tv.ToString(),
-                                                          ContentFinder<Texture2D>.Get(returnPath + "_northm", reportFailure: false) == null ? this.ShaderType.Shader : ShaderDatabase.CutoutComplex, //ShaderDatabase.Transparent,
-                                                          this.drawSize * 1.5f,
-                                                          Color.white, Color.white, new GraphicData
-                                                          {
-                                                              drawRotated = !this.drawRotated
-                                                          }) :
-                       null;
-        }
-    }
     public class AnimalComp : ThingComp
     {
         public List<Graphic> addonGraphics;
@@ -798,61 +744,7 @@ namespace Horizon
                     }
                 }
             });
-            StringBuilder logBuilder = new StringBuilder();
-            bodyAddons.Do(delegate (BodyAddon ba)
-            {
-                ba.defaultOffsets = offsetDefaults.Find((OffsetNamed on) => on.name == ba.defaultOffset).offsets;
-                if (ba.variantCount == 0)
-                {
-                    AddToStringBuilder("Loading variants for " + ba.path);
-                    while (ContentFinder<Texture2D>.Get(ba.path + ((ba.variantCount == 0) ? "" : ba.variantCount.ToString()) + "_north", reportFailure: false) != null)
-                    {
-                        ba.variantCount++;
-                    }
-                    AddToStringBuilder($"Variants found for {ba.path}: {ba.variantCount}");
-                    if (ba.hediffGraphics != null)
-                    {
-                        foreach (BodyAddonHediffGraphic item2 in ba.hediffGraphics.Where((BodyAddonHediffGraphic bahg) => bahg.variantCount == 0))
-                        {
-                            while (ContentFinder<Texture2D>.Get(item2.path + ((item2.variantCount == 0) ? "" : item2.variantCount.ToString()) + "_north", reportFailure: false) != null)
-                            {
-                                item2.variantCount++;
-                            }
-                            AddToStringBuilder($"Variants found for {item2.path}: {item2.variantCount}");
-                            if (item2.variantCount == 0)
-                            {
-                                Log.Warning($"No hediff graphics found at {item2.path} for hediff {item2.hediff} in {def}");
-                            }
-                            if (item2.severity != null)
-                            {
-                                foreach (BodyAddonHediffSeverityGraphic item3 in item2.severity)
-                                {
-                                    while (ContentFinder<Texture2D>.Get(item3.path + ((item3.variantCount == 0) ? "" : item3.variantCount.ToString()) + "_north", reportFailure: false) != null)
-                                    {
-                                        item3.variantCount++;
-                                    }
-                                    AddToStringBuilder($"Variants found for {item3.path} at severity {item3.severity}: {item3.variantCount}");
-                                    if (item3.variantCount == 0)
-                                    {
-                                        Log.Warning($"No hediff graphics found at {item3.path} at severity {item3.severity} for hediff {item2.hediff} in {def}");
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                void AddToStringBuilder(string s)
-                {
-                    if (ba.debug)
-                    {
-                        logBuilder.AppendLine(s);
-                    }
-                }
-            });
-            if (logBuilder.Length > 0)
-            {
-                Log.Message($"Loaded body addon variants for {def} \n{logBuilder}");
-            }
+            new AlienRace.BodyAddonSupport.DefaultGraphicsLoader().LoadAllGraphics(def.defName, offsetDefaults, bodyAddons);
         }
     }
 }
