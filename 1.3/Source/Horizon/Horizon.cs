@@ -14,6 +14,7 @@ using static Verse.DamageWorker;
 using MonoMod.Utils;
 using static AlienRace.AlienPartGenerator;
 using AlienRace;
+using Verse.Sound;
 
 namespace Horizon
 {
@@ -853,6 +854,398 @@ namespace Horizon
             {
                 Log.Message($"Loaded body addon variants for {def} \n{logBuilder}");
             }
+        }
+    }
+
+    public class HediffCompProperties_Explosive : HediffCompProperties
+    {
+        public float explosiveRadius = 1.9f;
+
+        public DamageDef explosiveDamageType;
+
+        public int damageAmountBase = -1;
+
+        public float armorPenetrationBase = -1f;
+
+        public ThingDef postExplosionSpawnThingDef;
+
+        public float postExplosionSpawnChance;
+
+        public int postExplosionSpawnThingCount = 1;
+
+        public bool applyDamageToExplosionCellsNeighbors;
+
+        public ThingDef preExplosionSpawnThingDef;
+
+        public float preExplosionSpawnChance;
+
+        public int preExplosionSpawnThingCount = 1;
+
+        public float chanceToStartFire;
+
+        public bool damageFalloff;
+
+        public bool explodeOnKilled;
+
+        public float explosiveExpandPerStackcount;
+
+        public float explosiveExpandPerFuel;
+
+        public EffecterDef explosionEffect;
+
+        public SoundDef explosionSound;
+
+        public List<DamageDef> startWickOnDamageTaken;
+
+        public float startWickHitPointsPercent = 0.2f;
+
+        public IntRange wickTicks = new IntRange(140, 150);
+
+        public float wickScale = 1f;
+
+        public float chanceNeverExplodeFromDamage;
+
+        public float destroyThingOnExplosionSize;
+
+        public DamageDef requiredDamageTypeToExplode;
+
+        public IntRange? countdownTicks;
+
+        public string extraInspectStringKey;
+
+        public List<WickMessage> wickMessages;
+
+        public HediffCompProperties_Explosive()
+        {
+            compClass = typeof(HediffCompExplosive);
+        }
+        public override void ResolveReferences(HediffDef parent)
+        {
+            base.ResolveReferences(parent);
+            if (explosiveDamageType == null)
+            {
+                explosiveDamageType = DamageDefOf.Bomb;
+            }
+        }
+    }
+    public class HediffCompExplosive : HediffComp
+    {
+        public bool wickStarted;
+
+        protected int wickTicksLeft;
+
+        private Thing instigator;
+
+        private int countdownTicksLeft = -1;
+
+        public bool destroyedThroughDetonation;
+
+        private List<Thing> thingsIgnoredByExplosion;
+
+        public float? customExplosiveRadius;
+
+        protected Sustainer wickSoundSustainer;
+
+        private OverlayHandle? overlayBurningWick;
+
+        public HediffCompProperties_Explosive Props => (HediffCompProperties_Explosive)props;
+
+        protected float StartWickThreshold => Props.startWickHitPointsPercent;
+
+        private bool CanEverExplodeFromDamage
+        {
+            get
+            {
+                if (Props.chanceNeverExplodeFromDamage < 1E-05f)
+                {
+                    return true;
+                }
+                Rand.PushState();
+                Rand.Seed = Pawn.thingIDNumber.GetHashCode();
+                bool result = Rand.Value > Props.chanceNeverExplodeFromDamage;
+                Rand.PopState();
+                return result;
+            }
+        }
+
+        public void AddThingsIgnoredByExplosion(List<Thing> things)
+        {
+            if (thingsIgnoredByExplosion == null)
+            {
+                thingsIgnoredByExplosion = new List<Thing>();
+            }
+            thingsIgnoredByExplosion.AddRange(things);
+        }
+
+        public override void CompExposeData()
+        {
+            base.CompExposeData();
+            Scribe_References.Look(ref instigator, "instigator");
+            Scribe_Collections.Look(ref thingsIgnoredByExplosion, "thingsIgnoredByExplosion", LookMode.Reference);
+            Scribe_Values.Look(ref wickStarted, "wickStarted", defaultValue: false);
+            Scribe_Values.Look(ref wickTicksLeft, "wickTicksLeft", 0);
+            Scribe_Values.Look(ref destroyedThroughDetonation, "destroyedThroughDetonation", defaultValue: false);
+            Scribe_Values.Look(ref countdownTicksLeft, "countdownTicksLeft", 0);
+            Scribe_Values.Look(ref customExplosiveRadius, "explosiveRadius");
+        }
+
+        [HarmonyPatch(typeof(Pawn), "SpawnSetup")]
+        public static class Pawn_SpawnSetup_Patch
+        {
+            public static void Postfix(Pawn __instance)
+            {
+                foreach (var hediff in __instance.health.hediffSet.hediffs)
+                {
+                    var comp = hediff.TryGetComp<HediffCompExplosive>();
+                    if (comp != null)
+                    {
+                        comp.PostSpawnSetup();
+                    }
+                }
+            }
+        }
+
+        public void PostSpawnSetup()
+        {
+            if (Props.countdownTicks.HasValue)
+            {
+                countdownTicksLeft = Props.countdownTicks.Value.RandomInRange;
+            }
+            UpdateOverlays();
+        }
+        public override void CompPostTick(ref float severityAdjustment)
+        {
+            base.CompPostTick(ref severityAdjustment);
+            if (countdownTicksLeft > 0)
+            {
+                countdownTicksLeft--;
+                if (countdownTicksLeft == 0)
+                {
+                    StartWick();
+                    countdownTicksLeft = -1;
+                }
+            }
+            if (!wickStarted)
+            {
+                return;
+            }
+            if (wickSoundSustainer == null)
+            {
+                StartWickSustainer();
+            }
+            else
+            {
+                wickSoundSustainer.Maintain();
+            }
+            if (Props.wickMessages != null)
+            {
+                foreach (WickMessage wickMessage in Props.wickMessages)
+                {
+                    if (wickMessage.ticksLeft == wickTicksLeft && wickMessage.wickMessagekey != null)
+                    {
+                        Messages.Message(wickMessage.wickMessagekey.Translate(Pawn, wickTicksLeft.ToStringSecondsFromTicks()), Pawn, wickMessage.messageType ?? MessageTypeDefOf.NeutralEvent, historical: false);
+                    }
+                }
+            }
+            wickTicksLeft--;
+            if (wickTicksLeft <= 0)
+            {
+                Detonate(Pawn.MapHeld);
+            }
+        }
+
+        private void StartWickSustainer()
+        {
+            SoundDefOf.MetalHitImportant.PlayOneShot(new TargetInfo(Pawn.Position, Pawn.Map));
+            SoundInfo info = SoundInfo.InMap(Pawn, MaintenanceType.PerTick);
+            wickSoundSustainer = SoundDefOf.HissSmall.TrySpawnSustainer(info);
+        }
+
+        private void EndWickSustainer()
+        {
+            if (wickSoundSustainer != null)
+            {
+                wickSoundSustainer.End();
+                wickSoundSustainer = null;
+            }
+        }
+
+        private void UpdateOverlays()
+        {
+            if (Pawn.Spawned)
+            {
+                Pawn.Map.overlayDrawer.Disable(Pawn, ref overlayBurningWick);
+                if (wickStarted)
+                {
+                    overlayBurningWick = Pawn.Map.overlayDrawer.Enable(Pawn, OverlayTypes.BurningWick);
+                }
+            }
+        }
+
+        [HarmonyPatch(typeof(Pawn), "Destroy")]
+        public static class Pawn_Destroy_Patch
+        {
+            public static void Prefix(Pawn __instance, out Map __state)
+            {
+                __state = __instance.Map;
+            }
+
+            public static void Postfix(Pawn __instance, DestroyMode mode, Map __state)
+            {
+                foreach (var hediff in __instance.health.hediffSet.hediffs)
+                {
+                    var comp = hediff.TryGetComp<HediffCompExplosive>();
+                    if (comp != null)
+                    {
+                        comp.PostDestroy(mode, __state);
+                    }
+                }
+            }
+        }
+
+        public void PostDestroy(DestroyMode mode, Map previousMap)
+        {
+            if (mode == DestroyMode.KillFinalize && Props.explodeOnKilled)
+            {
+                Detonate(previousMap, ignoreUnspawned: true);
+            }
+        }
+
+        [HarmonyPatch(typeof(Pawn), "PreApplyDamage")]
+        public static class Pawn_PreApplyDamage_Patch
+        {
+            public static void Postfix(Pawn __instance, ref DamageInfo dinfo, ref bool absorbed)
+            {
+                foreach (var hediff in __instance.health.hediffSet.hediffs)
+                {
+                    var comp = hediff.TryGetComp<HediffCompExplosive>();
+                    if (comp != null)
+                    {
+                        comp.PostPreApplyDamage(dinfo, out absorbed);
+                    }
+                }
+            }
+        }
+
+        public void PostPreApplyDamage(DamageInfo dinfo, out bool absorbed)
+        {
+            absorbed = false;
+            if (!CanEverExplodeFromDamage)
+            {
+                return;
+            }
+            if (dinfo.Def.ExternalViolenceFor(Pawn) && CanExplodeFromDamageType(dinfo.Def))
+            {
+                if (Pawn.MapHeld != null)
+                {
+                    instigator = dinfo.Instigator;
+                    Detonate(Pawn.MapHeld);
+                    if (Pawn.Destroyed)
+                    {
+                        absorbed = true;
+                    }
+                }
+            }
+            else if (!wickStarted && Props.startWickOnDamageTaken != null && Props.startWickOnDamageTaken.Contains(dinfo.Def))
+            {
+                StartWick(dinfo.Instigator);
+            }
+        }
+
+        [HarmonyPatch(typeof(Pawn), "PostApplyDamage")]
+        public static class Pawn_PostApplyDamage_Patch
+        {
+            public static void Postfix(Pawn __instance, DamageInfo dinfo, float totalDamageDealt)
+            {
+                foreach (var hediff in __instance.health.hediffSet.hediffs)
+                {
+                    var comp = hediff.TryGetComp<HediffCompExplosive>();
+                    if (comp != null)
+                    {
+                        comp.PostPostApplyDamage(dinfo, totalDamageDealt);
+                    }
+                }
+            }
+        }
+
+        public void PostPostApplyDamage(DamageInfo dinfo, float totalDamageDealt)
+        {
+            if (CanEverExplodeFromDamage && CanExplodeFromDamageType(dinfo.Def) && !Pawn.Destroyed)
+            {
+                if (wickStarted && dinfo.Def == DamageDefOf.Stun)
+                {
+                    StopWick();
+                }
+                else if (!wickStarted && Pawn.health.summaryHealth.SummaryHealthPercent <= StartWickThreshold && dinfo.Def.ExternalViolenceFor(Pawn))
+                {
+                    StartWick(dinfo.Instigator);
+                }
+            }
+        }
+
+        public void StartWick(Thing instigator = null)
+        {
+            if (!wickStarted && !(ExplosiveRadius() <= 0f))
+            {
+                this.instigator = instigator;
+                wickStarted = true;
+                wickTicksLeft = Props.wickTicks.RandomInRange;
+                StartWickSustainer();
+                GenExplosion.NotifyNearbyPawnsOfDangerousExplosive(Pawn, Props.explosiveDamageType, null, instigator);
+                UpdateOverlays();
+            }
+        }
+
+        public void StopWick()
+        {
+            wickStarted = false;
+            instigator = null;
+            UpdateOverlays();
+        }
+
+        public float ExplosiveRadius()
+        {
+            HediffCompProperties_Explosive compProperties_Explosive = Props;
+            float num = customExplosiveRadius ?? Props.explosiveRadius;
+            return num;
+        }
+
+        protected void Detonate(Map map, bool ignoreUnspawned = false)
+        {
+            if (!ignoreUnspawned && !Pawn.SpawnedOrAnyParentSpawned)
+            {
+                return;
+            }
+            HediffCompProperties_Explosive compProperties_Explosive = Props;
+            float num = ExplosiveRadius();
+            if (compProperties_Explosive.destroyThingOnExplosionSize <= num && !Pawn.Destroyed)
+            {
+                destroyedThroughDetonation = true;
+                Pawn.Kill(null);
+            }
+            EndWickSustainer();
+            wickStarted = false;
+            if (map == null)
+            {
+                Log.Warning("Tried to detonate CompExplosive in a null map.");
+                return;
+            }
+            if (compProperties_Explosive.explosionEffect != null)
+            {
+                Effecter effecter = compProperties_Explosive.explosionEffect.Spawn();
+                effecter.Trigger(new TargetInfo(Pawn.PositionHeld, map), new TargetInfo(Pawn.PositionHeld, map));
+                effecter.Cleanup();
+            }
+            GenExplosion.DoExplosion(instigator: (instigator == null || (instigator.HostileTo(Pawn.Faction) && Pawn.Faction != Faction.OfPlayer)) ? Pawn : instigator, center: Pawn.PositionHeld, map: map, radius: num, damType: compProperties_Explosive.explosiveDamageType, damAmount: compProperties_Explosive.damageAmountBase, armorPenetration: compProperties_Explosive.armorPenetrationBase, explosionSound: compProperties_Explosive.explosionSound, weapon: null, projectile: null, intendedTarget: null, postExplosionSpawnThingDef: compProperties_Explosive.postExplosionSpawnThingDef, postExplosionSpawnChance: compProperties_Explosive.postExplosionSpawnChance, postExplosionSpawnThingCount: compProperties_Explosive.postExplosionSpawnThingCount, applyDamageToExplosionCellsNeighbors: compProperties_Explosive.applyDamageToExplosionCellsNeighbors, preExplosionSpawnThingDef: compProperties_Explosive.preExplosionSpawnThingDef, preExplosionSpawnChance: compProperties_Explosive.preExplosionSpawnChance, preExplosionSpawnThingCount: compProperties_Explosive.preExplosionSpawnThingCount, chanceToStartFire: compProperties_Explosive.chanceToStartFire, damageFalloff: compProperties_Explosive.damageFalloff, direction: null, ignoredThings: thingsIgnoredByExplosion);
+        }
+
+        private bool CanExplodeFromDamageType(DamageDef damage)
+        {
+            if (Props.requiredDamageTypeToExplode != null)
+            {
+                return Props.requiredDamageTypeToExplode == damage;
+            }
+            return true;
         }
     }
 }
