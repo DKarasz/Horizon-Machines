@@ -30,7 +30,7 @@
 	<modExtensions>
 		<li Class="Horizon.AnimalBodyAddons">
 			<bodyAddons>
-				<li Class="Horizon.AnimalBodyAddon">
+				<li>
 					<path>Things/Pawn/test/default</path>
 					<bodyPart>Central torso armor plate</bodyPart>
 					<!--<inFrontOfBody>true</inFrontOfBody>
