@@ -43,11 +43,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="addons.cs" />
-    <Compile Include="bodyaddonsPatches.cs" />
-    <Compile Include="mainThingdef.cs" />
     <Compile Include="Horizon.cs" />
-    <Compile Include="partgenerator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
