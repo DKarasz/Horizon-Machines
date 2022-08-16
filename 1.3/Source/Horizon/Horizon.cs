@@ -562,7 +562,7 @@ namespace Horizon
 
 
 
-
+    //addon code
     [HarmonyPatch(typeof(HarmonyPatches), nameof(HarmonyPatches.DrawAddons))]
     public static class HarmonyPatches_DrawAddons_Patch
     {
@@ -779,9 +779,9 @@ namespace Horizon
 
         public bool explodeOnKilled;
 
-        public float explosiveExpandPerStackcount;
+        public float explosiveExpandPerStackcount;//unneeded, kept for copy paste-ability of comp explosive
 
-        public float explosiveExpandPerFuel;
+        public float explosiveExpandPerFuel;//unneeded, kept for copy paste-ability of comp explosive
 
         public EffecterDef explosionEffect;
 

@@ -166,4 +166,90 @@
 	</modExtensions>
   </PawnKindDef>
   
+	<HediffDef ParentName="ImplantHediffBase">
+		<defName>BlazeCan</defName>
+		<label>Blaze Canister</label>
+		<labelNoun>Blaze</labelNoun>
+		<description>blaze fuel, reactive to flame/burn</description>
+		<descriptionHyperlinks>
+			<ThingDef>BionicArm</ThingDef>
+		</descriptionHyperlinks>
+		<comps>
+			<li Class="Horizon.HediffCompProperties_Explosive">
+				<explosiveRadius>1.1</explosiveRadius>
+				<explosiveDamageType>Flame</explosiveDamageType>
+				<explosiveExpandPerStackcount>0.037</explosiveExpandPerStackcount>
+				<startWickOnDamageTaken>
+					<li>Flame</li>
+					<li>Burn</li>
+				</startWickOnDamageTaken>
+				<preExplosionSpawnThingDef>Filth_Fuel</preExplosionSpawnThingDef>
+				<preExplosionSpawnChance>1</preExplosionSpawnChance>
+				<wickTicks>70~150</wickTicks>
+			</li>
+		</comps>
+		<spawnThingOnRemoved>BionicArm</spawnThingOnRemoved>
+		<addedPartProps>
+			<solid>true</solid>
+			<betterThanNatural>true</betterThanNatural>
+		</addedPartProps>
+	</HediffDef>
+	
+	<HediffDef ParentName="ImplantHediffBase">
+		<defName>BlazeSac</defName>
+		<label>Blaze Sac</label>
+		<labelNoun>Blaze Sac</labelNoun>
+		<description>blaze fuel sac, reactive to damage</description>
+		<descriptionHyperlinks>
+			<ThingDef>BionicArm</ThingDef>
+		</descriptionHyperlinks>
+		<comps>
+			<li Class="Horizon.HediffCompProperties_Explosive">
+				<explosiveRadius>1.1</explosiveRadius>
+				<explosiveDamageType>Flame</explosiveDamageType>
+				<explosiveExpandPerStackcount>0.037</explosiveExpandPerStackcount>
+				<startWickHitPointsPercent>0.1</startWickHitPointsPercent>
+				<preExplosionSpawnThingDef>Filth_Fuel</preExplosionSpawnThingDef>
+				<preExplosionSpawnChance>1</preExplosionSpawnChance>
+				<wickTicks>70~150</wickTicks>
+			</li>
+		</comps>
+		<spawnThingOnRemoved>BionicArm</spawnThingOnRemoved>
+		<addedPartProps>
+			<solid>true</solid>
+			<betterThanNatural>true</betterThanNatural>
+		</addedPartProps>
+	</HediffDef>
+	
+	<HediffDef ParentName="ImplantHediffBase">
+		<defName>ShockCan</defName>
+		<label>Sparker</label>
+		<labelNoun>Sparker</labelNoun>
+		<description>sparker, reactive to stun/emp/bullet</description>
+		<descriptionHyperlinks>
+			<ThingDef>BionicArm</ThingDef>
+		</descriptionHyperlinks>
+		<comps>
+			<li Class="Horizon.HediffCompProperties_Explosive">
+				<explosiveRadius>1.1</explosiveRadius>
+				<explosiveDamageType>Stun</explosiveDamageType>
+				<explosiveExpandPerStackcount>0.037</explosiveExpandPerStackcount>
+				<startWickOnDamageTaken>
+					<li>EMP</li>
+					<li>Stun</li>
+					<li>Bullet</li>
+				</startWickOnDamageTaken>
+				<preExplosionSpawnThingDef>Filth_MachineBits</preExplosionSpawnThingDef>
+				<preExplosionSpawnChance>1</preExplosionSpawnChance>
+				<wickTicks>70~150</wickTicks>
+			</li>
+		</comps>
+		<spawnThingOnRemoved>BionicArm</spawnThingOnRemoved>
+		<addedPartProps>
+			<solid>true</solid>
+			<betterThanNatural>true</betterThanNatural>
+		</addedPartProps>
+	</HediffDef>
+
+	
 </Defs>
