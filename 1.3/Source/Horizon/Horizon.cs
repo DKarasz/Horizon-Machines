@@ -1108,7 +1108,6 @@ namespace Horizon
 
         protected void Detonate(Map map, bool ignoreUnspawned = false)
         {
-            Log.Message("Detonating");
             if (!ignoreUnspawned && !Pawn.SpawnedOrAnyParentSpawned)
             {
                 return;
