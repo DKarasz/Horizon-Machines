@@ -1033,7 +1033,7 @@ namespace Horizon
             {
                 StartWick(dinfo.Instigator);
             }
-            else if (dinfo.Def.ExternalViolenceFor(Pawn) && CanExplodeFromDamageType(dinfo))
+            else if (!wickStarted && CanExplodeFromDamageType(dinfo))
             {
                 if (Pawn.MapHeld != null)
                 {
@@ -1066,13 +1066,10 @@ namespace Horizon
 
         public void PostPostApplyDamage(DamageInfo dinfo, float totalDamageDealt)
         {
-            if (CanEverExplodeFromDamage && CanExplodeFromDamageType(dinfo) && !Pawn.Destroyed)
+            if (CanEverExplodeFromDamage && !Pawn.Destroyed)
             {
-                if (wickStarted && dinfo.Def == DamageDefOf.Stun)
-                {
-                    StopWick();
-                }
-                else if (!wickStarted && Pawn.health.summaryHealth.SummaryHealthPercent <= StartWickThreshold && dinfo.Def.ExternalViolenceFor(Pawn) && CanExplodeFrom(dinfo))
+                if (!wickStarted && (Pawn.health.summaryHealth.SummaryHealthPercent <= StartWickThreshold || this.parent.Part != null && 
+                    (this.Pawn.health.hediffSet.GetPartHealth(this.parent.Part) / this.parent.Part.def.GetMaxHealth(Pawn)) <= StartWickThreshold))
                 {
                     StartWick(dinfo.Instigator);
                 }
@@ -1154,6 +1151,6 @@ namespace Horizon
             return false;
         }
 
-        public bool CanExplodeFrom(DamageInfo dinfo) => dinfo.HitPart != this.parent.Part || this.parent.Part is null;
+        public bool CanExplodeFrom(DamageInfo dinfo) => dinfo.HitPart == this.parent.Part || this.parent.Part is null;
     }
 }
