@@ -886,8 +886,9 @@ namespace Horizon
         {
             public static void Postfix(Pawn __instance)
             {
-                foreach (var hediff in __instance.health.hediffSet.hediffs)
+                for (int i = __instance.health.hediffSet.hediffs.Count - 1; i >= 0; i--)
                 {
+                    var hediff = __instance.health.hediffSet.hediffs[i];
                     var comp = hediff.TryGetComp<HediffCompExplosive>();
                     if (comp != null)
                     {
@@ -984,8 +985,9 @@ namespace Horizon
 
             public static void Postfix(Pawn __instance, DestroyMode mode, Map __state)
             {
-                foreach (var hediff in __instance.health.hediffSet.hediffs)
+                for (int i = __instance.health.hediffSet.hediffs.Count - 1; i >= 0; i--)
                 {
+                    var hediff = __instance.health.hediffSet.hediffs[i];
                     var comp = hediff.TryGetComp<HediffCompExplosive>();
                     if (comp != null)
                     {
@@ -1008,8 +1010,9 @@ namespace Horizon
         {
             public static void Postfix(Pawn __instance, ref DamageInfo dinfo, ref bool absorbed)
             {
-                foreach (var hediff in __instance.health.hediffSet.hediffs)
+                for (int i = __instance.health.hediffSet.hediffs.Count - 1; i >= 0; i--)
                 {
+                    var hediff = __instance.health.hediffSet.hediffs[i];
                     var comp = hediff.TryGetComp<HediffCompExplosive>();
                     if (comp != null)
                     {
@@ -1026,7 +1029,11 @@ namespace Horizon
             {
                 return;
             }
-            if (dinfo.Def.ExternalViolenceFor(Pawn) && CanExplodeFromDamageType(dinfo.Def))
+            if (!wickStarted && Props.startWickOnDamageTaken != null && Props.startWickOnDamageTaken.Contains(dinfo.Def) && CanExplodeFrom(dinfo))
+            {
+                StartWick(dinfo.Instigator);
+            }
+            else if (dinfo.Def.ExternalViolenceFor(Pawn) && CanExplodeFromDamageType(dinfo))
             {
                 if (Pawn.MapHeld != null)
                 {
@@ -1038,10 +1045,6 @@ namespace Horizon
                     }
                 }
             }
-            else if (!wickStarted && Props.startWickOnDamageTaken != null && Props.startWickOnDamageTaken.Contains(dinfo.Def))
-            {
-                StartWick(dinfo.Instigator);
-            }
         }
 
         [HarmonyPatch(typeof(Pawn), "PostApplyDamage")]
@@ -1049,8 +1052,9 @@ namespace Horizon
         {
             public static void Postfix(Pawn __instance, DamageInfo dinfo, float totalDamageDealt)
             {
-                foreach (var hediff in __instance.health.hediffSet.hediffs)
+                for (int i = __instance.health.hediffSet.hediffs.Count - 1; i >= 0; i--)
                 {
+                    var hediff = __instance.health.hediffSet.hediffs[i];
                     var comp = hediff.TryGetComp<HediffCompExplosive>();
                     if (comp != null)
                     {
@@ -1062,13 +1066,13 @@ namespace Horizon
 
         public void PostPostApplyDamage(DamageInfo dinfo, float totalDamageDealt)
         {
-            if (CanEverExplodeFromDamage && CanExplodeFromDamageType(dinfo.Def) && !Pawn.Destroyed)
+            if (CanEverExplodeFromDamage && CanExplodeFromDamageType(dinfo) && !Pawn.Destroyed)
             {
                 if (wickStarted && dinfo.Def == DamageDefOf.Stun)
                 {
                     StopWick();
                 }
-                else if (!wickStarted && Pawn.health.summaryHealth.SummaryHealthPercent <= StartWickThreshold && dinfo.Def.ExternalViolenceFor(Pawn))
+                else if (!wickStarted && Pawn.health.summaryHealth.SummaryHealthPercent <= StartWickThreshold && dinfo.Def.ExternalViolenceFor(Pawn) && CanExplodeFrom(dinfo))
                 {
                     StartWick(dinfo.Instigator);
                 }
@@ -1104,6 +1108,7 @@ namespace Horizon
 
         protected void Detonate(Map map, bool ignoreUnspawned = false)
         {
+            Log.Message("Detonating");
             if (!ignoreUnspawned && !Pawn.SpawnedOrAnyParentSpawned)
             {
                 return;
@@ -1129,15 +1134,27 @@ namespace Horizon
                 effecter.Cleanup();
             }
             GenExplosion.DoExplosion(instigator: (instigator == null || (instigator.HostileTo(Pawn.Faction) && Pawn.Faction != Faction.OfPlayer)) ? Pawn : instigator, center: Pawn.PositionHeld, map: map, radius: num, damType: compProperties_Explosive.explosiveDamageType, damAmount: compProperties_Explosive.damageAmountBase, armorPenetration: compProperties_Explosive.armorPenetrationBase, explosionSound: compProperties_Explosive.explosionSound, weapon: null, projectile: null, intendedTarget: null, postExplosionSpawnThingDef: compProperties_Explosive.postExplosionSpawnThingDef, postExplosionSpawnChance: compProperties_Explosive.postExplosionSpawnChance, postExplosionSpawnThingCount: compProperties_Explosive.postExplosionSpawnThingCount, applyDamageToExplosionCellsNeighbors: compProperties_Explosive.applyDamageToExplosionCellsNeighbors, preExplosionSpawnThingDef: compProperties_Explosive.preExplosionSpawnThingDef, preExplosionSpawnChance: compProperties_Explosive.preExplosionSpawnChance, preExplosionSpawnThingCount: compProperties_Explosive.preExplosionSpawnThingCount, chanceToStartFire: compProperties_Explosive.chanceToStartFire, damageFalloff: compProperties_Explosive.damageFalloff, direction: null, ignoredThings: thingsIgnoredByExplosion);
+            var part = this.parent.Part;
+            Pawn.health.RemoveHediff(this.parent);
+            if (part != null)
+            {
+                Pawn.health.AddHediff(HediffDefOf.MissingBodyPart, part);
+            }
         }
 
-        private bool CanExplodeFromDamageType(DamageDef damage)
+        private bool CanExplodeFromDamageType(DamageInfo dinfo)
         {
-            if (Props.requiredDamageTypeToExplode != null)
+            if (CanExplodeFrom(dinfo))
             {
-                return Props.requiredDamageTypeToExplode == damage;
+                if (Props.requiredDamageTypeToExplode != null)
+                {
+                    return Props.requiredDamageTypeToExplode == dinfo.Def;
+                }
+                return true;
             }
-            return true;
+            return false;
         }
+
+        public bool CanExplodeFrom(DamageInfo dinfo) => dinfo.HitPart != this.parent.Part || this.parent.Part is null;
     }
 }
