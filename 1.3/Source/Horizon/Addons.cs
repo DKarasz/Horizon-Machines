@@ -30,7 +30,6 @@ namespace Horizon
             {
                 return;
             }
-            Log.Message("Drawing body addons: " + extension);
             List<AlienPartGenerator.BodyAddon> bodyAddons = extension.bodyAddons;
             var comp = pawn.GetComp<AnimalComp>();
             if (comp == null)
@@ -42,12 +41,10 @@ namespace Horizon
             for (int i = 0; i < bodyAddons.Count; i++)
             {
                 AlienPartGenerator.BodyAddon bodyAddon = bodyAddons[i];
-                Log.Message("1 Drawing addon: " + bodyAddon);
                 if (!bodyAddon.CanDrawAddon(pawn))
                 {
                     continue;
                 }
-                Log.Message("Drawing addon: " + bodyAddon);
                 Vector3 v = (bodyAddon.defaultOffsets.GetOffset(rotation)?.GetOffset(flag, BodyTypeDefOf.Male, "") ?? Vector3.zero) + (bodyAddon.offsets.GetOffset(rotation)?.GetOffset(flag, BodyTypeDefOf.Male, "") ?? Vector3.zero);
                 v.y = (bodyAddon.inFrontOfBody ? (0.3f + v.y) : (-0.3f - v.y));
                 float num = bodyAddon.angle;

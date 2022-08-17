@@ -279,21 +279,48 @@ namespace Horizon
         {
             public static void Postfix(Pawn __instance, ref DamageInfo dinfo, ref bool absorbed)
             {
-                for (int i = __instance.health.hediffSet.hediffs.Count - 1; i >= 0; i--)
+
+            }
+        }
+
+        [HarmonyPatch(typeof(DamageWorker_AddInjury), "FinalizeAndAddInjury", new Type[]
+        {
+            typeof(Pawn),
+            typeof(Hediff_Injury),
+            typeof(DamageInfo),
+            typeof(DamageWorker.DamageResult)
+        })]
+        public static class DamageWorker_AddInjury_FinalizeAndAddInjury_Patch
+        {
+            public static void Prefix(ref DamageWorker_AddInjury __instance, ref float __result, Pawn pawn, ref Hediff_Injury injury, ref DamageInfo dinfo, ref DamageWorker.DamageResult result)
+            {
+                for (int i = pawn.health.hediffSet.hediffs.Count - 1; i >= 0; i--)
                 {
-                    var hediff = __instance.health.hediffSet.hediffs[i];
+                    var hediff = pawn.health.hediffSet.hediffs[i];
                     var comp = hediff.TryGetComp<HediffCompExplosive>();
                     if (comp != null)
                     {
-                        comp.PostPreApplyDamage(dinfo, out absorbed);
+                        comp.PostPreApplyDamage(ref dinfo);
+                    }
+                }
+            }
+
+            public static void Postfix(ref DamageWorker_AddInjury __instance, ref float __result, Pawn pawn, ref Hediff_Injury injury, ref DamageInfo dinfo, ref DamageWorker.DamageResult result)
+            {
+                for (int i = pawn.health.hediffSet.hediffs.Count - 1; i >= 0; i--)
+                {
+                    var hediff = pawn.health.hediffSet.hediffs[i];
+                    var comp = hediff.TryGetComp<HediffCompExplosive>();
+                    if (comp != null)
+                    {
+                        comp.PostPostApplyDamage(ref dinfo);
                     }
                 }
             }
         }
 
-        public void PostPreApplyDamage(DamageInfo dinfo, out bool absorbed)
+        public void PostPreApplyDamage(ref DamageInfo dinfo)
         {
-            absorbed = false;
             if (!CanEverExplodeFromDamage)
             {
                 return;
@@ -308,33 +335,13 @@ namespace Horizon
                 {
                     instigator = dinfo.Instigator;
                     Detonate(Pawn.MapHeld);
-                    if (Pawn.Destroyed)
-                    {
-                        absorbed = true;
-                    }
                 }
             }
         }
 
-        [HarmonyPatch(typeof(Pawn), "PostApplyDamage")]
-        public static class Pawn_PostApplyDamage_Patch
+        public void PostPostApplyDamage(ref DamageInfo dinfo)
         {
-            public static void Postfix(Pawn __instance, DamageInfo dinfo, float totalDamageDealt)
-            {
-                for (int i = __instance.health.hediffSet.hediffs.Count - 1; i >= 0; i--)
-                {
-                    var hediff = __instance.health.hediffSet.hediffs[i];
-                    var comp = hediff.TryGetComp<HediffCompExplosive>();
-                    if (comp != null)
-                    {
-                        comp.PostPostApplyDamage(dinfo, totalDamageDealt);
-                    }
-                }
-            }
-        }
-
-        public void PostPostApplyDamage(DamageInfo dinfo, float totalDamageDealt)
-        {
+            Log.Message("2 Apply damage on - " + dinfo.HitPart);
             if (CanEverExplodeFromDamage && !Pawn.Destroyed)
             {
                 if (!wickStarted && Props.startWickOnDamageTaken != null && Props.startWickOnDamageTaken.Contains(dinfo.Def) && CanExplodeFrom(dinfo))

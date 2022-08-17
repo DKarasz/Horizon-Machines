@@ -434,9 +434,12 @@ namespace Horizon
     [HarmonyPatch(typeof(DamageWorker_AddInjury), "ApplyDamageToPart")]
     public static class DamageWorker_AddInjury_ApplyDamageToPart_Patch
     {
-        public static void Prefix(Pawn pawn, ref DamageInfo dinfo, DamageResult result)
+        [HarmonyDelegate(typeof(DamageWorker_AddInjury), "GetExactPartFromDamageInfo", new[] { typeof(DamageInfo), typeof(Pawn) })]
+        public delegate BodyPartRecord GetExactPartFromDamageInfo(DamageInfo dinfo, Pawn pawn);
+        public static void Prefix(Pawn pawn, ref DamageInfo dinfo, DamageResult result, GetExactPartFromDamageInfo method)
         {
-            if (dinfo.HitPart?.def.destroyableByDamage is false && pawn.health.hediffSet.GetPartHealth(dinfo.HitPart) == 1)
+            var partToBeAffected = method(dinfo, pawn);
+            if (partToBeAffected.def.destroyableByDamage is false && pawn.health.hediffSet.GetPartHealth(dinfo.HitPart) == 1)
             {
                 var hitPart = dinfo.HitPart;
                 var nonMissingParts = pawn.health.hediffSet.GetNotMissingParts();
@@ -450,7 +453,15 @@ namespace Horizon
                 }
                 dinfo.SetHitPart(hitPart.parent);
             }
+            Log.Message("1 partToBeAffected: " + partToBeAffected + " - " + dinfo.HitPart);
         }
+
+        public static void Postfix(Pawn pawn, ref DamageInfo dinfo, DamageResult result, GetExactPartFromDamageInfo method)
+        {
+            var partToBeAffected = method(dinfo, pawn);
+            Log.Message("2 partToBeAffected: " + partToBeAffected + " - " + dinfo.HitPart);
+        }
+
     }
     [HarmonyPatch(typeof(Pawn_HealthTracker), "ShouldBeDeadFromLethalDamageThreshold")]
     public static class Pawn_HealthTracker_ShouldBeDeadFromLethalDamageThreshold_Patch
