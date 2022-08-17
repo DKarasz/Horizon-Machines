@@ -431,37 +431,28 @@ namespace Horizon
         }
     }
     //armor bones code
-    [HarmonyPatch(typeof(DamageWorker_AddInjury), "ApplyDamageToPart")]
-    public static class DamageWorker_AddInjury_ApplyDamageToPart_Patch
+    [HarmonyPatch(typeof(DamageWorker_AddInjury), "GetExactPartFromDamageInfo")]
+    public static class DamageWorker_AddInjury_GetExactPartFromDamageInfo_Patch
     {
-        [HarmonyDelegate(typeof(DamageWorker_AddInjury), "GetExactPartFromDamageInfo", new[] { typeof(DamageInfo), typeof(Pawn) })]
-        public delegate BodyPartRecord GetExactPartFromDamageInfo(DamageInfo dinfo, Pawn pawn);
-        public static void Prefix(Pawn pawn, ref DamageInfo dinfo, DamageResult result, GetExactPartFromDamageInfo method)
+        public static void Postfix(Pawn pawn, DamageInfo dinfo, ref BodyPartRecord __result)
         {
-            var partToBeAffected = method(dinfo, pawn);
-            if (partToBeAffected.def.destroyableByDamage is false && pawn.health.hediffSet.GetPartHealth(dinfo.HitPart) == 1)
+            var partToBeAffected = __result;
+            if (partToBeAffected?.def.destroyableByDamage is false && pawn.health.hediffSet.GetPartHealth(__result) == 1)
             {
-                var hitPart = dinfo.HitPart;
+                var hitPart = __result;
                 var nonMissingParts = pawn.health.hediffSet.GetNotMissingParts();
                 var children = hitPart.GetDirectChildParts();
                 Log.Message("Children of " + hitPart + " - " + String.Join(", ", children));
                 if (children.TryRandomElementByWeight(x => x.coverage, out var child) && nonMissingParts.Contains(child))
                 {
-                    dinfo.SetHitPart(child);
-                    Log.Message("Armor: Choosen: " + hitPart + " for damage: " + dinfo + " for pawn " + pawn);
+                    __result = child;
+                    Log.Message("Armor: Choosen: " + hitPart + " Child for damage: " + dinfo + " for pawn " + pawn);
                     return;
                 }
-                dinfo.SetHitPart(hitPart.parent);
+                __result = hitPart.parent;
+                Log.Message("Armor: Choosen: " + hitPart + " Parent for damage: " + dinfo + " for pawn " + pawn);
             }
-            Log.Message("1 partToBeAffected: " + partToBeAffected + " - " + dinfo.HitPart);
         }
-
-        public static void Postfix(Pawn pawn, ref DamageInfo dinfo, DamageResult result, GetExactPartFromDamageInfo method)
-        {
-            var partToBeAffected = method(dinfo, pawn);
-            Log.Message("2 partToBeAffected: " + partToBeAffected + " - " + dinfo.HitPart);
-        }
-
     }
     [HarmonyPatch(typeof(Pawn_HealthTracker), "ShouldBeDeadFromLethalDamageThreshold")]
     public static class Pawn_HealthTracker_ShouldBeDeadFromLethalDamageThreshold_Patch
