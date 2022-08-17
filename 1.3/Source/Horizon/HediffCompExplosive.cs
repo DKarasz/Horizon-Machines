@@ -274,15 +274,6 @@ namespace Horizon
             }
         }
 
-        [HarmonyPatch(typeof(Pawn), "PreApplyDamage")]
-        public static class Pawn_PreApplyDamage_Patch
-        {
-            public static void Postfix(Pawn __instance, ref DamageInfo dinfo, ref bool absorbed)
-            {
-
-            }
-        }
-
         [HarmonyPatch(typeof(DamageWorker_AddInjury), "FinalizeAndAddInjury", new Type[]
         {
             typeof(Pawn),
@@ -341,7 +332,6 @@ namespace Horizon
 
         public void PostPostApplyDamage(ref DamageInfo dinfo)
         {
-            Log.Message("2 Apply damage on - " + dinfo.HitPart);
             if (CanEverExplodeFromDamage && !Pawn.Destroyed)
             {
                 if (!wickStarted && Props.startWickOnDamageTaken != null && Props.startWickOnDamageTaken.Contains(dinfo.Def) && CanExplodeFrom(dinfo))
