@@ -123,21 +123,62 @@ namespace Horizon
     {
         public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
         {
-            bool firstfound = false;
+            int found = 0;
             MethodBase from = AccessTools.PropertyGetter(typeof(RaceProperties), "IsFlesh");
             MethodBase to = AccessTools.Method(typeof(Isflesh_to_Isnotmech_Patch), "IsNotMechanoid");
+            MethodBase to2 = AccessTools.Method(typeof(HealthCardUtility_DrawOverviewTab_Patch), "feelsPain");
             foreach (CodeInstruction instruction in instructions)
             {
-                if (instruction.operand as MethodBase == from && firstfound == false)
+                if (instruction.operand as MethodBase == from && found == 0)
                 {
                     instruction.opcode = (to.IsConstructor ? OpCodes.Newobj : OpCodes.Call);
                     instruction.operand = to;
-                    firstfound = true;
+                    found = 1;
+                    yield return instruction;
+                }
+                if (instruction.operand as MethodBase == from && found == 1)
+                {
+                    instruction.opcode = (to2.IsConstructor ? OpCodes.Newobj : OpCodes.Call);
+                    instruction.operand = to2;
+                    found = 2;
                 }
                 yield return instruction;
             }
         }
+        static bool feelsPain(RaceProperties RaceProps)
+        {
+            if (RaceProps.IsFlesh == false && RaceProps.AnyPawnKind.HasModExtension<FeelsPain>())
+            {
+                return true;
+            }
+            return RaceProps.IsFlesh;
+        }
     }
+
+    //paincheck
+    public class FeelsPain : DefModExtension { }
+    
+    [HarmonyPatch(typeof(HediffSet), "CalculatePain")]
+    public static class HediffSet_CalculatePain_Patch
+    {
+        static void Postfix(List<Hediff> ___hediffs, Pawn ___pawn, ref float __result)
+        {
+            if (___pawn.kindDef.HasModExtension<FeelsPain>() && !___pawn.Dead)
+            {
+                float num = 0f;
+                for (int i = 0; i < ___hediffs.Count; i++)
+                {
+                    num += ___hediffs[i].PainOffset;
+                }
+                for (int j = 0; j < ___hediffs.Count; j++)
+                {
+                    num *= ___hediffs[j].PainFactor;
+                }
+                __result = Mathf.Clamp(num, 0f, 1f);
+            }
+        }
+    }
+
     //ismech patches
     [HarmonyPatch]
     public static class Ismech_to_Isnotflesh_Patch
@@ -184,15 +225,13 @@ namespace Horizon
     }
     public class HorizonFrameworkSettings : ModSettings
     {
-        public static bool AdvancedArmor = false;
-        public static bool AdvancedAccuracy = false;
-        public static bool bones = false;
+        public static bool ArmorBones = true;
+        public static bool LethalBones = false;
         public override void ExposeData()
         {
             base.ExposeData();
-            Scribe_Values.Look(ref AdvancedArmor, "AdvancedArmor", false, true);
-            Scribe_Values.Look(ref AdvancedArmor, "AdvancedAccuracy", false, true);
-            Scribe_Values.Look(ref AdvancedArmor, "Bones", false, true);
+            Scribe_Values.Look(ref ArmorBones, "ArmorBones", true);
+            Scribe_Values.Look(ref LethalBones, "LethalBones", false);
 
 
         }
@@ -203,90 +242,19 @@ namespace Horizon
             listingStandard.GapLine();
             listingStandard.Label("Hf.generaltab".Translate());
             listingStandard.GapLine();
-            listingStandard.CheckboxLabeled("Hf.AdvanceArmor".Translate(), ref AdvancedArmor, "Hf.AAtooltip".Translate());
+            listingStandard.CheckboxLabeled("Hf.ArmorBones".Translate(), ref ArmorBones, "Hf.ABonestooltip".Translate());
             listingStandard.GapLine();
-            listingStandard.CheckboxLabeled("Hf.AdvanceAccuracy".Translate(), ref AdvancedAccuracy, "Hf.AAcctooltip".Translate());
-            listingStandard.GapLine();
-            listingStandard.CheckboxLabeled("Hf.lethalBones".Translate(), ref bones, "Hf.Bonestooltip".Translate());
+            listingStandard.CheckboxLabeled("Hf.lethalBones".Translate(), ref LethalBones, "Hf.LBonestooltip".Translate());
             listingStandard.GapLine();
             listingStandard.End();
         }
         public void ApplySettings()
         {
-            ArmorUtility_ApplyArmor_Patch.AArmor = AdvancedArmor;
-            ShotReport_HitReportFor_Patch.AAccuracy = AdvancedAccuracy;
-            Pawn_HealthTracker_ShouldBeDeadFromLethalDamageThreshold_Patch.lethalBones = bones;
+            Pawn_HealthTracker_ShouldBeDeadFromLethalDamageThreshold_Patch.lethalBones = LethalBones;
+            DamageWorker_AddInjury_GetExactPartFromDamageInfo_Patch.ArmorBones = ArmorBones;
         }
     }
-    //advanced armor patches (will be split off into separate mod)
-    [HarmonyPatch(typeof(ArmorUtility), "ApplyArmor")]
-    public static class ArmorUtility_ApplyArmor_Patch
-    {
-        public static bool AArmor;
-        public static bool Prefix(ref float armorPenetration, ref float armorRating)
-        {
-            if (AArmor)
-            {
-                armorPenetration *= 2;
-                armorRating *= 2;
-            }
-            return true;
-        }
-    }
-    [HarmonyPatch]
-    public static class AdvanceArmor_postfix
-    {
-        static IEnumerable<MethodBase> TargetMethods()
-        {
-            yield return AccessTools.Method(typeof(VerbProperties), nameof(VerbProperties.AdjustedArmorPenetration), parameters: new Type[] { typeof(Tool), typeof(Pawn), typeof(Thing), typeof(HediffComp_VerbGiver) });
-            yield return AccessTools.Method(typeof(VerbProperties), nameof(VerbProperties.AdjustedArmorPenetration), parameters: new Type[] { typeof(Tool), typeof(Pawn), typeof(ThingDef), typeof(ThingDef), typeof(HediffComp_VerbGiver) });
-            yield return AccessTools.Method(typeof(ExtraDamage), nameof(ExtraDamage.AdjustedArmorPenetration), parameters: new Type[] { });
-            yield return AccessTools.Method(typeof(ExtraDamage), nameof(ExtraDamage.AdjustedArmorPenetration), parameters: new Type[] { typeof(Verb), typeof(Pawn) });
-            yield return AccessTools.Method(typeof(ProjectileProperties), nameof(ProjectileProperties.GetArmorPenetration), parameters: new Type[] { typeof(float), typeof(StringBuilder) });
-        }
-        public static void Postfix(ref float __result)
-        {
-            if (ArmorUtility_ApplyArmor_Patch.AArmor)
-            {
-                __result *= 2;
-            }
-        }
-    }
-    //advanced accuracy patches (not yet working) (will be split off into separate mod)
-    [HarmonyPatch(typeof(ShotReport), "HitReportFor")]
-    public static class ShotReport_HitReportFor_Patch
-    {
-        public static bool AAccuracy;
-        public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
-        {
-            MethodBase from = AccessTools.Method(typeof(VerbProperties), "GetHitChanceFactor");
-            MethodBase from1 = AccessTools.PropertyGetter(typeof(WeatherManager), "CurWeatherAccuracyMultiplier");
-            MethodBase to = AccessTools.Method(typeof(ShotReport_HitReportFor_Patch), "statBump");
 
-            foreach (CodeInstruction instruction in instructions)
-            {
-                if (instruction.operand as MethodBase == from || instruction.operand as MethodBase == from1)//find method to replace
-                {
-                    yield return instruction;//add first instruction back
-                    yield return new CodeInstruction(OpCodes.Ldarg_0);//load in next argument
-                    yield return new CodeInstruction(OpCodes.Call, to);//execute new method
-                }
-                else
-                {
-                    yield return instruction;
-                }
-            }
-        }
-        public static float statBump(float factor,Thing caster)
-        {
-            if (AAccuracy)
-            {
-                float shootstat = Mathf.Max(1, (caster is Pawn) ? caster.GetStatValue(StatDefOf.ShootingAccuracyPawn, false): caster.GetStatValue(StatDefOf.ShootingAccuracyTurret,false));//StatDefOf.ShootingAccuracyPawn.Worker.GetValue(StatRequest.For(caster), false) : StatDefOf.ShootingAccuracyTurret.Worker.GetValue(StatRequest.For(caster), false)
-                factor = Mathf.Pow(factor, 1 / shootstat);
-            }
-            return factor;
-        }
-    }
     //no food taming patches (wip)
     [HarmonyPatch(typeof(JobDriver_InteractAnimal), "RequiredNutritionPerFeed")]
     public static class JobDriver_InteractAnimal_RequiredNutritionPerFeed_Patch
@@ -297,6 +265,8 @@ namespace Horizon
             return false;
         }
     }
+
+
     //mech part specific patches
     [HarmonyPatch(typeof(ExecutionUtility), "ExecuteCutPart")]
     public static class ExecutionUtility_ExecuteCutPart_Patch
@@ -398,6 +368,8 @@ namespace Horizon
             DefOfHelper.EnsureInitializedInCtor(typeof(MechPartDefOf));
         }
     }
+
+
     //need remover (testing)
     public class RemoveNeed : DefModExtension
     {
@@ -430,12 +402,19 @@ namespace Horizon
             return true;
         }
     }
+
+
     //armor bones code
     [HarmonyPatch(typeof(DamageWorker_AddInjury), "GetExactPartFromDamageInfo")]
     public static class DamageWorker_AddInjury_GetExactPartFromDamageInfo_Patch
     {
+        public static bool ArmorBones;
         public static void Postfix(Pawn pawn, DamageInfo dinfo, ref BodyPartRecord __result)
         {
+            if (ArmorBones)
+            {
+                return;
+            }
             var partToBeAffected = __result;
             if (partToBeAffected?.def.destroyableByDamage is false && pawn.health.hediffSet.GetPartHealth(__result) == 1)
             {
@@ -484,35 +463,37 @@ namespace Horizon
             return false;
         }
     }
+
+
     //social remover (wip, issues with NRE on createrelation)
     public class NoSocial : DefModExtension { }
     //remove relation creation
-    [HarmonyPatch]
-    public static class PawnRelationWorker_CreateRelation_NoSocialPatch
-    {
-        static IEnumerable<MethodBase> TargetMethods()
-        {
-            yield return AccessTools.Method(typeof(PawnRelationWorker), "CreateRelation");
-            yield return AccessTools.Method(typeof(PawnRelationWorker_Child), "CreateRelation");
-            yield return AccessTools.Method(typeof(PawnRelationWorker_ExLover), "CreateRelation");
-            yield return AccessTools.Method(typeof(PawnRelationWorker_ExSpouse), "CreateRelation");
-            yield return AccessTools.Method(typeof(PawnRelationWorker_Fiance), "CreateRelation");
-            yield return AccessTools.Method(typeof(PawnRelationWorker_Lover), "CreateRelation");
-            yield return AccessTools.Method(typeof(PawnRelationWorker_Parent), "CreateRelation");
-            yield return AccessTools.Method(typeof(PawnRelationWorker_Sibling), "CreateRelation");
-            yield return AccessTools.Method(typeof(PawnRelationWorker_Spouse), "CreateRelation");
-        }
-        public static bool Prefix(Pawn generated, Pawn other)
-        {
-            var pawnSocial = generated.kindDef.HasModExtension<NoSocial>();
-            var otherSocial = other.kindDef.HasModExtension<NoSocial>();
-            if (pawnSocial == true || otherSocial == true)
-            {
-                return false;
-            }
-            return true;
-        }
-    }
+    //[HarmonyPatch]
+    //public static class PawnRelationWorker_CreateRelation_NoSocialPatch
+    //{
+    //    static IEnumerable<MethodBase> TargetMethods()
+    //    {
+    //        yield return AccessTools.Method(typeof(PawnRelationWorker), "CreateRelation");
+    //        yield return AccessTools.Method(typeof(PawnRelationWorker_Child), "CreateRelation");
+    //        yield return AccessTools.Method(typeof(PawnRelationWorker_ExLover), "CreateRelation");
+    //        yield return AccessTools.Method(typeof(PawnRelationWorker_ExSpouse), "CreateRelation");
+    //        yield return AccessTools.Method(typeof(PawnRelationWorker_Fiance), "CreateRelation");
+    //        yield return AccessTools.Method(typeof(PawnRelationWorker_Lover), "CreateRelation");
+    //        yield return AccessTools.Method(typeof(PawnRelationWorker_Parent), "CreateRelation");
+    //        yield return AccessTools.Method(typeof(PawnRelationWorker_Sibling), "CreateRelation");
+    //        yield return AccessTools.Method(typeof(PawnRelationWorker_Spouse), "CreateRelation");
+    //    }
+    //    public static bool Prefix(Pawn generated, Pawn other)
+    //    {
+    //        var pawnSocial = generated.kindDef.HasModExtension<NoSocial>();
+    //        var otherSocial = other.kindDef.HasModExtension<NoSocial>();
+    //        if (pawnSocial == true || otherSocial == true)
+    //        {
+    //            return false;
+    //        }
+    //        return true;
+    //    }
+    //}
     [HarmonyPatch(typeof(RelationsUtility), "TryDevelopBondRelation")]
     public static class RelationsUtility_TryDevelopBondRelation_Patch
     {
