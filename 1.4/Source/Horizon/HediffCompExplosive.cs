@@ -374,9 +374,9 @@ namespace Horizon
         {
             HediffCompProperties_Explosive compProperties_Explosive = Props;
             float num = customExplosiveRadius ?? Props.explosiveRadius;
-            if (compProperties_Explosive.explosiveExpandPerFuel > 0f && parent.TryGetComp<HediffCompRefuelable>() != null)
+            if (compProperties_Explosive.explosiveExpandPerFuel > 0f && parent.TryGetComp<HediffComp_Chargeable>() != null)
             {
-                num += Mathf.Sqrt(parent.TryGetComp<HediffCompRefuelable>().Fuel * compProperties_Explosive.explosiveExpandPerFuel);
+                num += Mathf.Sqrt(parent.TryGetComp<HediffComp_Chargeable>().Charge * compProperties_Explosive.explosiveExpandPerFuel);
             }
             return num;
         }
@@ -389,9 +389,9 @@ namespace Horizon
             }
             HediffCompProperties_Explosive compProperties_Explosive = Props;
             float num = ExplosiveRadius();
-            if (compProperties_Explosive.explosiveExpandPerFuel > 0f && parent.TryGetComp<HediffCompRefuelable>() != null)
+            if (compProperties_Explosive.explosiveExpandPerFuel > 0f && parent.TryGetComp<HediffComp_Chargeable>() != null)
             {
-                parent.TryGetComp<HediffCompRefuelable>().ConsumeFuel(parent.TryGetComp<HediffCompRefuelable>().Fuel);
+                parent.TryGetComp<HediffComp_Chargeable>().GreedyConsume(parent.TryGetComp<HediffComp_Chargeable>().Props.fullChargeAmount);
             }
             if (compProperties_Explosive.destroyThingOnExplosionSize <= num && !Pawn.Destroyed)
             {
