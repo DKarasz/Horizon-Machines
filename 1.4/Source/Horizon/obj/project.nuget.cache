@@ -1,11 +1,11 @@
 {
   "version": 2,
-  "dgSpecHash": "a1sQTR5N9Jqn7fnRKyYcCzY7IUbqhwno7WosfnDnb4RYzZOmVxAAd62f/Yl/2Qa+F6mLhcvtjnZrzJ8ks03OgQ==",
+  "dgSpecHash": "S6MSqdLIZ+Uh0ZzvV/rYujZsgcuDz0n9fZPm1i62Ybsh4FxvLbCzWGgZBkMrLxSo1b2etBvIcuEirt1lYx7yWQ==",
   "success": true,
-  "projectFilePath": "C:\\Users\\Donald Karasz\\Documents\\GitHub\\Horizon-Machines\\1.4\\Source\\Horizon\\Horizon.csproj",
+  "projectFilePath": "C:\\Users\\karasd3\\Documents\\GitHub\\Horizon-Machines\\1.4\\Source\\Horizon\\Horizon.csproj",
   "expectedPackageFiles": [
-    "C:\\Users\\Donald Karasz\\.nuget\\packages\\krafs.rimworld.ref\\1.4.3514-beta\\krafs.rimworld.ref.1.4.3514-beta.nupkg.sha512",
-    "C:\\Users\\Donald Karasz\\.nuget\\packages\\lib.harmony\\2.2.2\\lib.harmony.2.2.2.nupkg.sha512"
+    "C:\\Users\\karasd3\\.nuget\\packages\\krafs.rimworld.ref\\1.4.3580\\krafs.rimworld.ref.1.4.3580.nupkg.sha512",
+    "C:\\Users\\karasd3\\.nuget\\packages\\lib.harmony\\2.2.2\\lib.harmony.2.2.2.nupkg.sha512"
   ],
   "logs": []
 }

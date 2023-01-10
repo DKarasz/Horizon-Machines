@@ -1,21 +1,21 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Donald Karasz\\Documents\\GitHub\\Horizon-Machines\\1.4\\Source\\Horizon\\Horizon.csproj": {}
+    "C:\\Users\\karasd3\\Documents\\GitHub\\Horizon-Machines\\1.4\\Source\\Horizon\\Horizon.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Donald Karasz\\Documents\\GitHub\\Horizon-Machines\\1.4\\Source\\Horizon\\Horizon.csproj": {
+    "C:\\Users\\karasd3\\Documents\\GitHub\\Horizon-Machines\\1.4\\Source\\Horizon\\Horizon.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Donald Karasz\\Documents\\GitHub\\Horizon-Machines\\1.4\\Source\\Horizon\\Horizon.csproj",
+        "projectUniqueName": "C:\\Users\\karasd3\\Documents\\GitHub\\Horizon-Machines\\1.4\\Source\\Horizon\\Horizon.csproj",
         "projectName": "Horizon",
-        "projectPath": "C:\\Users\\Donald Karasz\\Documents\\GitHub\\Horizon-Machines\\1.4\\Source\\Horizon\\Horizon.csproj",
-        "packagesPath": "C:\\Users\\Donald Karasz\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Donald Karasz\\Documents\\GitHub\\Horizon-Machines\\1.4\\Source\\Horizon\\obj\\",
+        "projectPath": "C:\\Users\\karasd3\\Documents\\GitHub\\Horizon-Machines\\1.4\\Source\\Horizon\\Horizon.csproj",
+        "packagesPath": "C:\\Users\\karasd3\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\karasd3\\Documents\\GitHub\\Horizon-Machines\\1.4\\Source\\Horizon\\obj\\",
         "projectStyle": "PackageReference",
         "skipContentFileWrite": true,
         "configFilePaths": [
-          "C:\\Users\\Donald Karasz\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\karasd3\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -36,7 +36,7 @@
           "dependencies": {
             "Krafs.Rimworld.Ref": {
               "target": "Package",
-              "version": "[1.4.3514-beta, )"
+              "version": "[1.4.3580, )"
             },
             "Lib.Harmony": {
               "target": "Package",

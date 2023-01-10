@@ -2,7 +2,7 @@
   "version": 3,
   "targets": {
     ".NETFramework,Version=v4.7.2": {
-      "Krafs.Rimworld.Ref/1.4.3514-beta": {
+      "Krafs.Rimworld.Ref/1.4.3580": {
         "type": "package",
         "compile": {
           "ref/net472/Assembly-CSharp-firstpass.dll": {},
@@ -97,7 +97,7 @@
       }
     },
     ".NETFramework,Version=v4.7.2/win": {
-      "Krafs.Rimworld.Ref/1.4.3514-beta": {
+      "Krafs.Rimworld.Ref/1.4.3580": {
         "type": "package",
         "compile": {
           "ref/net472/Assembly-CSharp-firstpass.dll": {},
@@ -192,7 +192,7 @@
       }
     },
     ".NETFramework,Version=v4.7.2/win-x64": {
-      "Krafs.Rimworld.Ref/1.4.3514-beta": {
+      "Krafs.Rimworld.Ref/1.4.3580": {
         "type": "package",
         "compile": {
           "ref/net472/Assembly-CSharp-firstpass.dll": {},
@@ -287,7 +287,7 @@
       }
     },
     ".NETFramework,Version=v4.7.2/win-x86": {
-      "Krafs.Rimworld.Ref/1.4.3514-beta": {
+      "Krafs.Rimworld.Ref/1.4.3580": {
         "type": "package",
         "compile": {
           "ref/net472/Assembly-CSharp-firstpass.dll": {},
@@ -383,17 +383,17 @@
     }
   },
   "libraries": {
-    "Krafs.Rimworld.Ref/1.4.3514-beta": {
-      "sha512": "AM0fH3D5JO8qU3+aJlMu3oCmB7Xl608hnOGLKivJR2VRXyt8SMgqO9aaO/bPtiV0oS4Tunz2xMXOSCvcRJWz/Q==",
+    "Krafs.Rimworld.Ref/1.4.3580": {
+      "sha512": "1fA57QZ6jcqvbcfwRLAQA/Si46dS+t7JaRZY2TSvL+T8SK1oY1RPpimWqYwIRAUsh1RGAPXL/RwPbnW+8y4oIQ==",
       "type": "package",
-      "path": "krafs.rimworld.ref/1.4.3514-beta",
+      "path": "krafs.rimworld.ref/1.4.3580",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
         "LICENSE.md",
         "README.md",
         "icon.png",
-        "krafs.rimworld.ref.1.4.3514-beta.nupkg.sha512",
+        "krafs.rimworld.ref.1.4.3580.nupkg.sha512",
         "krafs.rimworld.ref.nuspec",
         "ref/net472/Assembly-CSharp-firstpass.dll",
         "ref/net472/Assembly-CSharp.dll",
@@ -508,25 +508,25 @@
   },
   "projectFileDependencyGroups": {
     ".NETFramework,Version=v4.7.2": [
-      "Krafs.Rimworld.Ref >= 1.4.3514-beta",
+      "Krafs.Rimworld.Ref >= 1.4.3580",
       "Lib.Harmony >= 2.2.2"
     ]
   },
   "packageFolders": {
-    "C:\\Users\\Donald Karasz\\.nuget\\packages\\": {}
+    "C:\\Users\\karasd3\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Donald Karasz\\Documents\\GitHub\\Horizon-Machines\\1.4\\Source\\Horizon\\Horizon.csproj",
+      "projectUniqueName": "C:\\Users\\karasd3\\Documents\\GitHub\\Horizon-Machines\\1.4\\Source\\Horizon\\Horizon.csproj",
       "projectName": "Horizon",
-      "projectPath": "C:\\Users\\Donald Karasz\\Documents\\GitHub\\Horizon-Machines\\1.4\\Source\\Horizon\\Horizon.csproj",
-      "packagesPath": "C:\\Users\\Donald Karasz\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Donald Karasz\\Documents\\GitHub\\Horizon-Machines\\1.4\\Source\\Horizon\\obj\\",
+      "projectPath": "C:\\Users\\karasd3\\Documents\\GitHub\\Horizon-Machines\\1.4\\Source\\Horizon\\Horizon.csproj",
+      "packagesPath": "C:\\Users\\karasd3\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\karasd3\\Documents\\GitHub\\Horizon-Machines\\1.4\\Source\\Horizon\\obj\\",
       "projectStyle": "PackageReference",
       "skipContentFileWrite": true,
       "configFilePaths": [
-        "C:\\Users\\Donald Karasz\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\karasd3\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -547,7 +547,7 @@
         "dependencies": {
           "Krafs.Rimworld.Ref": {
             "target": "Package",
-            "version": "[1.4.3514-beta, )"
+            "version": "[1.4.3580, )"
           },
           "Lib.Harmony": {
             "target": "Package",

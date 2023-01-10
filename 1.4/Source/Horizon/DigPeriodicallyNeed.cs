@@ -54,6 +54,7 @@ namespace Horizon
         //timeToDig has a misleading name. It is a minimum counter. The user will not dig if less than timeToDig ticks have passed.
         //This is done to avoid an animal digging again if it's still hungry.
         public int timeToDig = 40000;
+        public int timeDelay = 600;
         
         //A list of acceptable terrains can be specified
         public List<string> acceptedTerrains = null;
@@ -167,11 +168,17 @@ namespace Horizon
                     ((pawn.needs.food?.CurLevelPercentage < pawn.needs.food?.PercentageThreshHungry) ||
                     (Props.digAnywayEveryXTicks && this.parent.IsHashIntervalTick(Props.timeToDigForced))))
                 {
+                    if (stopdiggingcounter > 0)
+                    {
+                        stopdiggingcounter--;
+                        return false;
+                    }
                     foreach (NeedComposite needComp in Props.inputNeed)
                     {
                         Need need = pawn.needs.TryGetNeed(needComp.need);
                         if (need == null || need.CurLevel < needComp.amount)
                         {
+                            stopdiggingcounter = Props.timeDelay;
                             return false;
                         }
                     }
@@ -182,24 +189,25 @@ namespace Horizon
                             Need need = pawn.needs.TryGetNeed(needComp.need);
                             if (need == null || need.MaxLevel - need.CurLevel < needComp.amount)
                             {
+                                stopdiggingcounter = Props.timeDelay;
                                 return false;
                             }
                         }
                     }
                     if (Props.allowedAffordances.NullOrEmpty() || pawn.Position.GetTerrain(pawn.Map).affordances.SharesElementWith(Props.allowedAffordances))
                     {
-                        if (stopdiggingcounter <= 0)
+                        if (Props.acceptedTerrains != null)
                         {
-                            if (Props.acceptedTerrains != null)
+                            if (Props.acceptedTerrains.Contains(pawn.Position.GetTerrain(pawn.Map).defName))
                             {
-                                if (Props.acceptedTerrains.Contains(pawn.Position.GetTerrain(pawn.Map).defName))
-                                {
-                                    return true;
-                                }
+                                stopdiggingcounter = Props.timeToDig;
+                                return true;
                             }
-                            stopdiggingcounter = Props.timeToDig;
+                            stopdiggingcounter = Props.timeDelay;
+                            return false;
                         }
-                        stopdiggingcounter--;
+                        stopdiggingcounter = Props.timeToDig;
+                        return true;
                     }
                 }
             }
