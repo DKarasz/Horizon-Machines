@@ -11,12 +11,11 @@ using System.Reflection.Emit;
 using UnityEngine;
 using Verse.AI.Group;
 using MonoMod.Utils;
-using static AlienRace.AlienPartGenerator;
-using AlienRace;
 using Verse.Sound;
 
 namespace Horizon
 {
+	//class for organs that increase storage of a need, also stablized storage
     public class HediffCompProperties_Refuelable : HediffCompProperties_Chargeable
     {
 		//public int ticksToFullCharge = -1;
@@ -29,7 +28,7 @@ namespace Horizon
 
 		//public string labelInBrackets;
 
-		public ThingDef fuelDef;
+		//public ThingDef fuelDef;
 		public NeedDef Need;
 
 		public HediffCompProperties_Refuelable()
@@ -55,6 +54,16 @@ namespace Horizon
 					charge = Props.fullChargeAmount;
 				}
 			}
+		}
+		public float Activate()
+        {
+			float amount = 0;
+			while (CanActivate)
+            {
+				TryCharge(-(Props.minChargeToActivate));
+				amount++;
+            }
+			return amount;
 		}
 		//activate can indicate given amount of charge for product creation, need greedy consume or trycharge
 		public override void TryCharge(float desiredChargeAmount)

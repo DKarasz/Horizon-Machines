@@ -12,8 +12,6 @@ using UnityEngine;
 using Verse.AI.Group;
 using static Verse.DamageWorker;
 using MonoMod.Utils;
-using static AlienRace.AlienPartGenerator;
-using AlienRace;
 using Verse.Sound;
 
 namespace Horizon
@@ -227,6 +225,7 @@ namespace Horizon
     {
         public static bool ArmorBones = true;
         public static bool LethalBones = false;
+        public static bool flagDigPeriodicallyNeed = true;
         public override void ExposeData()
         {
             base.ExposeData();

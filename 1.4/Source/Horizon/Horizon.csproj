@@ -31,17 +31,17 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AlienRace">
-      <HintPath>..\..\Assemblies\AlienRace.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="Addons.cs" />
+    <Compile Include="Comp_CommsTower.cs" />
+    <Compile Include="DigPeriodicallyNeed.cs" />
+    <Compile Include="HediffCompSolar.cs" />
+    <Compile Include="HediffCompGenerator.cs" />
     <Compile Include="HediffCompBattery.cs" />
     <Compile Include="HediffCompRefuelable.cs" />
     <Compile Include="HediffCompExplosive.cs" />
     <Compile Include="Horizon.cs" />
     <Compile Include="Need_Refuelable.cs" />
+    <Compile Include="ProcessingComp.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -51,6 +51,11 @@
     <PackageReference Include="Lib.Harmony">
       <Version>2.2.2</Version>
     </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="VFECore">
+      <HintPath>D:\SteamLibrary\steamapps\workshop\content\294100\2023507013\1.4\Assemblies\VFECore.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

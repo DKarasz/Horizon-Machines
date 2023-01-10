@@ -12,8 +12,6 @@ using UnityEngine;
 using Verse.AI.Group;
 using static Verse.DamageWorker;
 using MonoMod.Utils;
-using static AlienRace.AlienPartGenerator;
-using AlienRace;
 using Verse.Sound;
 
 namespace Horizon
