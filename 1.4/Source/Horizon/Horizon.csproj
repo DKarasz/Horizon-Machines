@@ -40,22 +40,18 @@
     <Compile Include="HediffCompRefuelable.cs" />
     <Compile Include="HediffCompExplosive.cs" />
     <Compile Include="Horizon.cs" />
+    <Compile Include="MechSuit.cs" />
     <Compile Include="Need_Refuelable.cs" />
     <Compile Include="ProcessingComp.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Krafs.Rimworld.Ref">
-      <Version>1.4.3514-beta</Version>
+      <Version>1.4.3606-beta</Version>
     </PackageReference>
     <PackageReference Include="Lib.Harmony">
       <Version>2.2.2</Version>
     </PackageReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="VFECore">
-      <HintPath>D:\SteamLibrary\steamapps\workshop\content\294100\2023507013\1.4\Assemblies\VFECore.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

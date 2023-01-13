@@ -118,7 +118,7 @@ namespace Horizon
 			PlayerKnowledgeDatabase.KnowledgeDemonstrated(ConceptDefOf.OpeningComms, KnowledgeAmount.Total);
 		}
 	}
-	[HarmonyPatch(typeof(CommsConsoleUtility), "PlayerHasPoweredCommsConsole", new Type[] { })]
+	[HarmonyPatch(typeof(CommsConsoleUtility), "PlayerHasPoweredCommsConsole", new Type[] {typeof(Map) })]
 	public static class CommsConsoleUtility_PlayerHasPoweredCommsConsole_Patch
 	{
 		public static void Postfix(ref bool __result, Map map)

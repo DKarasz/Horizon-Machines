@@ -11,16 +11,16 @@ namespace Horizon
 {
 	//base class for solar panels or other power generator organs
 	[HarmonyPatch(typeof(Need_MechEnergy), "NeedInterval")]
-	public class Need_MechEnergy_NeedInterval_Patch
+	public static class Need_MechEnergy_NeedInterval_Patch
     {
-		public void Postfix(ref float ___CurLevel, ref Pawn ___pawn)
+		public static void Postfix(ref Need __instance, ref Pawn ___pawn)
         {
 			IEnumerable<HediffComp_Generator> t = from a in ___pawn.health.hediffSet.hediffs
 												   where a is HediffWithComps x && x.TryGetComp<HediffComp_Generator>() != null
 												   select a.TryGetComp<HediffComp_Generator>();
 			foreach (HediffComp_Generator comp in t)
 			{
-				___CurLevel += comp.output/400;
+				__instance.CurLevel += comp.output/400;
 			}
         }
     }

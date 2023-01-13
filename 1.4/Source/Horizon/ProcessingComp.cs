@@ -48,6 +48,7 @@ namespace Horizon
     public class ProcessComposite
     {
 		public ThingDef Input;
+        public ThingCategoryDef InputCategory= null;
 		public ThingDef Output;
         //for pollution, this works on a pollution/tile basis, 1 bag= 6 pollution
 		public int inputCount=1;
@@ -55,8 +56,6 @@ namespace Horizon
         public bool consumePollution = false;
         //special case for cutting chunks into bricks
         public bool cutChunks = false;
-        //special case for eating chunks for something like concrete
-        public bool eatChunks = false;
 
     }
     public class NeedComposite
@@ -146,15 +145,15 @@ namespace Horizon
                     newThing.stackCount = Props.product.outputCount;
                 }
             }
-            else if (Props.product.eatChunks)
+            else if (Props.product.InputCategory!= null)
             {
-                Thing chunk = FindInputChunks(pawn);
-                if (chunk == null)
+                Thing category = FindInputCategory(pawn, Props.product.InputCategory);
+                if (category == null)
                 {
                     return;
                 }
                 newThingDef = Props.product.Output;
-                eatThing(chunk, pawn);
+                eatThing(category, pawn);
                 if (inputCounter >= Props.product.inputCount)
                 {
                     inputCounter = 0;
@@ -326,8 +325,12 @@ namespace Horizon
             }
             return GenClosest.ClosestThingReachable(pawn.PositionHeld, pawn.MapHeld, ThingRequest.ForGroup(ThingRequestGroup.Chunk), PathEndMode.OnCell, TraverseParms.For(pawn), 15.9f, (Thing t) => IsValid(t, pawn));
         }
-        public bool IsValid(Thing thing, Pawn hauler)
+        public bool IsValid(Thing thing, Pawn hauler, ThingCategoryDef category=null)
         {
+            if (category != null && !thing.HasThingCategory(category))
+            {
+                return false;
+            }
             if (thing.IsForbidden(hauler))
             {
                 return false;
@@ -345,6 +348,21 @@ namespace Horizon
                 return false;
             }
             return true;
+        }
+        public Thing FindInputCategory(Pawn pawn, ThingCategoryDef category)
+        {
+            Room room = pawn.GetRoom();
+            if (room != null)
+            {
+                foreach (Thing item in room.ContainedThingsList(category.childThingDefs))
+                {
+                    if (IsValid(item, pawn, category))
+                    {
+                        return item;
+                    }
+                }
+            }
+            return GenClosest.ClosestThingReachable(pawn.PositionHeld, pawn.MapHeld, ThingRequest.ForGroup(ThingRequestGroup.Undefined), PathEndMode.OnCell, TraverseParms.For(pawn), Props.range, (Thing t) => IsValid(t, pawn, category));
         }
         public Thing FindInputChunks(Pawn pawn)
         {

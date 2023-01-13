@@ -11,9 +11,9 @@ namespace Horizon
 {
 	//class for power capacity increasing organs
 	[HarmonyPatch(typeof(Need_MechEnergy), "MaxLevel", MethodType.Getter)]
-	public class Need_MechEnergy__MaxLevel_Patch
+	public static class Need_MechEnergy__MaxLevel_Patch
 	{
-		public void Postfix(ref float __result, ref Pawn ___pawn)
+		public static void Postfix(ref float __result, ref Pawn ___pawn)
 		{
 			IEnumerable<HediffComp_Battery> t = from a in ___pawn.health.hediffSet.hediffs
 												where a is HediffWithComps x && x.TryGetComp<HediffComp_Battery>() != null
@@ -27,11 +27,11 @@ namespace Horizon
 
 	//locks waste generation to be per point of energy instead of percent of total energy
 	[HarmonyPatch(typeof(Building_MechCharger), "WasteProducedPerTick", MethodType.Getter)]
-	public class Building_MechCharger_WasteProducedPerTick
+	public static class Building_MechCharger_WasteProducedPerTick
     {
-		public bool Prefix(ref float __result, Pawn currentlyChargingMech)
+		public static bool Prefix(ref float __result, Pawn ___currentlyChargingMech)
         {
-			__result= currentlyChargingMech.GetStatValue(StatDefOf.WastepacksPerRecharge) * (0.000833333354f / 100f);
+			__result= ___currentlyChargingMech.GetStatValue(StatDefOf.WastepacksPerRecharge) * (0.000833333354f / 100f);
 			return false;
 		}
     }

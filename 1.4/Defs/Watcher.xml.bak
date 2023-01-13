@@ -23,7 +23,6 @@
 	<defName>BattleMech_Centurion</defName>
 	<race>
 		<thinkTreeMain>MechanoidPilot</thinkTreeMain>
-	</race>
 	<thingClass>Horizon.MechSuit</thingClass>
   </ThingDef>
   <PawnKindDef ParentName="MechCenturionKind">
