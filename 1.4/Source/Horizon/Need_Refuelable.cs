@@ -15,6 +15,10 @@ namespace Horizon
     }
     public class Need_Refuelable : Need
     {
+        public Need_Refuelable(Pawn pawn)
+        : base(pawn)
+        {
+        }
         public override float MaxLevel
         {
             get
@@ -53,7 +57,7 @@ namespace Horizon
         }
         public override void NeedInterval()
         {
-            throw new NotImplementedException();//want to only consume when in use by action
+            //throw new NotImplementedException();//want to only consume when in use by action
         }
     }
 }

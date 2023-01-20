@@ -28,7 +28,6 @@ namespace Horizon
 
 		//public string labelInBrackets;
 
-		//public ThingDef fuelDef;
 		public NeedDef Need;
 
 		public HediffCompProperties_Refuelable()

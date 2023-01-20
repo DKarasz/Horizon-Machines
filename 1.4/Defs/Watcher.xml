@@ -212,16 +212,22 @@
 		<!--<li Class="Horizon.MechAnimal"/>-->
 	</modExtensions>
   </PawnKindDef>
-  
+   
 	<HediffDef ParentName="ImplantHediffBase">
 		<defName>BlazeCan</defName>
 		<label>Blaze Canister</label>
 		<labelNoun>Blaze</labelNoun>
+		<causesNeed>MechBlaze</causesNeed>
 		<description>blaze fuel, reactive to flame/burn</description>
 		<descriptionHyperlinks>
 			<ThingDef>BionicArm</ThingDef>
 		</descriptionHyperlinks>
 		<comps>
+			<li Class="Horizon.HediffCompProperties_Refuelable">
+				<fullChargeAmount>10</fullChargeAmount>
+				<minChargeToActivate>5</minChargeToActivate>
+				<Need>MechBlaze</Need>
+			</li>
 			<li Class="Horizon.HediffCompProperties_Explosive">
 				<explosiveRadius>1.1</explosiveRadius>
 				<explosiveDamageType>Flame</explosiveDamageType>
@@ -246,11 +252,17 @@
 		<defName>BlazeSac</defName>
 		<label>Blaze Sac</label>
 		<labelNoun>Blaze Sac</labelNoun>
+		<causesNeed>MechBlaze</causesNeed>
 		<description>blaze fuel sac, reactive to damage</description>
 		<descriptionHyperlinks>
 			<ThingDef>BionicArm</ThingDef>
 		</descriptionHyperlinks>
 		<comps>
+			<li Class="Horizon.HediffCompProperties_Refuelable">
+				<fullChargeAmount>20</fullChargeAmount>
+				<minChargeToActivate>5</minChargeToActivate>
+				<Need>MechBlaze</Need>
+			</li>
 			<li Class="Horizon.HediffCompProperties_Explosive">
 				<explosiveRadius>1.1</explosiveRadius>
 				<explosiveDamageType>Flame</explosiveDamageType>
@@ -268,6 +280,26 @@
 		</addedPartProps>
 	</HediffDef>
 	
+	<NeedDef>
+		<defName>MechBlaze</defName>
+		<needClass>Horizon.Need_Refuelable</needClass>
+		<description>A reserve of chemical energy stored inside specially created organs</description>
+		<label>BlazeFuel</label>
+		<showOnNeedList>true</showOnNeedList>
+		<minIntelligence>ToolUser</minIntelligence>
+		<playerMechsOnly>false</playerMechsOnly>
+		<onlyIfCausedByHediff>true</onlyIfCausedByHediff>
+		<listPriority>9000</listPriority>
+		<freezeWhileSleeping>true</freezeWhileSleeping>
+		<showForCaravanMembers>true</showForCaravanMembers>
+		<major>true</major>
+		<modExtensions>
+			<li Class= "Horizon.FuelNeed">
+				<fuelDef>Chemfuel</fuelDef>
+			</li>
+		</modExtensions>
+	</NeedDef>
+	
 	<HediffDef ParentName="ImplantHediffBase">
 		<defName>ShockCan</defName>
 		<label>Sparker</label>
@@ -277,6 +309,9 @@
 			<ThingDef>BionicArm</ThingDef>
 		</descriptionHyperlinks>
 		<comps>
+			<li Class="Horizon.HediffCompProperties_Battery">
+				<fullChargeAmount>20</fullChargeAmount>
+			</li>
 			<li Class="Horizon.HediffCompProperties_Explosive">
 				<explosiveRadius>1.1</explosiveRadius>
 				<explosiveDamageType>Stun</explosiveDamageType>
