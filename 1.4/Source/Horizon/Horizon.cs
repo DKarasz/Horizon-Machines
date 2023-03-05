@@ -410,7 +410,7 @@ namespace Horizon
         public static bool ArmorBones;
         public static void Postfix(Pawn pawn, DamageInfo dinfo, ref BodyPartRecord __result)
         {
-            if (ArmorBones)
+            if (!ArmorBones)
             {
                 return;
             }
@@ -420,15 +420,19 @@ namespace Horizon
                 var hitPart = __result;
                 var nonMissingParts = pawn.health.hediffSet.GetNotMissingParts();
                 var children = hitPart.GetDirectChildParts();
-                Log.Message("Children of " + hitPart + " - " + String.Join(", ", children));
-                if (children.TryRandomElementByWeight(x => x.coverage, out var child) && nonMissingParts.Contains(child))
+                //Log.Message("Children of " + hitPart + " - " + String.Join(", ", children));
+                if (children.TryRandomElementByWeight(x => x.coverageAbs, out var child) && nonMissingParts.Contains(child))
                 {
                     __result = child;
-                    Log.Message("Armor: Choosen: " + hitPart + " Child for damage: " + dinfo + " for pawn " + pawn);
+                    //Log.Message("Armor: Choosen: " + hitPart + " Child for damage: " + dinfo + " for pawn " + pawn);
                     return;
                 }
-                __result = hitPart.parent;
-                Log.Message("Armor: Choosen: " + hitPart + " Parent for damage: " + dinfo + " for pawn " + pawn);
+                if(!hitPart.parent.def.conceptual)
+                {
+                    __result = hitPart.parent;
+                    //Log.Message("Armor: Choosen: " + hitPart + " Parent for damage: " + dinfo + " for pawn " + pawn);
+
+                }
             }
         }
     }
@@ -464,82 +468,82 @@ namespace Horizon
     }
 
 
-    //social remover (wip, issues with NRE on createrelation)
-    public class NoSocial : DefModExtension { }
-    //remove relation creation
-    //[HarmonyPatch]
-    //public static class PawnRelationWorker_CreateRelation_NoSocialPatch
+    ////social remover (wip, issues with NRE on createrelation)
+    //public class NoSocial : DefModExtension { }
+    ////remove relation creation
+    ////[HarmonyPatch]
+    ////public static class PawnRelationWorker_CreateRelation_NoSocialPatch
+    ////{
+    ////    static IEnumerable<MethodBase> TargetMethods()
+    ////    {
+    ////        yield return AccessTools.Method(typeof(PawnRelationWorker), "CreateRelation");
+    ////        yield return AccessTools.Method(typeof(PawnRelationWorker_Child), "CreateRelation");
+    ////        yield return AccessTools.Method(typeof(PawnRelationWorker_ExLover), "CreateRelation");
+    ////        yield return AccessTools.Method(typeof(PawnRelationWorker_ExSpouse), "CreateRelation");
+    ////        yield return AccessTools.Method(typeof(PawnRelationWorker_Fiance), "CreateRelation");
+    ////        yield return AccessTools.Method(typeof(PawnRelationWorker_Lover), "CreateRelation");
+    ////        yield return AccessTools.Method(typeof(PawnRelationWorker_Parent), "CreateRelation");
+    ////        yield return AccessTools.Method(typeof(PawnRelationWorker_Sibling), "CreateRelation");
+    ////        yield return AccessTools.Method(typeof(PawnRelationWorker_Spouse), "CreateRelation");
+    ////    }
+    ////    public static bool Prefix(Pawn generated, Pawn other)
+    ////    {
+    ////        var pawnSocial = generated.kindDef.HasModExtension<NoSocial>();
+    ////        var otherSocial = other.kindDef.HasModExtension<NoSocial>();
+    ////        if (pawnSocial == true || otherSocial == true)
+    ////        {
+    ////            return false;
+    ////        }
+    ////        return true;
+    ////    }
+    ////}
+    //[HarmonyPatch(typeof(RelationsUtility), "TryDevelopBondRelation")]
+    //public static class RelationsUtility_TryDevelopBondRelation_Patch
     //{
-    //    static IEnumerable<MethodBase> TargetMethods()
+    //    public static bool Prefix(Pawn humanlike, Pawn animal, ref bool __result)
     //    {
-    //        yield return AccessTools.Method(typeof(PawnRelationWorker), "CreateRelation");
-    //        yield return AccessTools.Method(typeof(PawnRelationWorker_Child), "CreateRelation");
-    //        yield return AccessTools.Method(typeof(PawnRelationWorker_ExLover), "CreateRelation");
-    //        yield return AccessTools.Method(typeof(PawnRelationWorker_ExSpouse), "CreateRelation");
-    //        yield return AccessTools.Method(typeof(PawnRelationWorker_Fiance), "CreateRelation");
-    //        yield return AccessTools.Method(typeof(PawnRelationWorker_Lover), "CreateRelation");
-    //        yield return AccessTools.Method(typeof(PawnRelationWorker_Parent), "CreateRelation");
-    //        yield return AccessTools.Method(typeof(PawnRelationWorker_Sibling), "CreateRelation");
-    //        yield return AccessTools.Method(typeof(PawnRelationWorker_Spouse), "CreateRelation");
-    //    }
-    //    public static bool Prefix(Pawn generated, Pawn other)
-    //    {
-    //        var pawnSocial = generated.kindDef.HasModExtension<NoSocial>();
-    //        var otherSocial = other.kindDef.HasModExtension<NoSocial>();
+    //        var pawnSocial = humanlike.kindDef.HasModExtension<NoSocial>();
+    //        var otherSocial = animal.kindDef.HasModExtension<NoSocial>();
     //        if (pawnSocial == true || otherSocial == true)
     //        {
+    //            __result = false;
     //            return false;
     //        }
     //        return true;
     //    }
     //}
-    [HarmonyPatch(typeof(RelationsUtility), "TryDevelopBondRelation")]
-    public static class RelationsUtility_TryDevelopBondRelation_Patch
-    {
-        public static bool Prefix(Pawn humanlike, Pawn animal, ref bool __result)
-        {
-            var pawnSocial = humanlike.kindDef.HasModExtension<NoSocial>();
-            var otherSocial = animal.kindDef.HasModExtension<NoSocial>();
-            if (pawnSocial == true || otherSocial == true)
-            {
-                __result = false;
-                return false;
-            }
-            return true;
-        }
-    }
-    //other pawns dont think of pawn as anything
-    [HarmonyPatch(typeof(Pawn_RelationsTracker), "OpinionOf")]
-    public static class Pawn_RelationsTracker_OpinionOf_NoSocialPatch
-    {
-        public static bool Prefix(Pawn other, ref int __result, ref Pawn ___pawn)
-        {
-            var pawnSocial = ___pawn.kindDef.HasModExtension<NoSocial>();
-            var otherSocial = other.kindDef.HasModExtension<NoSocial>();
-            if (pawnSocial == true || otherSocial == true)
-            {
-                __result= 0;
-                return false;
-            }
-            return true;
-        }
-    }
-    //hide social tab
-    [HarmonyPatch(typeof(ITab_Pawn_Social), "IsVisible", MethodType.Getter)]
-    public static class ITab_Pawn_Social_IsVisible_NoSocialPatch
-    {
-        private static Func<ITab_Pawn_Social, Pawn> selPawn = AccessTools.PropertyGetter(typeof(ITab_Pawn_Social), "SelPawnForSocialInfo").CreateDelegate<Func<ITab_Pawn_Social, Pawn>>();
-        public static bool Prefix(ITab_Pawn_Social __instance, ref bool __result)
-        {
-            Pawn pawn = selPawn(__instance);
-            var pawnSocial = pawn.kindDef.HasModExtension<NoSocial>();
-            if (pawnSocial == true)
-            {
-                __result = false;
-                return false;
-            }
-            return true;
-        }
-    }
+    ////other pawns dont think of pawn as anything
+    //[HarmonyPatch(typeof(Pawn_RelationsTracker), "OpinionOf")]
+    //public static class Pawn_RelationsTracker_OpinionOf_NoSocialPatch
+    //{
+    //    public static bool Prefix(Pawn other, ref int __result, ref Pawn ___pawn)
+    //    {
+    //        var pawnSocial = ___pawn.kindDef.HasModExtension<NoSocial>();
+    //        var otherSocial = other.kindDef.HasModExtension<NoSocial>();
+    //        if (pawnSocial == true || otherSocial == true)
+    //        {
+    //            __result= 0;
+    //            return false;
+    //        }
+    //        return true;
+    //    }
+    //}
+    ////hide social tab
+    //[HarmonyPatch(typeof(ITab_Pawn_Social), "IsVisible", MethodType.Getter)]
+    //public static class ITab_Pawn_Social_IsVisible_NoSocialPatch
+    //{
+    //    private static Func<ITab_Pawn_Social, Pawn> selPawn = AccessTools.PropertyGetter(typeof(ITab_Pawn_Social), "SelPawnForSocialInfo").CreateDelegate<Func<ITab_Pawn_Social, Pawn>>();
+    //    public static bool Prefix(ITab_Pawn_Social __instance, ref bool __result)
+    //    {
+    //        Pawn pawn = selPawn(__instance);
+    //        var pawnSocial = pawn.kindDef.HasModExtension<NoSocial>();
+    //        if (pawnSocial == true)
+    //        {
+    //            __result = false;
+    //            return false;
+    //        }
+    //        return true;
+    //    }
+    //}
 
 }

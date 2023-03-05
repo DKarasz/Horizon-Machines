@@ -129,6 +129,17 @@ namespace Horizon
             Thing newThing = null;
             ThingDef newThingDef;
             counter = Props.ticksForDelay;// delay each eat attempt
+            if (Props.product == null)
+            {
+                if (this.effecter == null)
+                {
+                    this.effecter = EffecterDefOf.Mine.Spawn();
+                }
+                this.effecter.Trigger(pawn, newThing);
+                consumeNeeds(pawn);
+                counter = Props.timeInterval;
+                return;
+            }
             if (Props.product.cutChunks)
             {
                 Thing chunk = FindInputChunks(pawn);
@@ -233,7 +244,7 @@ namespace Horizon
 
         public void eatThing(Thing thing, Pawn pawn)
         {
-            Job job = JobMaker.MakeJob(JobDefOf.Ingest, thing);
+            Job job = JobMaker.MakeJob(JobDefOf.Ingest, thing);// will need replace with custom job similar to animal eating
             job.count = Math.Min(thing.stackCount, Props.product.inputCount - inputCounter);
             pawn.jobs.StartJob(job, JobCondition.InterruptOptional);
             inputCounter += job.count;

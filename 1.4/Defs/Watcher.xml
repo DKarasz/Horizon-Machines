@@ -2,7 +2,26 @@
 <Defs>
   <ThingDef ParentName="MechCenturion">
 	<defName>TitanMech_Centurion</defName>
+	<label>Titan Centurion</label>
 	<thingClass>Horizon.MechSuit</thingClass>
+	<comps>
+		<li Class="CompProperties_BladelinkWeapon">
+			<biocodeOnEquip>true</biocodeOnEquip>
+		</li>
+		<li Class="CompProperties_GeneratedName">
+			<nameMaker>NamerWeaponBladelink</nameMaker>
+		</li>
+	</comps>
+	<modExtensions>
+		<li Class="Horizon.MechExtension">
+			<canDraftRemote>true</canDraftRemote>
+			<renderPawn>true</renderPawn>
+			<exposedPawn>.5</exposedPawn>
+			<graphicData>
+				<drawOffset>(1,1,1)</drawOffset>
+			</graphicData>
+		</li>
+	</modExtensions>
   </ThingDef>
   <PawnKindDef ParentName="MechCenturionKind">
 	<defName>TitanMech_Centurion</defName>
@@ -11,7 +30,39 @@
   
   <ThingDef ParentName="MechCenturion">
 	<defName>EvaMech_Centurion</defName>
-	<devNote>OverseerOnly</devNote>
+	<label>Eva Centurion</label>
+	<race>
+		<body inherit="false">Human</body>
+		<bloodDef inherit="false">Filth_Blood</bloodDef>
+	</race>
+	<modExtensions>
+		<li Class="Horizon.MechExtension">
+			<canBleed>true</canBleed>
+			<canDraftRemote>false</canDraftRemote>
+			<overseerOnly>true</overseerOnly>
+			<exposedPawn>.5</exposedPawn>
+		</li>
+	</modExtensions>
+	<recipes>
+		<li>ExciseCarcinoma</li>
+		<li>AdministerMechSerumHealer</li>
+		<li>RemoveBodyPart</li>
+		<li>Euthanize</li>
+		<li>Anesthetize</li>
+		<li>CureScaria</li>
+		<li MayRequire="Ludeon.RimWorld.Biotech">Vasectomy</li>
+		<li MayRequire="Ludeon.RimWorld.Biotech">ReverseVasectomy</li>
+		<li MayRequire="Ludeon.RimWorld.Biotech">TubalLigation</li>
+		<li MayRequire="Ludeon.RimWorld.Biotech">ExtractOvum</li>
+		<li MayRequire="Ludeon.RimWorld.Royalty">CureBloodRot</li>
+		<li MayRequire="Ludeon.RimWorld.Royalty">CureAbasia</li>
+		<li MayRequire="Ludeon.RimWorld.Biotech">ExtractHemogenPack</li>
+		<li MayRequire="Ludeon.RimWorld.Biotech">BloodTransfusion</li>
+		<li MayRequire="Ludeon.RimWorld.Biotech">ImplantXenogerm</li>
+		<li MayRequire="Ludeon.RimWorld.Biotech">ImplantIUD</li>
+		<li MayRequire="Ludeon.RimWorld.Biotech">RemoveIUD</li>
+		<li MayRequire="Ludeon.RimWorld.Biotech">TerminatePregnancy</li>
+	</recipes>
 	<thingClass>Horizon.MechSuit</thingClass>
   </ThingDef>
   <PawnKindDef ParentName="MechCenturionKind">
@@ -21,9 +72,16 @@
   
   <ThingDef ParentName="MechCenturion">
 	<defName>BattleMech_Centurion</defName>
+	<label>Battle Centurion</label>
 	<race>
 		<thinkTreeMain>MechanoidPilot</thinkTreeMain>
 	</race>
+	<modExtensions>
+		<li Class="Horizon.MechExtension">
+			<canDraftRemote>false</canDraftRemote>
+			<isViolent>true</isViolent>
+		</li>
+	</modExtensions>
 	<thingClass>Horizon.MechSuit</thingClass>
   </ThingDef>
   <PawnKindDef ParentName="MechCenturionKind">
@@ -31,6 +89,58 @@
 	<race>BattleMech_Centurion</race>
   </PawnKindDef>
   
+  <ThingDef ParentName="MechCenturion">
+	<defName>PacificMech_Centurion</defName>
+	<label>Pacific Centurion</label>
+	<race>
+		<thinkTreeMain>MechanoidPilot</thinkTreeMain>
+	</race>
+	<modExtensions>
+		<li Class="Horizon.MechExtension">
+			<pilotNumber>2</pilotNumber>
+			<canDraftRemote>false</canDraftRemote>
+		</li>
+	</modExtensions>
+	<thingClass>Horizon.MechSuit</thingClass>
+  </ThingDef>
+  <PawnKindDef ParentName="MechCenturionKind">
+	<defName>PacificMech_Centurion</defName>
+	<race>PacificMech_Centurion</race>
+  </PawnKindDef>
+  
+  <ThingDef ParentName="MechCenturion">
+	<defName>TallneckMech_Centurion</defName>
+	<label>Tallneck Centurion</label>
+	<comps>
+		<li Class="Horizon.CompProperties_CommsTower"/>
+		<li Class="CompProperties_Usable" MayRequire="Ludeon.RimWorld.Biotech">
+			<useJob>TriggerObject</useJob>
+			<useLabel>Summon diabolus threat</useLabel>
+			<useDuration>900</useDuration>
+			<floatMenuOptionPriority>SummonThreat</floatMenuOptionPriority>
+			<floatMenuFactionIcon>Mechanoid</floatMenuFactionIcon>
+			<ignoreOtherReservations>true</ignoreOtherReservations>
+		</li>
+		<li Class="CompProperties_Useable_CallBossgroup" MayRequire="Ludeon.RimWorld.Biotech">
+			<bossgroupDef>Diabolus</bossgroupDef>
+			<spawnLetterLabelKey>LetterLabelCommsConsoleSpawned</spawnLetterLabelKey>
+			<spawnLetterTextKey>LetterCommsConsoleSpawned</spawnLetterTextKey>
+			<effecterDef>CommsConsoleBossgroupSummoned</effecterDef>
+			<delayTicks>120</delayTicks>
+		</li>
+	</comps>
+  </ThingDef>
+  <PawnKindDef ParentName="MechCenturionKind">
+	<defName>TallneckMech_Centurion</defName>
+	<race>TallneckMech_Centurion</race>
+  </PawnKindDef>
+  
+  <JobDef>
+	<defName>UseCommsConsoleItem</defName>
+	<driverClass>Horizon.JobDriver_UseCommsConsoleItem</driverClass>
+	<reportString>using comms console.</reportString>
+	<allowOpportunisticPrefix>true</allowOpportunisticPrefix>
+  </JobDef>
   <JobDef>
 	<defName>EnterMechSuit</defName>
 	<driverClass>Horizon.JobDriver_EnterMechSuit</driverClass>
@@ -40,7 +150,7 @@
   </JobDef>
   
   
-  <ThingDef ParentName="BaseMechanoidWalker" Name="HorizonBase" Abstract="true">
+  <!--<ThingDef ParentName="BaseMechanoidWalker" Name="HorizonBase" Abstract="true">
     <defName>Watcher</defName>
     <label>Watcher</label>
     <devNote>watcher</devNote>
@@ -62,9 +172,9 @@
       <soundMeleeHitBuilding>Pawn_Melee_MechanoidSlash_HitBuilding</soundMeleeHitBuilding>
       <soundMeleeMiss>Pawn_Melee_MechanoidSlash_Miss</soundMeleeMiss>
     </race>
-    <thingCategories>
+    <thingCategories>-->
       <!--<li>Animals</li>-->
-    </thingCategories>
+    <!--</thingCategories>-->
 	<!--<modExtensions>
 		<li Class="Horizon.AnimalBodyAddons">
 			<bodyAddons>
@@ -129,10 +239,17 @@
 			</bodyAddons>
 		</li>
 	</modExtensions>-->
-  </ThingDef>
+  <!--</ThingDef>-->
+  <!--<ThingDef ParentName="AnimalSleepingSpot">
+	<defName>MechSleepingSpot</defName>
+	<label>Mech sleeping spot</label>
+	<modExtensions>
+		<li Class="Horizon.MechBed"/>
+	</modExtensions>
+  </ThingDef>-->
   
   
-  <ThingDef ParentName="HorizonBase">
+  <!--<ThingDef ParentName="HorizonBase">
     <defName>Watcher</defName>
     <label>Watcher</label>
     <devNote>watcher</devNote>
@@ -208,10 +325,10 @@
         </bodyGraphicData>
       </li>
     </lifeStages>
-	<modExtensions>
+	<modExtensions>-->
 		<!--<li Class="Horizon.MechAnimal"/>-->
-	</modExtensions>
-  </PawnKindDef>
+	<!--</modExtensions>
+  </PawnKindDef>-->
    
 	<HediffDef ParentName="ImplantHediffBase">
 		<defName>BlazeCan</defName>

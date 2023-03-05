@@ -19,7 +19,7 @@
 
 //namespace Horizon
 //{
-//      PR on har dev, obsolete
+//      integrated into har, obsolete
 //    //addon code
 //    [HarmonyPatch(typeof(HarmonyPatches), nameof(HarmonyPatches.DrawAddons))]
 //    public static class HarmonyPatches_DrawAddons_Patch
