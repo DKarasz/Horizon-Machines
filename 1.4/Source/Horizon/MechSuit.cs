@@ -32,370 +32,6 @@ namespace Horizon
 		}
 	}
 
-	[HarmonyPatch(typeof(StatWorker), "GetValueUnfinalized")]
-	public static class StatWorker_GetValueUnfinalized_Patch
-	{
-		public static void Postfix(ref float __result, StatRequest req, StatDef ___stat)
-		{
-			Pawn pawn = req.Thing as Pawn;
-			if (pawn != null)
-			{
-				if(!pawn.Spawned && pawn.ParentHolder != null && pawn.ParentHolder is MechSuit suit && suit.mechExtension.mechOffsetsPawn)
-                {
-					__result += StatWorker.StatOffsetFromGear(suit, ___stat);
-				}
-				//else if (pawn.equipment != null && pawn.equipment.bondedWeapon != null && pawn.equipment.bondedWeapon is MechSuit mech && mech.ContainedThing == pawn)
-				//{
-				//	//Log.Message("test mech offset pawn");
-				//	__result += StatWorker.StatOffsetFromGear(pawn.equipment.bondedWeapon, ___stat);
-				//}
-				if (pawn is MechSuit mech2 && mech2.HasAnyContents)
-				{
-					//Log.Message("test mech offset");
-
-					__result += StatWorker.StatOffsetFromGear(pawn, ___stat);
-				}
-			}
-		}
-	}
-	[HarmonyPatch(typeof(StatWorker), "GetExplanationUnfinalized")]
-	public static class StatWorker_GetExplanationUnfinalized_Patch
-	{
-		public static void Postfix(ref string __result, StatRequest req, StatDef ___stat, StatWorker __instance)
-		{
-			StringBuilder stringBuilder = new StringBuilder(__result);
-			Pawn pawn = req.Thing as Pawn;
-			if (pawn != null)
-			{
-				if (!pawn.Spawned && pawn.ParentHolder != null && pawn.ParentHolder is MechSuit suit && suit.mechExtension.mechOffsetsPawn)
-				{
-					float f = StatWorker.StatOffsetFromGear(suit, ___stat);
-					if(f != 0)
-                    {
-					stringBuilder.AppendLine(InfoTextLineFromGear(suit, ___stat, f));
-                    }
-				}
-				//else if (pawn.equipment != null && pawn.equipment.bondedWeapon != null && pawn.equipment.bondedWeapon is MechSuit mech && mech.ContainedThing == pawn)
-				//{
-				//	//Log.Message("test mech offset pawn");
-				//	__result += StatWorker.StatOffsetFromGear(pawn.equipment.bondedWeapon, ___stat);
-				//}
-				if (pawn is MechSuit mech2 && mech2.HasAnyContents)
-				{
-					//Log.Message("test mech offset");
-					float f = StatWorker.StatOffsetFromGear(pawn, ___stat);
-					if (f != 0)
-                    {
-						stringBuilder.AppendLine(InfoTextLineFromGear(pawn, ___stat, f));
-                    }
-				}
-				__result = stringBuilder.ToString();
-			}
-		}
-		public static string InfoTextLineFromGear(Thing gear, StatDef stat, float f)
-		{
-			return "    " + gear.LabelCap + ": " + f.ToStringByStyle(stat.finalizeEquippedStatOffset ? stat.toStringStyle : stat.ToStringStyleUnfinalized, ToStringNumberSense.Offset);
-		}
-
-	}
-	[HarmonyPatch(typeof (StatWorker),"StatOffsetFromGear")]
-	public static class StatWorker_StatOffsetFromGear_Patch
-    {
-		public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> codes)
-        {
-			bool first = true;
-			MethodBase to = AccessTools.Method(typeof(StatWorker_StatOffsetFromGear_Patch), "checkcomps");
-			foreach (CodeInstruction instruction in codes)
-			{
-				if (instruction.opcode == OpCodes.Stloc_0 && first == true)
-				{
-					first = false;
-					yield return new CodeInstruction(OpCodes.Ldarg_0);
-					yield return new CodeInstruction(OpCodes.Ldarg_1);
-					yield return new CodeInstruction(OpCodes.Call, to);
-					yield return instruction;
-					continue;
-				}
-				yield return instruction;
-			}
-		}
-		public static float checkcomps(float num, Thing gear, StatDef stat)
-        {
-			ThingWithComps thing = gear as ThingWithComps;
-			if(thing == null)
-            {
-				return num;
-            }
-			IEnumerable<CompGearStatOffsetBase> comps = from a in thing.AllComps where a is CompGearStatOffsetBase select (CompGearStatOffsetBase)a;
-			foreach (CompGearStatOffsetBase comp in comps)
-            {
-				if (comp.Props.statDef == stat)
-				{
-					num += comp.GetGearStatOffset(gear);
-				}
-			}
-			return num;
-        }
-    }
-	[HarmonyPatch(typeof(StatWorker), "GearHasCompsThatAffectStat")]
-	public static class StatWorker_GearHasCompsThatAffectStat_Patch
-    {
-		public static void Postfix(bool __result, Thing gear, StatDef stat)
-        {
-			ThingWithComps thing = gear as ThingWithComps;
-			if (thing == null)
-			{
-				return;
-			}
-			IEnumerable<CompGearStatOffsetBase> comps = from a in thing.AllComps where a is CompGearStatOffsetBase select (CompGearStatOffsetBase)a;
-			foreach (CompGearStatOffsetBase comp in comps)
-			{
-				if (comp.Props.statDef == stat)
-				{
-                    if (comp.GetGearStatOffset(gear) != 0)
-                    {
-						__result = true;
-                    }
-				}
-			}
-		}
-	}
-	[HarmonyPatch(typeof(StatWorker), "GearAffectsStat")]
-	public static class StatWorker_GearAffectsStat_Patch
-	{
-		public static void Postfix(bool __result, ThingDef gearDef, StatDef stat)
-		{
-			if (gearDef == null)
-			{
-				return;
-			}
-			IEnumerable<CompProperties_StatOffsetBase> comps = from a in gearDef.comps where typeof(CompGearStatOffsetBase).AllSubclasses().Contains(a.compClass) select (CompProperties_StatOffsetBase)a;
-			foreach (CompProperties_StatOffsetBase comp in comps)
-			{
-				if (comp.statDef == stat)
-				{
-					__result = true;
-				}
-			}
-		}
-	}
-	public class CompGearStatOffsetBase : CompStatOffsetBase
-    {
-        public override IEnumerable<string> GetExplanation()
-        {
-			for (int i = 0; i < Props.offsets.Count; i++)
-			{
-				string explanation = Props.offsets[i].GetExplanation(parent);
-				if (!explanation.NullOrEmpty())
-				{
-					yield return explanation;
-				}
-			}
-		}
-		public virtual float GetGearStatOffset(Thing thing = null)
-        {
-			Pawn pawn = (thing.ParentHolder as Pawn_EquipmentTracker)?.pawn ?? null;
-			return GetStatOffset(pawn);
-        }
-        public override float GetStatOffset(Pawn pawn = null)
-        {
-			float num = 0f;
-			for (int i = 0; i < Props.offsets.Count; i++)
-			{
-				if (Props.offsets[i].CanApply(parent, pawn))
-				{
-					num += Props.offsets[i].GetOffset(parent, pawn);
-				}
-			}
-			return num;
-		}
-    }
-	public class CompMechStatOffsetBase : CompGearStatOffsetBase
-    {
-        public override float GetGearStatOffset(Thing thing = null)
-        {
-			MechSuit mech = thing as MechSuit;
-			if (mech != null && mech.HasAnyContents && mech.ContainedThing is Pawn pawn)
-            {
-				return GetStatOffset(pawn);
-            }
-			return 0;
-        }
-    }
-
-	[HarmonyPatch(typeof(CompBiocodable), "CodeFor")]
-    public static class CompBiocodable_CodeFor_Patch
-	{
-		public static bool Prefix(Pawn p)
-		{
-			if (p is MechSuit)
-			{
-				return false;
-			}
-			return true;
-		}
-	}
-	[HarmonyPatch(typeof(WeaponTraitWorker), "Notify_KilledPawn")]
-	public static class WeaponTraitWorker_Notify_KilledPawn_Patch
-	{
-		public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> codes) =>
-            codes.MethodReplacer(AccessTools.PropertyGetter(typeof(Pawn_EquipmentTracker), "Primary"), AccessTools.Method(typeof(WeaponTraitWorker_Notify_KilledPawn_Patch), "bondedEquipment"));
-		static Thing bondedEquipment(Pawn_EquipmentTracker equipment) => equipment.bondedWeapon;
-
-	}
-	[HarmonyPatch(typeof(ThingWithComps), "Notify_UsedWeapon")]
-	public static class ThingWithComps_Notify_UsedWeapon_Patch
-    {
-		public static void Postfix(ThingWithComps __instance, Pawn pawn)
-        {
-			if (pawn is MechSuit mech && mech.ContainedThing is Pawn pawn2)
-            {
-				//Log.Message("test used weapon pawn");
-				__instance.Notify_UsedWeapon(pawn2);
-				//pawn.Notify_UsedWeapon(pawn2);
-
-			}
-		}
-    }
-	[HarmonyPatch(typeof(Thought_WeaponTraitNotEquipped), "ShouldDiscard", MethodType.Getter)]
-	public static class Thought_WeaponTraitNotEquipped_ShouldDiscard_Patch
-    {
-		public static void Postfix(ref bool __result, Thought_WeaponTraitNotEquipped __instance)
-        {
-            if (!__result)
-            {
-				__result = __instance.pawn.equipment.Contains(__instance.weapon)|| __instance.pawn.apparel.Contains(__instance.weapon);
-				if (__instance.weapon is MechSuit Mech)
-				{
-					__result = true;
-					if (__instance.pawn.ParentHolder != null && __instance.pawn.ParentHolder is MechSuit newMech)
-					{
-						__result = Mech == newMech;
-					}
-				}
-			}
-		}
-		//unused, example of how to rewrite a persona check to return the bonded weapon if the weapon is applicable
-		//public static Thing checkBond(Pawn pawn)
-  //      {
-		//	if (pawn == null)
-  //          {
-		//		return null;
-  //          }
-		//	if(pawn is MechSuit mech)
-  //          {
-		//		return checkBond((Pawn)mech.ContainedThing);
-  //          }
-		//	Thing thing = pawn.equipment.bondedWeapon;
-		//	if (thing == null)
-  //          {
-		//		return null;
-  //          }
-		//	if (thing is MechSuit Mech)
-		//	{
-		//		if (pawn.ParentHolder != null && pawn.ParentHolder is MechSuit newMech)
-		//		{
-		//			if (Mech == newMech)
-		//				return thing;
-		//		}
-		//	}
-  //          if (pawn.equipment.Contains(thing))
-  //          {
-		//		return thing;
-  //          }
-		//	return null;
-		//}
-	}
-
-
-	[HarmonyPatch(typeof(Pawn_EquipmentTracker), "Notify_KilledPawn")]
-	public static class Pawn_EquipmentTracker_Notify_KilledPawn
-    {
-		public static void Postfix(Thing ___bondedWeapon, Pawn ___pawn)
-        {
-			if (___bondedWeapon is ThingWithComps thing && ___pawn.apparel.Contains(thing))
-            {
-				thing.Notify_KilledPawn(___pawn);
-			}
-        }
-    }
-
-
-
-	[HarmonyPatch(typeof(Pawn_EquipmentTracker), "Notify_EquipmentAdded")]
-	public static class Pawn_EquipmentTracker_Notify_EquipmentAdded_Patch
-    {
-		public static void Postfix(ThingWithComps eq, Thing ___bondedWeapon)
-        {
-			if (ModsConfig.RoyaltyActive && eq.def.equipmentType == EquipmentType.None && ___bondedWeapon != null && !___bondedWeapon.Destroyed)
-			{
-				___bondedWeapon.TryGetComp<CompBladelinkWeapon>()?.Notify_WieldedOtherWeapon();
-			}
-		}
-    }
-
-    [HarmonyPatch(typeof(ThoughtUtility), "CanGetThought")]
-    public static class ThoughtUtility_CanGetThought_Patch
-    {
-        public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> codes)
-        {
-            MethodBase from = AccessTools.PropertyGetter(typeof(Thing), "Spawned");
-            MethodBase to = AccessTools.Method(typeof(ThoughtUtility_CanGetThought_Patch), "IsInMech");
-            foreach (CodeInstruction instruction in codes)
-            {
-                if (instruction.operand as MethodBase == from)
-                {
-                    yield return new CodeInstruction(OpCodes.Ldarg_1);
-                    yield return new CodeInstruction(OpCodes.Call, to);
-                    continue;
-                }
-                yield return instruction;
-            }
-        }
-        public static bool IsInMech(Pawn pawn, ThoughtDef def)
-        {
-            if (def.workerClass == typeof(ThoughtWorker_WeaponTraitBonded))
-            {
-                return ThingOwnerUtility.SpawnedOrAnyParentSpawned(pawn);
-            }
-            return pawn.Spawned;
-        }
-    }
-    [HarmonyPatch(typeof(Pawn), "DoKillSideEffects")]//need to add hook into apparel kill side effects
-	public static class Pawn_DoKillSideEffects_Patch
-	{
-		public static void Postfix(Pawn __instance, DamageInfo? dinfo)
-		{
-			if (dinfo.HasValue && dinfo.Value.Instigator != null && dinfo.Value.Instigator is MechSuit mech && mech.ContainedThing is Pawn pawn)
-			{
-				RecordsUtility.Notify_PawnKilled(__instance, pawn);
-				mech.Notify_KilledPawn(pawn);
-				if (pawn.equipment != null)
-				{
-					pawn.equipment.Notify_KilledPawn();
-				}
-				if (__instance.RaceProps.Humanlike)
-				{
-					pawn.needs?.TryGetNeed<Need_KillThirst>()?.Notify_KilledPawn(dinfo);
-				}
-				if (pawn.health.hediffSet != null)
-				{
-					for (int i = 0; i < pawn.health.hediffSet.hediffs.Count; i++)
-					{
-						pawn.health.hediffSet.hediffs[i].Notify_KilledPawn(pawn, dinfo);
-					}
-				}
-				if (HistoryEventUtility.IsKillingInnocentAnimal(pawn, __instance))
-				{
-					Find.HistoryEventsManager.RecordEvent(new HistoryEvent(HistoryEventDefOf.KilledInnocentAnimal, pawn.Named(HistoryEventArgsNames.Doer), __instance.Named(HistoryEventArgsNames.Victim)));
-				}
-				//if (spawned)
-				//{
-				//	Find.BattleLog.Add(new BattleLogEntry_StateTransition(__instance, __instance.RaceProps.DeathActionWorker.DeathRules, dinfo.HasValue ? (pawn) : null, exactCulprit, dinfo.HasValue ? dinfo.Value.HitPart : null));
-				//}
-			}
-		}
-	}
 
 	[HarmonyPatch(typeof(GameEnder),"IsPlayerControlledWithFreeColonist")]
 	public static class GameEnder_IsPlayerControlledWithFreeColonist_Patch
@@ -419,6 +55,7 @@ namespace Horizon
 			return;
 		}
     }
+
 	[HarmonyPatch(typeof(MapPawns), "PlayerEjectablePodHolder")]
 	public static class MapPawns_PlayerEjectablePodHolder_Patch
 	{
@@ -430,55 +67,115 @@ namespace Horizon
 			}
 		}
 	}
-	[HarmonyPatch(typeof(Pawn), "GenerateNecessaryName")]
-	public static class Pawn_GenerateNecessaryName_Patch
-    {
-		public static bool Prefix(Pawn __instance)
+	[HarmonyPatch(typeof(Pawn), "GetDirectlyHeldThings")]
+	public static class Pawn_GetDirectlyHeldThings_Patch
+	{
+		public static void Postfix(ref ThingOwner __result, Pawn __instance)
 		{
-			if (__instance.Name == null && __instance.Faction == Faction.OfPlayer && (__instance.RaceProps.Animal || (ModsConfig.BiotechActive && __instance.RaceProps.IsMechanoid)))
+			if (__instance is MechSuit mech)
 			{
-				CompGeneratedNames compGeneratedNames = __instance.TryGetComp<CompGeneratedNames>();
-				if (compGeneratedNames != null)
-				{
-					string tempstring = compGeneratedNames.TransformLabel(__instance.KindLabel);
-					__instance.Name = new NameSingle(tempstring);
-					return false;
-				}
+				__result = mech.innerContainer;
 			}
-			return true;
 		}
 	}
-    //[HarmonyPatch(typeof(Pawn), "Name", MethodType.Setter)]
-    //public static class Pawn_Name_Patch
-    //{
-    //    public static void Postfix(Pawn __instance)
-    //    {
-    //        CompGeneratedNames compGeneratedNames = __instance.TryGetComp<CompGeneratedNames>();
-    //        if (compGeneratedNames != null)
-    //        {
-				//compGeneratedNames.AccessTools.FieldRef("name");
-    //            compGeneratedNames.Name
-    //        }
-    //    }
-    //}
+	//[HarmonyPatch(typeof(Caravan), "AllOwnersDowned", MethodType.Getter)]
+	//public static class Caravan_AllOwnersDowned_Patch
+ //   {
+	//	public static void prefix(Caravan __instance, ThingOwner<Pawn> ___pawns)
+ //       {
+	//		for (int i = 0; i < ___pawns.Count; i++)
+	//		{
+	//			if (__instance.IsOwner(___pawns[i]) && ___pawns[i].RaceProps.IsMechanoid)
+	//			{
+	//				Log.Message("mech owner check");
+	//			}
+	//		}
+	//	}
+ //   }
+	//[HarmonyPatch(typeof(Caravan), "IsOwner")]
+	//public static class Caravan_IsOwner_Patch
+	//{
+	//	public static void prefix(Pawn p, ThingOwner<Pawn> ___pawns)
+	//	{
+ //           if (p.RaceProps.IsMechanoid)
+ //           {
+	//			Log.Message("is mech");
+	//			if (!___pawns.Contains(p))
+ //               {
+	//				Log.Message("not in pawns");
+ //               }
+ //           }
+	//		Log.Message("is not mech");
+	//	}
+	//}
+	[HarmonyPatch(typeof(Caravan),"RemovePawn")]
+	public static class Caravan_RemovePawn_Patch
+    {
+		public static void Prefix(Pawn p)
+        {
+			if (p is MechSuit mech)
+            {
+				mech.EjectContents();
+            }
+        }
+    }
+	//[HarmonyPatch(typeof(Caravan), "RemoveAllPawns")]
+	//public class Caravan_RemovePawn_Patch
+	//{
+	//	public static void Prefix(Pawn p)
+	//	{
+	//		if (p is MechSuit mech)
+	//		{
+	//			mech.EjectContents();
+	//		}
+	//	}
+	//}
+
+	[HarmonyPatch(typeof(Pawn), "ExitMap")]
+	public static class Pawn_ExitMap_Patch
+    {
+		public static void Prefix(Pawn __instance)
+        {
+			if (__instance is MechSuit mech && !mech.IsColonyMech)
+            {
+				mech.EjectContents(true);
+            }
+        }
+    }
+
+	[HarmonyPatch(typeof(KidnappedPawnsTracker), "Kidnap")]
+	public static class KidnappedPawnsTracker_Kidnap_Patch
+    {
+		public static void Prefix(Pawn pawn, Pawn kidnapper)
+        {
+			if (pawn is MechSuit mech)
+            {
+				foreach (Thing thing in mech.innerContainer)
+                {
+					if (thing is Pawn p)
+                    {
+						mech.innerContainer.Remove(pawn);
+						if (p.Faction != null && p.Faction != kidnapper.Faction)
+						{
+							kidnapper.Faction.kidnapped.Kidnap(p, kidnapper);
+						}
+						else
+						{
+							Find.WorldPawns.PassToWorld(p);
+						}
+                    }
+					else
+					{
+						mech.innerContainer.Remove(thing);
+						thing.Notify_AbandonedAtTile(pawn.Tile);
+					}
+				}
+            }
+        }
+    }
 
 
-    //[HarmonyPatch(typeof(CaravanUtility), "IsOwner")]
-    //public static class RimWorld_Planet_CaravanUtility_Patch
-    //   {
-    //	public static void Postfix(ref bool __result, Pawn pawn, Faction caravanFaction)
-    //	{
-    //		if (caravanFaction == null)
-    //		{
-    //			return;
-    //		}
-    //		if (pawn is MechSuit suit && suit.HasAnyContents && suit.ContainedThing is Pawn pawn2)
-    //		{
-    //			__result = CaravanUtility.IsOwner(pawn2, caravanFaction);
-    //		}
-    //	}
 
-    //}
 	[HarmonyPatch(typeof(DamageWorker_AddInjury), "FinalizeAndAddInjury", new Type[] { typeof(Pawn), typeof(float), typeof(DamageInfo), typeof(DamageResult) })]
 	public static class DamageWorker_AddInjury_FinalizeAndAddInjury_Patch
     {
@@ -506,6 +203,23 @@ namespace Horizon
                     }
 				}
             }
+        }
+    }
+
+	[HarmonyPatch(typeof(Pawn),"CurrentlyUsableForBills")]
+	public static class Pawn_CurrentlyUsableForBills_Patch
+    {
+		public static bool Prefix(Pawn __instance, ref bool __result)
+        {
+            if (__instance.RaceProps.IsMechanoid)
+            {
+				if (__instance.Downed || __instance.IsSelfShutdown() || __instance.IsCharging())
+                {
+					__result = true;
+					return false;
+                }
+            }
+			return true;
         }
     }
 
@@ -592,6 +306,7 @@ namespace Horizon
             }
         }
     }
+
 	public class MechExtension: DefModExtension
     {
 		public bool canDraftRemote = true;
@@ -655,10 +370,10 @@ namespace Horizon
 			innerContainer = new ThingOwner<Thing>(this, oneStackOnly: false);
 		}
 
-		public new ThingOwner GetDirectlyHeldThings()
-		{
-			return innerContainer;
-		}
+		//public new ThingOwner GetDirectlyHeldThings()
+		//{
+		//	return innerContainer;
+		//}
 
 		public override void TickRare()
 		{
@@ -763,27 +478,27 @@ namespace Horizon
                 }
 			}
 		}
-		public new void GetChildHolders(List<IThingHolder> outChildren)
-		{
-			ThingOwnerUtility.AppendThingHoldersFromThings(outChildren, base.GetDirectlyHeldThings());
-			ThingOwnerUtility.AppendThingHoldersFromThings(outChildren, innerContainer);
-			if (inventory != null)
-			{
-				outChildren.Add(inventory);
-			}
-			if (carryTracker != null)
-			{
-				outChildren.Add(carryTracker);
-			}
-			if (equipment != null)
-			{
-				outChildren.Add(equipment);
-			}
-			if (apparel != null)
-			{
-				outChildren.Add(apparel);
-			}
-		}
+		//public new void GetChildHolders(List<IThingHolder> outChildren)
+		//{
+		//	ThingOwnerUtility.AppendThingHoldersFromThings(outChildren, base.GetDirectlyHeldThings());
+		//	ThingOwnerUtility.AppendThingHoldersFromThings(outChildren, innerContainer);
+		//	if (inventory != null)
+		//	{
+		//		outChildren.Add(inventory);
+		//	}
+		//	if (carryTracker != null)
+		//	{
+		//		outChildren.Add(carryTracker);
+		//	}
+		//	if (equipment != null)
+		//	{
+		//		outChildren.Add(equipment);
+		//	}
+		//	if (apparel != null)
+		//	{
+		//		outChildren.Add(apparel);
+		//	}
+		//}
 		public override void ExposeData()
 		{
 			base.ExposeData();
@@ -925,16 +640,55 @@ namespace Horizon
 			innerContainer.ClearAndDestroyContents();
 			base.Destroy(mode);
 		}
-
 		public virtual void EjectContents()
+        {
+			EjectContents(false);
+        }
+		public virtual void EjectContents(bool kidnap = false)
 		{
+			if (!HasAnyContents)
+            {
+				return;
+            }
 			if (!base.Destroyed)
 			{
 				SoundDefOf.CryptosleepCasket_Eject.PlayOneShot(SoundInfo.InMap(new TargetInfo(base.Position, base.Map)));
 			}
 			Caravan caravan= this.GetCaravan();
 			Notify_Unequipped(this);
-			if (base.Spawned)
+            if (kidnap)
+            {
+				foreach (Thing thing in innerContainer)
+				{
+					if (thing is Pawn pawn)
+					{
+						Notify_Unequipped(pawn);
+						if (ModsConfig.RoyaltyActive)
+						{
+							this.TryGetComp<CompBladelinkWeapon>()?.Notify_EquipmentLost(pawn);
+							this.TryGetComp<CompBladelinkWeapon>()?.Notify_EquipmentLost(this);
+						}
+						innerContainer.Remove(pawn);
+						if (base.Faction != null && base.Faction != pawn.Faction)
+						{
+							base.Faction.kidnapped.Kidnap(pawn, this);
+                        }
+                        else
+                        {
+							Find.WorldPawns.PassToWorld(pawn);
+                        }
+                    }
+                    else
+                    {
+						innerContainer.Remove(thing);
+						thing.Notify_AbandonedAtTile(base.Tile);
+					}					
+				}
+				//drafter.Drafted = false;
+				contentsKnown = true;
+				return;
+			}
+			if (base.Spawned && caravan == null)
             {
 				foreach (Thing thing in innerContainer)
 				{
@@ -957,11 +711,15 @@ namespace Horizon
             {
 				foreach(Thing thing in innerContainer)
                 {
-					caravan.AddPawnOrItem(thing, true);
 					innerContainer.Remove(thing);
+					caravan.AddPawnOrItem(thing, addCarriedPawnToWorldPawnsIfAny: true);
 					if (thing is Pawn pawn)
                     {
+						Find.WorldPawns.PassToWorld(pawn);
+						//Log.Message("test");
 						Notify_Unequipped(pawn);
+						//Log.Message("test0");
+
 						if (ModsConfig.RoyaltyActive)
 						{
 							this.TryGetComp<CompBladelinkWeapon>()?.Notify_EquipmentLost(pawn);
@@ -969,21 +727,53 @@ namespace Horizon
 						}
                     }
 				}
-				drafter.Drafted = false;
+				Log.Message("test1");
+				//drafter.Drafted = false;
+				Log.Message("test2");
 				contentsKnown = true;
+				Log.Message("test3");
 				return;
 			}
 			Log.Error(this.ToStringSafe() + "tried to eject contents while not in a caravan or on a map");
 
 		}
-		public virtual void EjectContentsThing(Thing thing)
+		public virtual void EjectContentsThing(Thing thing, bool kidnap=false)
 		{
 			if (!base.Destroyed)
 			{
 				SoundDefOf.CryptosleepCasket_Eject.PlayOneShot(SoundInfo.InMap(new TargetInfo(base.Position, base.Map)));
 			}
+			if (kidnap)
+			{
+				if (thing is Pawn pawn)
+				{
+					Notify_Unequipped(pawn);
+					if (ModsConfig.RoyaltyActive)
+					{
+						this.TryGetComp<CompBladelinkWeapon>()?.Notify_EquipmentLost(pawn);
+						this.TryGetComp<CompBladelinkWeapon>()?.Notify_EquipmentLost(this);
+					}
+					innerContainer.Remove(pawn);
+					if (base.Faction != null && base.Faction != pawn.Faction)
+					{
+						base.Faction.kidnapped.Kidnap(pawn, this);
+                    }
+                    else
+                    {
+						Find.WorldPawns.PassToWorld(pawn);
+					}
+				}
+				else
+				{
+					innerContainer.Remove(thing);
+					thing.Notify_AbandonedAtTile(base.Tile);
+				}
+				//drafter.Drafted = false;
+				contentsKnown = true;
+				return;
+			}
 			Caravan caravan = this.GetCaravan();
-			if (base.Spawned)
+			if (base.Spawned && caravan == null)
 			{
                 if (innerContainer.Contains(thing))
 				{
@@ -1011,19 +801,20 @@ namespace Horizon
 			{
 				if (innerContainer.Contains(thing))
 				{
-					caravan.AddPawnOrItem(thing, true);
 					innerContainer.Remove(thing);
+					caravan.AddPawnOrItem(thing, addCarriedPawnToWorldPawnsIfAny: true);
 					if (thing is Pawn pawn)
 					{
+						Find.WorldPawns.PassToWorld(pawn);
 						Notify_Unequipped(pawn);
 						if (ModsConfig.RoyaltyActive)
 						{
 							this.TryGetComp<CompBladelinkWeapon>()?.Notify_EquipmentLost(pawn);
 							this.TryGetComp<CompBladelinkWeapon>()?.Notify_EquipmentLost(this);
 						}
-					}
+                    }
 				}
-				drafter.Drafted = false;
+				//drafter.Drafted = false;
 				contentsKnown = true;
 				if (!HasAnyContents)
 				{
@@ -1168,6 +959,7 @@ namespace Horizon
 	public static class JobMechDefOf
 	{
 		public static JobDef EnterMechSuit;
+		public static JobDef IngestProcess;
 	}
 
 	public class ThinkNode_ConditionalPlayerNoPilotMechSuit : ThinkNode_Conditional

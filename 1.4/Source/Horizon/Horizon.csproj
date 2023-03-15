@@ -32,6 +32,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Addons.cs" />
+    <Compile Include="BladelinkPatches.cs" />
+    <Compile Include="CompGearStatOffset.cs" />
     <Compile Include="Comp_CommsTower.cs" />
     <Compile Include="DigPeriodicallyNeed.cs" />
     <Compile Include="HediffCompSolar.cs" />
@@ -41,6 +43,7 @@
     <Compile Include="HediffCompExplosive.cs" />
     <Compile Include="Horizon.cs" />
     <Compile Include="MechBed.cs" />
+    <Compile Include="MechCaravan.cs" />
     <Compile Include="MechSuit.cs" />
     <Compile Include="Need_Refuelable.cs" />
     <Compile Include="ProcessingComp.cs" />

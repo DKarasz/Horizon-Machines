@@ -33,6 +33,7 @@ namespace Horizon
 
             //Harmony.DEBUG = true;
             new Harmony("Horizon.Mod").PatchAll();
+
         }
     }
     ////mechanimal extension: delayed until re-evaluation

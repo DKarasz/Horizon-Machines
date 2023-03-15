@@ -10,6 +10,41 @@ using Verse.AI;
 
 namespace Horizon
 {
+	//ground scanner patch
+	[HarmonyPatch(typeof(CompDeepScanner), "ShouldShowDeepResourceOverlay")]
+	public static class CompDeepScanner_ShouldShowDeepResourceOverlay_Patch
+    {
+		public static bool Prefix(CompPowerTrader ___powerComp, ref bool __result)
+        {
+			if (___powerComp == null)
+            {
+				__result = true;
+				return false;
+            }
+			return true;
+        }
+    }
+	[HarmonyPatch(typeof(DeepResourceGrid),"AnyActiveDeepScannersOnMap")]
+	public static class DeepResourceGrid_AnyActiveDeepScannerOnMap_Patch
+    {
+		public static void Postfix(Map ___map, ref bool __result)
+        {
+            if (__result)
+            {
+				return;
+            }
+			foreach(Pawn pawn in ___map.mapPawns.SpawnedPawnsInFaction(Faction.OfPlayer))
+            {
+				CompDeepScanner compDeepScanner = pawn.TryGetComp<CompDeepScanner>();
+				if (compDeepScanner != null && compDeepScanner.ShouldShowDeepResourceOverlay())
+                {
+					__result = true;
+					return;
+                }
+            }
+        }
+    }
+
 	public class CompProperties_CommsTower : CompProperties
 	{
 		public CompProperties_CommsTower()
