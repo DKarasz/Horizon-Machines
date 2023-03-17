@@ -355,9 +355,15 @@ namespace Horizon
         }
         public bool IsValid(Thing thing, Pawn hauler, ThingCategoryDef category=null)
         {
-            if (category != null && !thing.HasThingCategory(category))
-            {
-                return false;
+            if (category != null) {
+                if (!thing.HasThingCategory(category))
+                {
+                    return false;
+                }
+                if (category == ThingCategoryDefOf.PlantMatter && thing is Plant plant)
+                {
+                    return plant.Growth >= .9f;
+                }
             }
             if (thing.IsForbidden(hauler))
             {
