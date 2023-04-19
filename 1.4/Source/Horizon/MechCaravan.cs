@@ -26,6 +26,36 @@ namespace Horizon
             }
         }
     }
+    [HarmonyPatch(typeof(FormCaravanComp),"CanFormOrReformCaravanNow", MethodType.Getter)]
+    public static class RimWorld_Planet_FormCaravanComp_CanFormOrReformCaravanNow
+    {
+        public static void Postfix(ref bool __result, WorldObject ___parent, FormCaravanComp __instance)
+        {
+            MapParent mapParent = (MapParent)___parent;
+            MapPawns mapPawns = mapParent.Map.mapPawns;
+            if (__result)
+            {
+                return;
+            }
+            if (!mapParent.HasMap||__instance.AnyActiveThreatNow)
+            {
+                return;
+            }
+            if (__instance.Reform)
+            {
+                foreach (Pawn a in mapPawns.SpawnedPawnsInFaction(Faction.OfPlayer))
+                {
+                    if (a.IsColonyMechPlayerControlled && !(a.Downed || a.Dead))
+                    {
+                        __result = true;
+                        return;
+                    }
+                }
+            }
+            return;
+        }
+    }
+
     [HarmonyPatch]
     public static class Dialog_FormCaravan_TrySend_Internal_Patch
     {

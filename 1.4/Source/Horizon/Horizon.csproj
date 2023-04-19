@@ -49,7 +49,7 @@
     <Compile Include="ProcessingComp.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ThunderJawLauncher.cs" />
-    <Compile Include="Verb_ShootBeamVertical.cs" />
+    <Compile Include="Verb_ShootBeamAngle.cs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Krafs.Rimworld.Ref">

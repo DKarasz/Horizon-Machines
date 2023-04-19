@@ -22,7 +22,7 @@ namespace Horizon
 		public new HediffCompProperties_Solar Props => (HediffCompProperties_Solar)props;
 		public override void CurOutput()
         {
-			output = Mathf.Lerp(0f, 1700f, parent.pawn.Map.skyManager.CurSkyGlow) * RoofedPowerOutputFactor*Props.baseOutput;
+			output = Mathf.Lerp(0f, 1f, parent.pawn.Map.skyManager.CurSkyGlow) * RoofedPowerOutputFactor*Props.baseOutput;
 
 		}
 		public float RoofedPowerOutputFactor

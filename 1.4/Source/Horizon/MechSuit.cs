@@ -310,6 +310,7 @@ namespace Horizon
 	public class MechExtension: DefModExtension
     {
 		public bool canDraftRemote = true;
+		public bool needsPilot = false;
 		public bool canBleed = false;
 		public bool overseerOnly = false;
 		public bool mechOffsetsPawn = true;// set to false if using dynamic offsets to prevent recursion, set to true if you want the pawn to have stat offsets from the mech (ie bladelink)
@@ -960,13 +961,14 @@ namespace Horizon
 	{
 		public static JobDef EnterMechSuit;
 		public static JobDef IngestProcess;
+		public static JobDef ExtractResources;
 	}
 
 	public class ThinkNode_ConditionalPlayerNoPilotMechSuit : ThinkNode_Conditional
 	{
 		protected override bool Satisfied(Pawn pawn)
 		{
-			if (pawn is MechSuit suit)
+			if (pawn is MechSuit suit && suit.mechExtension.needsPilot)
             {
 				return !suit.HasAnyContents && pawn.IsColonyMechPlayerControlled;
 			}

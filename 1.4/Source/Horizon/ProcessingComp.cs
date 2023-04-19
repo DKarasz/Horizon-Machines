@@ -101,6 +101,10 @@ namespace Horizon
                 {
                     if (counter <= 0)
                     {
+                        if (Props.onlyWhenTamed && pawn.IsColonyMechPlayerControlled && !MechanitorUtility.GetMechWorkMode(pawn).defName.Contains("ork"))//work or Work
+                        {
+                            return false;
+                        }
                         if (Props.product.consumePollution && !ModLister.CheckBiotech("Clear pollution"))
                         {
                             return false;
@@ -255,7 +259,7 @@ namespace Horizon
         public void eatThing(Thing thing, Pawn pawn, int maxCount = -1)
         {
             Job job = JobMaker.MakeJob(JobMechDefOf.IngestProcess, thing);// will need replace with custom job similar to animal eating
-            if (maxCount > 1)
+            if (maxCount >= 1)
             {
                 job.count = maxCount;
             }
@@ -453,56 +457,32 @@ namespace Horizon
         {
             get
             {
-                Thing ingestibleSource = IngestibleSource;
-                if (ingestibleSource.def.ingestible != null && !ingestibleSource.def.ingestible.useEatingSpeedStat)
-                {
-                    return 1f;
-                }
-                return 1f / pawn.GetStatValue(StatDefOf.EatingSpeed);
+                float eatingSpeed = pawn.GetStatValue(StatDefOf.EatingSpeed);
+                return eatingSpeed == 0 ? 1 : 1 / eatingSpeed;
             }
         }
 
         public override void ExposeData()
         {
             base.ExposeData();
-            Scribe_Values.Look(ref usingNutrientPasteDispenser, "usingNutrientPasteDispenser", defaultValue: false);
-            Scribe_Values.Look(ref eatingFromInventory, "eatingFromInventory", defaultValue: false);
         }
 
         public override string GetReport()
         {
-            if (usingNutrientPasteDispenser)
-            {
-                return JobUtility.GetResolvedJobReportRaw(job.def.reportString, ThingDefOf.MealNutrientPaste.label, ThingDefOf.MealNutrientPaste, "", "", "", "");
-            }
-            Thing thing = job.targetA.Thing;
-            if (thing != null && thing.def.ingestible != null)
-            {
-                if (!thing.def.ingestible.ingestReportStringEat.NullOrEmpty() && (thing.def.ingestible.ingestReportString.NullOrEmpty() || (int)pawn.RaceProps.intelligence < 1))
-                {
-                    return thing.def.ingestible.ingestReportStringEat.Formatted(job.targetA.Thing.LabelShort, job.targetA.Thing);
-                }
-                if (!thing.def.ingestible.ingestReportString.NullOrEmpty())
-                {
-                    return thing.def.ingestible.ingestReportString.Formatted(job.targetA.Thing.LabelShort, job.targetA.Thing);
-                }
-            }
             return base.GetReport();
         }
 
         public override void Notify_Starting()
         {
             base.Notify_Starting();
-            usingNutrientPasteDispenser = IngestibleSource is Building_NutrientPasteDispenser;
-            eatingFromInventory = pawn.inventory != null && pawn.inventory.Contains(IngestibleSource);
         }
 
         public override bool TryMakePreToilReservations(bool errorOnFailed)
         {
-            if (pawn.Faction != null && !(IngestibleSource is Building_NutrientPasteDispenser))
+            if (pawn.Faction != null)
             {
                 Thing ingestibleSource = IngestibleSource;
-                if (!pawn.Reserve(ingestibleSource, job, 10, FoodUtility.GetMaxAmountToPickup(ingestibleSource, pawn, job.count), null, errorOnFailed))
+                if (!pawn.Reserve(ingestibleSource, job, 10, job.count, null, errorOnFailed))
                 {
                     return false;
                 }
@@ -512,70 +492,184 @@ namespace Horizon
 
         protected override IEnumerable<Toil> MakeNewToils()
         {
-            if (!usingNutrientPasteDispenser)
-            {
-                this.FailOn(() => !IngestibleSource.Destroyed && !IngestibleSource.IngestibleNow);
-            }
-            Toil chew = Toils_Ingest.ChewIngestible(pawn, ChewDurationMultiplier, TargetIndex.A, TargetIndex.B).FailOn((Toil x) => !IngestibleSource.Spawned && (pawn.carryTracker == null || pawn.carryTracker.CarriedThing != IngestibleSource)).FailOnCannotTouch(TargetIndex.A, PathEndMode.Touch);
+            this.FailOn(() => !IngestibleSource.Destroyed);
+            
+            Toil chew = ChewResource(pawn, ChewDurationMultiplier, TargetIndex.A, TargetIndex.B).FailOn((Toil x) => !IngestibleSource.Spawned && (pawn.carryTracker == null || pawn.carryTracker.CarriedThing != IngestibleSource)).FailOnCannotTouch(TargetIndex.A, PathEndMode.Touch);
             foreach (Toil item in PrepareToIngestToils(chew))
             {
                 yield return item;
             }
             yield return chew;
-            yield return Toils_Ingest.FinalizeIngest(pawn, TargetIndex.A);
+            yield return FinalizeIngest(pawn, TargetIndex.A);
             yield return Toils_Jump.JumpIf(chew, () => job.GetTarget(TargetIndex.A).Thing is Corpse && pawn.needs.food.CurLevelPercentage < 0.9f);
+            yield break;
         }
 
         private IEnumerable<Toil> PrepareToIngestToils(Toil chewToil)
         {
-            if (usingNutrientPasteDispenser)
-            {
-                return PrepareToIngestToils_Dispenser();
-            }
-            if (pawn.RaceProps.ToolUser)
-            {
-                return PrepareToIngestToils_ToolUser(chewToil);
-            }
             return PrepareToIngestToils_NonToolUser();
         }
-
-        private IEnumerable<Toil> PrepareToIngestToils_Dispenser()
+        public static Toil ChewResource(Pawn chewer, float durationMultiplier, TargetIndex ingestibleInd, TargetIndex eatSurfaceInd = TargetIndex.None)
         {
-            yield return Toils_Goto.GotoThing(TargetIndex.A, PathEndMode.InteractionCell).FailOnDespawnedNullOrForbidden(TargetIndex.A);
-            yield return Toils_Ingest.TakeMealFromDispenser(TargetIndex.A, pawn);
-            yield return Toils_Ingest.CarryIngestibleToChewSpot(pawn, TargetIndex.A).FailOnDestroyedNullOrForbidden(TargetIndex.A);
-            yield return Toils_Ingest.FindAdjacentEatSurface(TargetIndex.B, TargetIndex.A);
-        }
+            Toil toil = new Toil();
+            toil.initAction = delegate
+            {
+                Pawn actor = toil.actor;
+                Thing thing4 = actor.CurJob.GetTarget(ingestibleInd).Thing;
 
-        private IEnumerable<Toil> PrepareToIngestToils_ToolUser(Toil chewToil)
-        {
-            if (eatingFromInventory)
+                    actor.jobs.curDriver.ticksLeftThisToil = Mathf.RoundToInt(500f * durationMultiplier);
+                    if (thing4.Spawned)
+                    {
+                        thing4.Map.physicalInteractionReservationManager.Reserve(chewer, actor.CurJob, thing4);
+                    }
+            };
+            toil.tickAction = delegate
             {
-                yield return Toils_Misc.TakeItemFromInventoryToCarrier(pawn, TargetIndex.A);
-            }
-            else
-            {
-                yield return ReserveFood();
-                Toil gotoToPickup = Toils_Goto.GotoThing(TargetIndex.A, PathEndMode.ClosestTouch).FailOnDespawnedNullOrForbidden(TargetIndex.A);
-                yield return Toils_Jump.JumpIf(gotoToPickup, () => pawn.health.capacities.CapableOf(PawnCapacityDefOf.Manipulation));
-                yield return Toils_Goto.GotoThing(TargetIndex.A, PathEndMode.Touch).FailOnDespawnedNullOrForbidden(TargetIndex.A);
-                yield return Toils_Jump.Jump(chewToil);
-                yield return gotoToPickup;
-                yield return Toils_Ingest.PickupIngestible(TargetIndex.A, pawn);
-            }
-            if (job.takeExtraIngestibles > 0)
-            {
-                foreach (Toil item in TakeExtraIngestibles())
+                if (chewer != toil.actor)
                 {
-                    yield return item;
+                    toil.actor.rotationTracker.FaceCell(chewer.Position);
                 }
-            }
-            if (!pawn.Drafted)
+                else
+                {
+                    Thing thing3 = toil.actor.CurJob.GetTarget(ingestibleInd).Thing;
+                    if (thing3 != null && thing3.Spawned)
+                    {
+                        toil.actor.rotationTracker.FaceCell(thing3.Position);
+                    }
+                    else if (eatSurfaceInd != 0 && toil.actor.CurJob.GetTarget(eatSurfaceInd).IsValid)
+                    {
+                        toil.actor.rotationTracker.FaceCell(toil.actor.CurJob.GetTarget(eatSurfaceInd).Cell);
+                    }
+                }
+                toil.actor.GainComfortFromCellIfPossible();
+            };
+            toil.WithProgressBar(ingestibleInd, delegate
             {
-                yield return Toils_Ingest.CarryIngestibleToChewSpot(pawn, TargetIndex.A).FailOnDestroyedOrNull(TargetIndex.A);
-            }
-            yield return Toils_Ingest.FindAdjacentEatSurface(TargetIndex.B, TargetIndex.A);
+                Thing thing2 = toil.actor.CurJob.GetTarget(ingestibleInd).Thing;
+                return (thing2 == null) ? 1f : (1f - (float)toil.actor.jobs.curDriver.ticksLeftThisToil / Mathf.Round(500f * durationMultiplier));
+            });
+            toil.defaultCompleteMode = ToilCompleteMode.Delay;
+            toil.FailOnDestroyedOrNull(ingestibleInd);
+            toil.AddFinishAction(delegate
+            {
+                if (chewer != null && chewer.CurJob != null)
+                {
+                    Thing thing = chewer.CurJob.GetTarget(ingestibleInd).Thing;
+                    if (thing != null && chewer.Map.physicalInteractionReservationManager.IsReservedBy(chewer, thing))
+                    {
+                        chewer.Map.physicalInteractionReservationManager.Release(chewer, toil.actor.CurJob, thing);
+                    }
+                }
+            });
+            toil.handlingFacing = true;
+            //AddIngestionEffects(toil, chewer, ingestibleInd, eatSurfaceInd);
+            return toil;
         }
+        public static Toil FinalizeIngest(Pawn ingester, TargetIndex ingestibleInd)
+        {
+            Toil toil = new Toil();
+            toil.initAction = delegate
+            {
+                Pawn actor = toil.actor;
+                Job curJob = actor.jobs.curJob;
+                Thing thing = curJob.GetTarget(ingestibleInd).Thing;
+                //if (ingester.needs.mood != null && thing.def.IsNutritionGivingIngestible && thing.def.ingestible.chairSearchRadius > 10f)
+                //{
+                //    if (!(ingester.Position + ingester.Rotation.FacingCell).HasEatSurface(actor.Map) && ingester.GetPosture() == PawnPosture.Standing && !ingester.IsWildMan() && thing.def.ingestible.tableDesired)
+                //    {
+                //        ingester.needs.mood.thoughts.memories.TryGainMemory(ThoughtDefOf.AteWithoutTable);
+                //    }
+                //    Room room = ingester.GetRoom();
+                //    if (room != null)
+                //    {
+                //        int scoreStageIndex = RoomStatDefOf.Impressiveness.GetScoreStageIndex(room.GetStat(RoomStatDefOf.Impressiveness));
+                //        if (ThoughtDefOf.AteInImpressiveDiningRoom.stages[scoreStageIndex] != null)
+                //        {
+                //            ingester.needs.mood.thoughts.memories.TryGainMemory(ThoughtMaker.MakeThought(ThoughtDefOf.AteInImpressiveDiningRoom, scoreStageIndex));
+                //        }
+                //    }
+                //}
+                //float num = ingester.needs.food.NutritionWanted;
+                //if (curJob.ingestTotalCount)
+                //{
+                //    num = thing.GetStatValue(StatDefOf.Nutrition) * (float)thing.stackCount;
+                //}
+                //else if (curJob.overeat)
+                //{
+                //    num = Mathf.Max(num, 0.75f);
+                //}
+                bool flag = false;
+                int numTaken = curJob.count;
+                if (numTaken > 0)
+                {
+                    if (thing.stackCount == 0)
+                    {
+                        Log.Error(string.Concat(thing, " stack count is 0."));
+                    }
+                    if (numTaken == thing.stackCount)
+                    {
+                        flag = true;
+                    }
+                    else
+                    {
+                        thing.SplitOff(numTaken);
+                    }
+                }
+                if (flag)
+                {
+                    ingester.carryTracker?.innerContainer?.Remove(thing);
+                }
+                if (flag)
+                {
+                    thing.Destroy();
+                }
+                //if (!ingester.Dead)
+                //{
+                //    ingester.needs.food.CurLevel += num2;
+                //}
+                //ingester.records.AddTo(RecordDefOf.NutritionEaten, num2);
+            };
+            toil.defaultCompleteMode = ToilCompleteMode.Instant;
+            return toil;
+        }
+
+        //private IEnumerable<Toil> PrepareToIngestToils_Dispenser()
+        //{
+        //    yield return Toils_Goto.GotoThing(TargetIndex.A, PathEndMode.InteractionCell).FailOnDespawnedNullOrForbidden(TargetIndex.A);
+        //    yield return Toils_Ingest.TakeMealFromDispenser(TargetIndex.A, pawn);
+        //    yield return Toils_Ingest.CarryIngestibleToChewSpot(pawn, TargetIndex.A).FailOnDestroyedNullOrForbidden(TargetIndex.A);
+        //    yield return Toils_Ingest.FindAdjacentEatSurface(TargetIndex.B, TargetIndex.A);
+        //}
+
+        //private IEnumerable<Toil> PrepareToIngestToils_ToolUser(Toil chewToil)
+        //{
+        //    if (eatingFromInventory)
+        //    {
+        //        yield return Toils_Misc.TakeItemFromInventoryToCarrier(pawn, TargetIndex.A);
+        //    }
+        //    else
+        //    {
+        //        yield return ReserveFood();
+        //        Toil gotoToPickup = Toils_Goto.GotoThing(TargetIndex.A, PathEndMode.ClosestTouch).FailOnDespawnedNullOrForbidden(TargetIndex.A);
+        //        yield return Toils_Jump.JumpIf(gotoToPickup, () => pawn.health.capacities.CapableOf(PawnCapacityDefOf.Manipulation));
+        //        yield return Toils_Goto.GotoThing(TargetIndex.A, PathEndMode.Touch).FailOnDespawnedNullOrForbidden(TargetIndex.A);
+        //        yield return Toils_Jump.Jump(chewToil);
+        //        yield return gotoToPickup;
+        //        yield return Toils_Ingest.PickupIngestible(TargetIndex.A, pawn);
+        //    }
+        //    if (job.takeExtraIngestibles > 0)
+        //    {
+        //        foreach (Toil item in TakeExtraIngestibles())
+        //        {
+        //            yield return item;
+        //        }
+        //    }
+        //    if (!pawn.Drafted)
+        //    {
+        //        yield return Toils_Ingest.CarryIngestibleToChewSpot(pawn, TargetIndex.A).FailOnDestroyedOrNull(TargetIndex.A);
+        //    }
+        //    yield return Toils_Ingest.FindAdjacentEatSurface(TargetIndex.B, TargetIndex.A);
+        //}
 
         private IEnumerable<Toil> PrepareToIngestToils_NonToolUser()
         {
@@ -583,33 +677,33 @@ namespace Horizon
             yield return Toils_Goto.GotoThing(TargetIndex.A, PathEndMode.Touch);
         }
 
-        private IEnumerable<Toil> TakeExtraIngestibles()
-        {
-            if (!pawn.health.capacities.CapableOf(PawnCapacityDefOf.Manipulation))
-            {
-                yield break;
-            }
-            Toil reserveExtraFoodToCollect = Toils_Ingest.ReserveFoodFromStackForIngesting(TargetIndex.C);
-            Toil findExtraFoodToCollect = ToilMaker.MakeToil("TakeExtraIngestibles");
-            findExtraFoodToCollect.initAction = delegate
-            {
-                if (pawn.inventory.innerContainer.TotalStackCountOfDef(IngestibleSource.def) < job.takeExtraIngestibles)
-                {
-                    Thing thing = GenClosest.ClosestThingReachable(pawn.Position, pawn.Map, ThingRequest.ForDef(IngestibleSource.def), PathEndMode.Touch, TraverseParms.For(pawn), 30f, (Thing x) => pawn.CanReserve(x, 10, 1) && !x.IsForbidden(pawn) && x.IsSociallyProper(pawn));
-                    if (thing != null)
-                    {
-                        job.SetTarget(TargetIndex.C, thing);
-                        JumpToToil(reserveExtraFoodToCollect);
-                    }
-                }
-            };
-            findExtraFoodToCollect.defaultCompleteMode = ToilCompleteMode.Instant;
-            yield return Toils_Jump.Jump(findExtraFoodToCollect);
-            yield return reserveExtraFoodToCollect;
-            yield return Toils_Goto.GotoThing(TargetIndex.C, PathEndMode.Touch);
-            yield return Toils_Haul.TakeToInventory(TargetIndex.C, () => job.takeExtraIngestibles - pawn.inventory.innerContainer.TotalStackCountOfDef(IngestibleSource.def));
-            yield return findExtraFoodToCollect;
-        }
+        //private IEnumerable<Toil> TakeExtraIngestibles()
+        //{
+        //    if (!pawn.health.capacities.CapableOf(PawnCapacityDefOf.Manipulation))
+        //    {
+        //        yield break;
+        //    }
+        //    Toil reserveExtraFoodToCollect = Toils_Ingest.ReserveFoodFromStackForIngesting(TargetIndex.C);
+        //    Toil findExtraFoodToCollect = ToilMaker.MakeToil("TakeExtraIngestibles");
+        //    findExtraFoodToCollect.initAction = delegate
+        //    {
+        //        if (pawn.inventory.innerContainer.TotalStackCountOfDef(IngestibleSource.def) < job.takeExtraIngestibles)
+        //        {
+        //            Thing thing = GenClosest.ClosestThingReachable(pawn.Position, pawn.Map, ThingRequest.ForDef(IngestibleSource.def), PathEndMode.Touch, TraverseParms.For(pawn), 30f, (Thing x) => pawn.CanReserve(x, 10, 1) && !x.IsForbidden(pawn) && x.IsSociallyProper(pawn));
+        //            if (thing != null)
+        //            {
+        //                job.SetTarget(TargetIndex.C, thing);
+        //                JumpToToil(reserveExtraFoodToCollect);
+        //            }
+        //        }
+        //    };
+        //    findExtraFoodToCollect.defaultCompleteMode = ToilCompleteMode.Instant;
+        //    yield return Toils_Jump.Jump(findExtraFoodToCollect);
+        //    yield return reserveExtraFoodToCollect;
+        //    yield return Toils_Goto.GotoThing(TargetIndex.C, PathEndMode.Touch);
+        //    yield return Toils_Haul.TakeToInventory(TargetIndex.C, () => job.takeExtraIngestibles - pawn.inventory.innerContainer.TotalStackCountOfDef(IngestibleSource.def));
+        //    yield return findExtraFoodToCollect;
+        //}
 
         private Toil ReserveFood()
         {
@@ -639,41 +733,41 @@ namespace Horizon
             return toil;
         }
 
-        public override bool ModifyCarriedThingDrawPos(ref Vector3 drawPos, ref bool behind, ref bool flip)
-        {
-            IntVec3 cell = job.GetTarget(TargetIndex.B).Cell;
-            return ModifyCarriedThingDrawPosWorker(ref drawPos, ref behind, ref flip, cell, pawn);
-        }
+        //public override bool ModifyCarriedThingDrawPos(ref Vector3 drawPos, ref bool behind, ref bool flip)
+        //{
+        //    IntVec3 cell = job.GetTarget(TargetIndex.B).Cell;
+        //    return ModifyCarriedThingDrawPosWorker(ref drawPos, ref behind, ref flip, cell, pawn);
+        //}
 
-        public static bool ModifyCarriedThingDrawPosWorker(ref Vector3 drawPos, ref bool behind, ref bool flip, IntVec3 placeCell, Pawn pawn)
-        {
-            if (pawn.pather.Moving)
-            {
-                return false;
-            }
-            Thing carriedThing = pawn.carryTracker.CarriedThing;
-            if (carriedThing == null || !carriedThing.IngestibleNow)
-            {
-                return false;
-            }
-            if (placeCell.IsValid && placeCell.AdjacentToCardinal(pawn.Position) && placeCell.HasEatSurface(pawn.Map) && carriedThing.def.ingestible.ingestHoldUsesTable)
-            {
-                drawPos = new Vector3((float)placeCell.x + 0.5f, drawPos.y, (float)placeCell.z + 0.5f);
-                return true;
-            }
-            if (carriedThing.def.ingestible.ingestHoldOffsetStanding != null)
-            {
-                HoldOffset holdOffset = carriedThing.def.ingestible.ingestHoldOffsetStanding.Pick(pawn.Rotation);
-                if (holdOffset != null)
-                {
-                    drawPos += holdOffset.offset;
-                    behind = holdOffset.behind;
-                    flip = holdOffset.flip;
-                    return true;
-                }
-            }
-            return false;
-        }
+        //public static bool ModifyCarriedThingDrawPosWorker(ref Vector3 drawPos, ref bool behind, ref bool flip, IntVec3 placeCell, Pawn pawn)
+        //{
+        //    if (pawn.pather.Moving)
+        //    {
+        //        return false;
+        //    }
+        //    Thing carriedThing = pawn.carryTracker.CarriedThing;
+        //    if (carriedThing == null || !carriedThing.IngestibleNow)
+        //    {
+        //        return false;
+        //    }
+        //    if (placeCell.IsValid && placeCell.AdjacentToCardinal(pawn.Position) && placeCell.HasEatSurface(pawn.Map) && carriedThing.def.ingestible.ingestHoldUsesTable)
+        //    {
+        //        drawPos = new Vector3((float)placeCell.x + 0.5f, drawPos.y, (float)placeCell.z + 0.5f);
+        //        return true;
+        //    }
+        //    if (carriedThing.def.ingestible.ingestHoldOffsetStanding != null)
+        //    {
+        //        HoldOffset holdOffset = carriedThing.def.ingestible.ingestHoldOffsetStanding.Pick(pawn.Rotation);
+        //        if (holdOffset != null)
+        //        {
+        //            drawPos += holdOffset.offset;
+        //            behind = holdOffset.behind;
+        //            flip = holdOffset.flip;
+        //            return true;
+        //        }
+        //    }
+        //    return false;
+        //}
     }
 
 }
