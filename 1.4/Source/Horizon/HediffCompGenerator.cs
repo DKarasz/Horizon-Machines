@@ -36,7 +36,6 @@ namespace Horizon
 	public class HediffComp_Generator : HediffComp
 	{
 		public bool active = true;
-		public float output;
 		public bool Active
         {
 			get { return active; }
@@ -44,20 +43,18 @@ namespace Horizon
         }
 
 		public HediffCompProperties_Generator Props => (HediffCompProperties_Generator)props;
-		public virtual void CurOutput()
+		public virtual float output
 		{
-            output = Props.baseOutput;
-		}
-		public override void CompPostTick(ref float severityAdjustment)
-		{
-			base.CompPostTick(ref severityAdjustment);
-			if (Active)
+            get
             {
-				CurOutput();
-            }
-            else
-            {
-				output = 0;
+				if (Active)
+				{
+					return Props.baseOutput;
+				}
+				else
+				{
+					return 0;
+				}
             }
 		}
 	}
