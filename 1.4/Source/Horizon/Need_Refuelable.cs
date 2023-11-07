@@ -13,22 +13,22 @@ namespace Horizon
 {
     //need class for accessing the stored capacity of the fuel
 
-    //[HarmonyPatch(typeof(Pawn), "GetFloatMenuOptions")]
-    //public static class Pawn_NeedsTracker_GetGizmos_Patch
-    //{
-    //    public static void Postfix(IEnumerable<FloatMenuOption> __result, Pawn __instance, Pawn myPawn)
-    //    {
-    //        if (__instance.Faction == null || __instance.Faction != Faction.OfPlayer)
-    //        {
-    //            return;
-    //        }
-    //        IEnumerable<Need_Refuelable> t = from a in __instance.needs.MiscNeeds where a is Need_Refuelable select (Need_Refuelable)a;
-    //        foreach (Need_Refuelable need in t)
-    //        {
-    //            __result.Concat(need.GetFloatMenuOption(myPawn));
-    //        }
-    //    }
-    //}
+    [HarmonyPatch(typeof(Pawn), "GetExtraFloatMenuOptionsFor")]
+    public static class Pawn_getExtraFloatMenuOptionsfor_Needs_Patch
+    {
+        public static void Postfix(ref IEnumerable<FloatMenuOption> __result, Pawn __instance)
+        {
+            if (__instance.Faction == null || __instance.Faction != Faction.OfPlayer)
+            {
+                return;
+            }
+            IEnumerable<Need_Refuelable> t = from a in __instance.needs.MiscNeeds where a is Need_Refuelable select (Need_Refuelable)a;
+            foreach (Need_Refuelable need in t)
+            {
+                __result= __result.Concat(need.GetFloatMenuOption(__instance));
+            }
+        }
+    }
 
     public class JobDriver_ExtractResource : JobDriver
     {
@@ -64,25 +64,28 @@ namespace Horizon
     public class FuelNeed : DefModExtension
     {
         public ThingDef fuelDef;
+        public float needPerFuel = 10f;
     }
     public class Need_Refuelable : Need
     {
         public Need_Refuelable(Pawn pawn) : base(pawn)
         {
         }
-        public ThingDef fuelThingDef => def.GetModExtension<FuelNeed>()?.fuelDef ?? null;
+        public FuelNeed extension => def.GetModExtension<FuelNeed>();
+        public ThingDef fuelThingDef => extension.fuelDef;
+        public float conversion => extension.needPerFuel;
         public virtual IEnumerable<FloatMenuOption> GetFloatMenuOption(Pawn myPawn)
         {
-            if (CurLevel < 1)
+            if (CurLevel < conversion)
             {
                 yield break;
             }
-            JobDef jobDef = JobMechDefOf.ExtractResources;
+            //JobDef jobDef = JobMechDefOf.ExtractResources;
             string label = "ExtractResource".Translate(fuelThingDef.label);
             Action action = delegate
             {
-                
-                    myPawn.jobs.TryTakeOrderedJob(JobMaker.MakeJob(jobDef, pawn), JobTag.Misc);
+                Activate();   
+                    //myPawn.jobs.TryTakeOrderedJob(JobMaker.MakeJob(jobDef, pawn), JobTag.Misc);
             };
             yield return FloatMenuUtility.DecoratePrioritizedTask(new FloatMenuOption(label, action), myPawn, pawn);
         }
@@ -122,9 +125,9 @@ namespace Horizon
                 return result;
             }
         }
-        public int Extract()
+        public float Extract(float max)
         {
-            int output = (int)(CurLevel % 1);
+            float output = Mathf.Min(CurLevel, max);
             CurLevel -= output;
             return output;
         }
@@ -134,16 +137,17 @@ namespace Horizon
             {
                 return;
             }
-            float amount = 0;
-            IEnumerable<HediffComp_Refuelable> t = from a in pawn.health.hediffSet.hediffs
-                                                   where a is HediffWithComps x && x.TryGetComp<HediffComp_Refuelable>() != null
-                                                   select a.TryGetComp<HediffComp_Refuelable>() into b
-                                                   where b.Props.Need.Equals(def)
-                                                   select b;
-            foreach (HediffComp_Refuelable comp in t)
-            {
-                amount += comp.Activate();
-            }
+            float amount = CurLevel/conversion;
+            CurLevel %= conversion;
+            //IEnumerable<HediffComp_Refuelable> t = from a in pawn.health.hediffSet.hediffs
+            //                                       where a is HediffWithComps x && x.TryGetComp<HediffComp_Refuelable>() != null
+            //                                       select a.TryGetComp<HediffComp_Refuelable>() into b
+            //                                       where b.Props.Need.Equals(def)
+            //                                       select b;
+            //foreach (HediffComp_Refuelable comp in t)
+            //{
+            //    amount += comp.Activate();
+            //}
             if (amount < 1)
             {
                 return;
@@ -155,7 +159,15 @@ namespace Horizon
         }
         public override void NeedInterval()
         {
-            //throw new NotImplementedException();//want to only consume when in use by action
+            //IEnumerable<HediffComp_Refuelable> t = from a in pawn.health.hediffSet.hediffs
+            //                                       where a is HediffWithComps x
+            //                                       select a.TryGetComp<HediffComp_Refuelable>() into b
+            //                                       where b.Props.Need.Equals(def)
+            //                                       select b;
+            //foreach (HediffComp_Refuelable comp in t)
+            //{
+            //    CurLevel += comp.output / 400;
+            //}
         }
     }
 }

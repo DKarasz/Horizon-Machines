@@ -1,0 +1,219 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+
+<Defs>
+
+  <ThingDef ParentName="HorizonBase">
+    <defName>HorizonDeathbringer</defName>
+    <label>Deathbringer</label>
+    <devNote>Deathbringer</devNote>
+    <description>Deathbringer</description>
+    <race>
+      <body>Deathbringer</body>
+	  <baseHealthScale>8</baseHealthScale>
+	  <mechWeightClass>UltraHeavy</mechWeightClass>
+    </race>
+	<statBases>
+		<MarketValue>2400</MarketValue>
+		<ControlTakingTime>30</ControlTakingTime>
+		<BandwidthCost>8</BandwidthCost>
+		<ArmorRating_Blunt>0.50</ArmorRating_Blunt>
+		<ArmorRating_Sharp>1.5</ArmorRating_Sharp>
+		<PsychicSensitivity>0.75</PsychicSensitivity>
+		<MechEnergyLossPerHP>0.15</MechEnergyLossPerHP>
+		<Flammability>0.5</Flammability>
+		<ArmorRating_Heat>0.5</ArmorRating_Heat>
+		<MoveSpeed>1.9</MoveSpeed>
+	</statBases>
+
+	<butcherProducts Inherit="False">
+		<Steel>50</Steel>
+		<Plasteel>20</Plasteel>
+	</butcherProducts>
+    <tools>
+      <li>
+        <label>Leg Stomp</label>
+        <capacities>
+          <li>Demolish</li>
+		  <li>Blunt</li>
+        </capacities>
+        <power>20</power>
+        <cooldownTime>2</cooldownTime>
+        <linkedBodyPartsGroup>Legs</linkedBodyPartsGroup>
+		<alwaysTreatAsWeapon>true</alwaysTreatAsWeapon>
+		<ensureLinkedBodyPartsGroupAlwaysUsable>true</ensureLinkedBodyPartsGroupAlwaysUsable>
+      </li>
+    </tools>
+	<verbs>
+			<li>
+				<label>SalvoRocket</label>
+				<verbClass>Verb_Shoot</verbClass>
+				<defaultProjectile>Proj_Rocket</defaultProjectile>
+				<range>29.9</range>
+				<accuracyTouch>0.28</accuracyTouch>
+				<accuracyShort>0.72</accuracyShort>
+				<accuracyMedium>0.66</accuracyMedium>
+				<accuracyLong>0.5</accuracyLong>
+				<ticksBetweenBurstShots>10</ticksBetweenBurstShots>
+				<burstShotCount>6</burstShotCount>
+				<forcedMissRadius>5.75</forcedMissRadius>
+				<forcedMissEvenDispersal>true</forcedMissEvenDispersal>
+				<targetParams>
+					<canTargetPawns>false</canTargetPawns>
+					<canTargetLocations>true</canTargetLocations>
+					<canTargetBuildings>false</canTargetBuildings>
+				</targetParams>
+				<soundCast>RocketswarmLauncher_Fire</soundCast>
+				<soundCastTail>GunTail_Heavy</soundCastTail>
+				<muzzleFlashScale>14</muzzleFlashScale>
+				<defaultCooldownTime>10</defaultCooldownTime>
+			</li>
+	</verbs>
+	<comps>
+		<li Class= "MVCF.Comps.CompProperties_VerbProps">
+			<compClass>MVCF.Comps.Comp_VerbProps</compClass>
+			<verbProps>
+			<li>
+			  <label>SalvoRocket</label>
+			  <canBeToggled>true</canBeToggled>
+			  <comps>
+				<li Class="MVCF.VerbComps.VerbCompProperties_Turret">
+				  <compClass>MVCF.VerbComps.VerbComp_Turret</compClass>
+				  <invisible>true</invisible>
+				  <uniqueTargets>true</uniqueTargets>
+				</li>
+			  </comps>
+			</li>
+			</verbProps>
+		</li>
+	</comps>
+	<!--<modExtensions>
+		
+	</modExtensions>-->
+  </ThingDef>
+
+  <PawnKindDef ParentName="BaseMechanoidKind">
+    <defName>Deathbringer</defName>
+	<defaultFactionType inherit= "false"/>
+    <label>Deathbringer</label>
+    <race>HorizonDeathbringer</race>
+    <combatPower>1000</combatPower>
+    <lifeStages>
+      <li>
+        <bodyGraphicData>
+          <texPath>Things/Pawn/Fido</texPath>
+          <maskPath>Things/Pawn/Mechanoid/AllegianceOverlays/MechMinimech</maskPath>
+		  <drawSize>4.5</drawSize>
+		  <shadowData>
+            <volume>(0.4, 0.8, 0.4)</volume>
+          </shadowData>
+        </bodyGraphicData>
+      </li>
+	  <li>
+        <bodyGraphicData>
+          <texPath>Things/Pawn/Fido</texPath>
+		  <maskPath>Things/Pawn/Mechanoid/AllegianceOverlays/MechMinimech</maskPath>
+          <drawSize>4.5</drawSize>
+		  <shadowData>
+            <volume>(0.4, 0.8, 0.4)</volume>
+          </shadowData>
+        </bodyGraphicData>
+      </li>
+	</lifeStages>
+	<modExtensions>
+		<li Class="Horizon.InitialHediff">
+			<hediffs>
+				<li>
+					<def>DBUSlug</def>
+					<chance>.5</chance>
+					<linkChanceWithPrevious>false</linkChanceWithPrevious>
+					<restoreOnReset>false</restoreOnReset>
+					<customPartLabel>
+						<li>Right Upper Weapon Hardpoint</li>
+						<li>Left Upper Weapon Hardpoint</li>
+					</customPartLabel>
+				</li>
+				<li>
+					<def>DBRockets</def>
+					<chance>.33</chance>
+					<linkChanceWithPrevious>false</linkChanceWithPrevious>
+					<restoreOnReset>false</restoreOnReset>
+					<customPartLabel>
+						<li>Right Upper Weapon Hardpoint</li>
+						<li>Left Upper Weapon Hardpoint</li>
+					</customPartLabel>
+				</li>
+				<li>
+					<def>DBAutoCannon</def>
+					<chance>.5</chance>
+					<linkChanceWithPrevious>false</linkChanceWithPrevious>
+					<restoreOnReset>false</restoreOnReset>
+					<customPartLabel>
+						<li>Right Lower Weapon Hardpoint</li>
+						<li>Left Lower Weapon Hardpoint</li>
+					</customPartLabel>
+				</li>
+				<li>
+					<def>DBFlamethrower</def>
+					<chance>.33</chance>
+					<linkChanceWithPrevious>false</linkChanceWithPrevious>
+					<restoreOnReset>false</restoreOnReset>
+					<customPartLabel>
+						<li>Right Upper Weapon Hardpoint</li>
+						<li>Left Upper Weapon Hardpoint</li>
+					</customPartLabel>
+				</li>
+				<li>
+					<def>DBMinigun</def>
+					<chance>.25</chance>
+					<linkChanceWithPrevious>false</linkChanceWithPrevious>
+					<restoreOnReset>false</restoreOnReset>
+					<customPartLabel>
+						<li>Right Upper Weapon Hardpoint</li>
+						<li>Left Upper Weapon Hardpoint</li>
+					</customPartLabel>
+				</li>
+				<li>
+					<def>DBMinigun</def>
+					<chance>.5</chance>
+					<linkChanceWithPrevious>false</linkChanceWithPrevious>
+					<restoreOnReset>false</restoreOnReset>
+					<customPartLabel>
+						<li>Rear Weapon Hardpoint</li>
+					</customPartLabel>
+				</li>
+				<li>
+					<def>DBMinigun</def>
+					<chance>1</chance>
+					<linkChanceWithPrevious>false</linkChanceWithPrevious>
+					<restoreOnReset>false</restoreOnReset>
+					<customPartLabel>
+						<li>Forward Weapon Hardpoint</li>
+						<li>Left Upper Weapon Hardpoint</li>
+					</customPartLabel>
+				</li>
+				<li>
+					<def>DBFlamethrower</def>
+					<chance>.33</chance>
+					<linkChanceWithPrevious>false</linkChanceWithPrevious>
+					<restoreOnReset>false</restoreOnReset>
+					<customPartLabel>
+						<li>Forward Weapon Hardpoint</li>
+					</customPartLabel>
+				</li>
+				<li>
+					<def>DBInfernoCannon</def>
+					<chance>.25</chance>
+					<linkChanceWithPrevious>false</linkChanceWithPrevious>
+					<restoreOnReset>false</restoreOnReset>
+					<customPartLabel>
+						<li>Forward Weapon Hardpoint</li>
+					</customPartLabel>
+				</li>
+			</hediffs>
+		</li>
+	</modExtensions>
+  </PawnKindDef>
+ 
+  
+</Defs>

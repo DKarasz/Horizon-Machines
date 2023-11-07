@@ -59,7 +59,7 @@ namespace Horizon
 	[HarmonyPatch(typeof(MapPawns), "PlayerEjectablePodHolder")]
 	public static class MapPawns_PlayerEjectablePodHolder_Patch
 	{
-		public static void postfix(ref IThingHolder __result, Thing thing, bool includeCryptosleepCaskets)
+		public static void Postfix(ref IThingHolder __result, Thing thing, bool includeCryptosleepCaskets)
 		{
 			if (thing is MechSuit suit)
 			{
@@ -274,6 +274,12 @@ namespace Horizon
                     }
                     else 
                     {
+						if (suit.innerContainer.Count < suit.mechExtension.minpilot)
+						{
+                            mech.drafter.Drafted = false;
+                            __result = new AcceptanceReport("MechNeedsMorePilots".Translate());
+                            return;
+                        }
 						Thing thing = suit.ContainedThing;
 						if (thing is Corpse)
                         {
@@ -315,14 +321,16 @@ namespace Horizon
 		public bool overseerOnly = false;
 		public bool mechOffsetsPawn = true;// set to false if using dynamic offsets to prevent recursion, set to true if you want the pawn to have stat offsets from the mech (ie bladelink)
 		public int pilotNumber = 1;
+		public int minpilot = 1;
 		public bool isViolent = false;
 		public bool renderPawn = false;
 		public GraphicData graphicData = new GraphicData();//only use for offsets of pawn
 		public float exposedPawn = 0f;
+		public int tickPawn = 1;
 		//public int mechConnections = 0;
 	}
     //patch mechanitor utility, get mech gizmos: no need
-    public class MechSuit: Pawn, IThingHolderWithDrawnPawn, IOpenable
+    public class MechSuit: Pawn, IThingHolderWithDrawnPawn, IOpenable, ISuspendableThingHolder
     {
         public ThingOwner innerContainer;
 
@@ -366,6 +374,9 @@ namespace Horizon
 
         public PawnPosture HeldPawnPosture => this.GetPosture();
 
+        public bool IsContentsSuspended => mechExtension.tickPawn==0;
+		public int tickinterval => mechExtension.tickPawn;
+
         public MechSuit()
 		{
 			innerContainer = new ThingOwner<Thing>(this, oneStackOnly: false);
@@ -375,17 +386,38 @@ namespace Horizon
 		//{
 		//	return innerContainer;
 		//}
-
+		public int tickTemp = 0;
+		public int tickRareTemp = 0;
+		public int tickLongTemp = 0;
 		public override void TickRare()
 		{
 			base.TickRare();
-			innerContainer.ThingOwnerTickRare();
+			tickRareTemp++;
+			if (tickRareTemp >= tickinterval)
+			{
+				tickRareTemp = 0;
+				innerContainer.ThingOwnerTickRare();
+			}
 		}
-
-		public override void Tick()
+        public override void TickLong()
+        {
+            base.TickLong();
+			tickLongTemp++;
+            if (tickLongTemp >= tickinterval)
+            {
+				tickLongTemp = 0;
+				innerContainer.ThingOwnerTickLong();
+            }
+        }
+        public override void Tick()
 		{
 			base.Tick();
-			innerContainer.ThingOwnerTick();
+			tickTemp++;
+			if (tickTemp >= tickinterval)
+			{
+				tickTemp = 0;
+				innerContainer.ThingOwnerTick();
+			}
 		}
 
 		public virtual void Open()
@@ -962,6 +994,7 @@ namespace Horizon
 		public static JobDef EnterMechSuit;
 		public static JobDef IngestProcess;
 		public static JobDef ExtractResources;
+		public static JobDef OperateDeepDrillSpot;
 	}
 
 	public class ThinkNode_ConditionalPlayerNoPilotMechSuit : ThinkNode_Conditional

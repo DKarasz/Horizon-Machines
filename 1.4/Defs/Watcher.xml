@@ -1,182 +1,185 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <Defs>
-  <ThingDef ParentName="MechCenturion">
-	<defName>TitanMech_Centurion</defName>
-	<label>Titan Centurion</label>
-	<thingClass>Horizon.MechSuit</thingClass>
+  
+  <ThingDef ParentName="BaseMechanoidWalker" Name="HorizonBase" Abstract="true">
+    <defName>HorizonBase</defName>
+    <label>abstractbase</label>
+    <devNote>similar to warurchin, summonable mech</devNote>
+    <description>Watcher</description>
+	<race>
+		<soundMeleeHitPawn>Pawn_Melee_Punch_HitPawn</soundMeleeHitPawn>
+		<soundMeleeHitBuilding>Pawn_Melee_Punch_HitBuilding</soundMeleeHitBuilding>
+		<soundMeleeMiss>Pawn_Melee_Punch_Miss</soundMeleeMiss>
+	</race>
+    <statBases>
+	  <ArmorRating_Heat>1</ArmorRating_Heat>
+	  <ToxicResistance>0.5</ToxicResistance>	  
+      <Flammability>0.25</Flammability>
+	  
+    </statBases>
+  </ThingDef>
+  <PawnKindDef ParentName="BaseMechanoidKind" Name="HorizonBaseKind" Abstract="true">
+	<abilities>
+		<li>MechWarcall</li>
+	</abilities>
+	<defaultFactionType inherit= "false"/>
+  </PawnKindDef>
+  
+  <AbilityDef>
+	<defName>MechWarcall</defName>
+	<label>Mech warcall</label>
+	<description>With a powerful bellow, alert nearby mechs of your enemies for a few hours.</description>
+	<iconPath>UI/Abilities/AnimalWarcall</iconPath>
+	<cooldownTicksRange>900000</cooldownTicksRange>
+		<!-- 15 days -->
+	<canUseAoeToGetTargets>false</canUseAoeToGetTargets>
+	<jobDef>CastAbilityOnThingWithoutWeaponInterruptible</jobDef>
+	<groupAbility>true</groupAbility>
+	<statBases>
+		<Ability_Duration>500</Ability_Duration>
+	</statBases>
+	<charges>2</charges>
+	<cooldownPerCharge>true</cooldownPerCharge>
+	<verbProperties>
+		<verbClass>Verb_CastAbility</verbClass>
+		<label>warcall</label>
+		<warmupTime>2</warmupTime>
+		<range>49.9</range>
+		<drawAimPie>true</drawAimPie>
+		<requireLineOfSight>false</requireLineOfSight>
+		<warmupEffecter>AnimalWarcall_Warmup</warmupEffecter>
+		<targetParams>
+			<canTargetLocations>false</canTargetLocations>
+			<canTargetPawns>true</canTargetPawns>
+			<canTargetAnimals>false</canTargetAnimals>
+			<canTargetBuildings>false</canTargetBuildings>
+			<canTargetHumans>false</canTargetHumans>
+			<canTargetMechs>true</canTargetMechs>
+			<canTargetSelf>false</canTargetSelf>
+		</targetParams>
+	</verbProperties>
 	<comps>
-		<li Class="CompProperties_BladelinkWeapon">
-			<biocodeOnEquip>true</biocodeOnEquip>
-		</li>
-		<li Class="CompProperties_GeneratedName">
-			<nameMaker>NamerWeaponBladelink</nameMaker>
+		<li Class="CompProperties_AbilityGiveMentalState">
+			<compClass>CompAbilityEffect_GiveMentalState</compClass>
+			<stateDef>BerserkWarcall</stateDef>
+			<goodwillImpact>-75</goodwillImpact>
+			<casterEffect>AnimalWarcall_Cast</casterEffect>
+			<targetEffect>AnimalWarcall_CastOnTarget</targetEffect>
+			<excludeNPCFactions>false</excludeNPCFactions>
 		</li>
 	</comps>
-	<modExtensions>
-		<li Class="Horizon.MechExtension">
-			<canDraftRemote>true</canDraftRemote>
-			<renderPawn>true</renderPawn>
-			<exposedPawn>.5</exposedPawn>
-			<graphicData>
-				<drawOffset>(1,1,1)</drawOffset>
-			</graphicData>
-		</li>
-	</modExtensions>
-  </ThingDef>
-  <PawnKindDef ParentName="MechCenturionKind">
-	<defName>TitanMech_Centurion</defName>
-	<race>TitanMech_Centurion</race>
-  </PawnKindDef>
-  
-  <ThingDef ParentName="MechCenturion">
-	<defName>EvaMech_Centurion</defName>
-	<label>Eva Centurion</label>
-	<race>
-		<body inherit="false">Human</body>
-		<bloodDef inherit="false">Filth_Blood</bloodDef>
-	</race>
-	<modExtensions>
-		<li Class="Horizon.MechExtension">
-			<canBleed>true</canBleed>
-			<canDraftRemote>false</canDraftRemote>
-			<overseerOnly>true</overseerOnly>
-			<exposedPawn>.5</exposedPawn>
-		</li>
-	</modExtensions>
-	<recipes>
-		<li>ExciseCarcinoma</li>
-		<li>AdministerMechSerumHealer</li>
-		<li>RemoveBodyPart</li>
-		<li>Euthanize</li>
-		<li>Anesthetize</li>
-		<li>CureScaria</li>
-		<li MayRequire="Ludeon.RimWorld.Biotech">Vasectomy</li>
-		<li MayRequire="Ludeon.RimWorld.Biotech">ReverseVasectomy</li>
-		<li MayRequire="Ludeon.RimWorld.Biotech">TubalLigation</li>
-		<li MayRequire="Ludeon.RimWorld.Biotech">ExtractOvum</li>
-		<li MayRequire="Ludeon.RimWorld.Royalty">CureBloodRot</li>
-		<li MayRequire="Ludeon.RimWorld.Royalty">CureAbasia</li>
-		<li MayRequire="Ludeon.RimWorld.Biotech">ExtractHemogenPack</li>
-		<li MayRequire="Ludeon.RimWorld.Biotech">BloodTransfusion</li>
-		<li MayRequire="Ludeon.RimWorld.Biotech">ImplantXenogerm</li>
-		<li MayRequire="Ludeon.RimWorld.Biotech">ImplantIUD</li>
-		<li MayRequire="Ludeon.RimWorld.Biotech">RemoveIUD</li>
-		<li MayRequire="Ludeon.RimWorld.Biotech">TerminatePregnancy</li>
-	</recipes>
-	<thingClass>Horizon.MechSuit</thingClass>
-  </ThingDef>
-  <PawnKindDef ParentName="MechCenturionKind">
-	<defName>EvaMech_Centurion</defName>
-	<race>EvaMech_Centurion</race>
-  </PawnKindDef>
-  
-  <ThingDef ParentName="MechCenturion">
-	<defName>BattleMech_Centurion</defName>
-	<label>Battle Centurion</label>
-	<race>
-		<thinkTreeMain>MechanoidPilot</thinkTreeMain>
-	</race>
-	<modExtensions>
-		<li Class="Horizon.MechExtension">
-			<canDraftRemote>false</canDraftRemote>
-			<isViolent>true</isViolent>
-		</li>
-	</modExtensions>
-	<thingClass>Horizon.MechSuit</thingClass>
-  </ThingDef>
-  <PawnKindDef ParentName="MechCenturionKind">
-	<defName>BattleMech_Centurion</defName>
-	<race>BattleMech_Centurion</race>
-  </PawnKindDef>
-  
-  <ThingDef ParentName="MechCenturion">
-	<defName>PacificMech_Centurion</defName>
-	<label>Pacific Centurion</label>
-	<race>
-		<thinkTreeMain>MechanoidPilot</thinkTreeMain>
-	</race>
-	<modExtensions>
-		<li Class="Horizon.MechExtension">
-			<pilotNumber>2</pilotNumber>
-			<canDraftRemote>false</canDraftRemote>
-		</li>
-	</modExtensions>
-	<thingClass>Horizon.MechSuit</thingClass>
-  </ThingDef>
-  <PawnKindDef ParentName="MechCenturionKind">
-	<defName>PacificMech_Centurion</defName>
-	<race>PacificMech_Centurion</race>
-  </PawnKindDef>
-  
-  <ThingDef ParentName="MechCenturion">
-	<defName>TallneckMech_Centurion</defName>
-	<label>Tallneck Centurion</label>
-	<comps>
-		<li Class="Horizon.CompProperties_CommsTower"/>
-		<li Class="CompProperties_Usable" MayRequire="Ludeon.RimWorld.Biotech">
-			<useJob>TriggerObject</useJob>
-			<useLabel>Summon diabolus threat</useLabel>
-			<useDuration>900</useDuration>
-			<floatMenuOptionPriority>SummonThreat</floatMenuOptionPriority>
-			<floatMenuFactionIcon>Mechanoid</floatMenuFactionIcon>
-			<ignoreOtherReservations>true</ignoreOtherReservations>
-		</li>
-		<li Class="CompProperties_Useable_CallBossgroup" MayRequire="Ludeon.RimWorld.Biotech">
-			<bossgroupDef>Diabolus</bossgroupDef>
-			<spawnLetterLabelKey>LetterLabelCommsConsoleSpawned</spawnLetterLabelKey>
-			<spawnLetterTextKey>LetterCommsConsoleSpawned</spawnLetterTextKey>
-			<effecterDef>CommsConsoleBossgroupSummoned</effecterDef>
-			<delayTicks>120</delayTicks>
-		</li>
-	</comps>
-  </ThingDef>
-  <PawnKindDef ParentName="MechCenturionKind">
-	<defName>TallneckMech_Centurion</defName>
-	<race>TallneckMech_Centurion</race>
-  </PawnKindDef>
-  
-  <JobDef>
-	<defName>UseCommsConsoleItem</defName>
-	<driverClass>Horizon.JobDriver_UseCommsConsoleItem</driverClass>
-	<reportString>using comms console.</reportString>
-	<allowOpportunisticPrefix>true</allowOpportunisticPrefix>
-  </JobDef>
-  <JobDef>
-	<defName>EnterMechSuit</defName>
-	<driverClass>Horizon.JobDriver_EnterMechSuit</driverClass>
-	<reportString>entering Mech.</reportString>
-	<taleOnCompletion>EnteredCryptosleep</taleOnCompletion>
-	<allowOpportunisticPrefix>true</allowOpportunisticPrefix>
-  </JobDef>
+  </AbilityDef>
   
   
-  <!--<ThingDef ParentName="BaseMechanoidWalker" Name="HorizonBase" Abstract="true">
-    <defName>Watcher</defName>
+  
+  <ThingDef ParentName="HorizonBase">
+    <defName>HorizonWatcher</defName>
     <label>Watcher</label>
     <devNote>watcher</devNote>
     <description>Watcher</description>
-    <statBases>
-      <MarketValue>750</MarketValue>
-	  <ArmorRating_Heat>0.5</ArmorRating_Heat>
-	  <ToxicResistance>0.5</ToxicResistance>
-      <Flammability>0.5</Flammability>
-    </statBases>
     <race>
-      <thinkTreeMain>Mechanoid</thinkTreeMain>
-	  <thinkTreeConstant>AnimalConstant</thinkTreeConstant>
-      <baseHealthScale>1</baseHealthScale>
-      <trainability>Advanced</trainability>
-      <wildness>0.5</wildness>
-	  <herdAnimal>false</herdAnimal>
-	  <soundMeleeHitPawn>Pawn_Melee_MechanoidSlash_HitPawn</soundMeleeHitPawn>
-      <soundMeleeHitBuilding>Pawn_Melee_MechanoidSlash_HitBuilding</soundMeleeHitBuilding>
-      <soundMeleeMiss>Pawn_Melee_MechanoidSlash_Miss</soundMeleeMiss>
+	  <wildBiomes>
+		<ColdBog>1</ColdBog>
+		<BorealForest>1</BorealForest>
+		<Tundra>1</Tundra>				
+		<IceSheet>1</IceSheet>
+		<SeaIce>1</SeaIce>
+		<TemperateSwamp>1</TemperateSwamp>
+		<TemperateForest>1</TemperateForest>		
+		<TropicalSwamp>1</TropicalSwamp>					
+		<TropicalRainforest>1</TropicalRainforest>
+		<AridShrubland>1</AridShrubland>
+		<Desert>1</Desert>
+		<ExtremeDesert>1</ExtremeDesert>				
+	  </wildBiomes>
+      <body>Watcher</body>
     </race>
-    <thingCategories>-->
-      <!--<li>Animals</li>-->
-    <!--</thingCategories>-->
+	<statBases>
+	  <MarketValue>800</MarketValue>
+	  <MoveSpeed>4.2</MoveSpeed>
+	  <ArmorRating_Blunt>0.10</ArmorRating_Blunt>
+	  <ArmorRating_Sharp>0.20</ArmorRating_Sharp>
+	  <MechEnergyLossPerHP>0.66</MechEnergyLossPerHP>
+	  <BandwidthCost MayRequire="Ludeon.Rimworld.Biotech">0</BandwidthCost>
+    </statBases>
+    <tools>
+      <li>
+        <label>Leg Claw</label>
+        <capacities>
+          <li>Scratch</li>
+        </capacities>
+        <power>20</power>
+        <cooldownTime>2</cooldownTime>
+        <linkedBodyPartsGroup>Legs</linkedBodyPartsGroup>
+		<alwaysTreatAsWeapon>true</alwaysTreatAsWeapon>
+      </li>
+      <li>
+        <label>head</label>
+        <capacities>
+          <li>Blunt</li>
+        </capacities>
+        <power>6</power>
+        <cooldownTime>2.6</cooldownTime>
+        <linkedBodyPartsGroup>HeadAttackTool</linkedBodyPartsGroup>
+        <ensureLinkedBodyPartsGroupAlwaysUsable>true</ensureLinkedBodyPartsGroupAlwaysUsable>
+        <chanceFactor>0.2</chanceFactor>
+      </li>
+    </tools>
+	<verbs>
+		<li>
+			<verbClass>Horizon.Verb_SpewDamage</verbClass>
+			<hasStandardCommand>true</hasStandardCommand>
+			<ticksBetweenBurstShots>4</ticksBetweenBurstShots>
+			<burstShotCount>10</burstShotCount>
+			<soundCast>Shot_MiniFlameblaster</soundCast>
+			<muzzleFlashScale>9</muzzleFlashScale>
+			<label>Flash Stun</label>
+			<range>7.9</range>
+			<beamDamageDef>Stun</beamDamageDef>
+			<sprayWidth>45</sprayWidth>
+			<warmupTime>1</warmupTime>
+			<targetParams>
+				<canTargetLocations>true</canTargetLocations>
+			</targetParams>
+		</li>
+		<li>
+			<verbClass>Verb_Shoot</verbClass>
+			<accuracyTouch>0.2</accuracyTouch>
+			<accuracyShort>0.3</accuracyShort>
+			<accuracyMedium>0.4</accuracyMedium>
+			<accuracyLong>0.95</accuracyLong>
+			<hasStandardCommand>true</hasStandardCommand>
+			<defaultProjectile>Bullet_Slugthrower</defaultProjectile>
+			<warmupTime>0.3</warmupTime>
+			<burstShotCount>3</burstShotCount>
+			<minRange>3</minRange>
+			<range>19.9</range>
+			<label>plasma burst</label>
+			<ticksBetweenBurstShots>8</ticksBetweenBurstShots>
+			<soundCast>Shot_Slugthrower</soundCast>
+			<soundCastTail>GunTail_Light</soundCastTail>
+			<muzzleFlashScale>9</muzzleFlashScale>
+		</li>
+	</verbs>
+	<comps Inherit="False">
+		<li Class="CompProperties_CanBeDormant"/>
+		<li Class="CompProperties_WakeUpDormant">
+			<wakeUpOnDamage>true</wakeUpOnDamage>
+			<wakeUpCheckRadius>30</wakeUpCheckRadius>
+			<wakeUpSound>MechanoidsWakeUp</wakeUpSound>
+		</li>
+		<li Class="CompProperties_MechPowerCell">
+			<totalPowerTicks>90000</totalPowerTicks>
+		</li>
+		<li MayRequire="Ludeon.Rimworld.Biotech" Class="CompProperties_OverseerSubject">
+			<needsOverseerEffect>MechUncontrolled</needsOverseerEffect>
+			<delayUntilFeralCheck>60000</delayUntilFeralCheck>
+			<feralMtbDays>10</feralMtbDays>
+			<feralCascadeRadialDistance>25</feralCascadeRadialDistance>
+		</li>
+	</comps>
 	<!--<modExtensions>
-		<li Class="Horizon.AnimalBodyAddons">
+		<li Mayrequire= "erdelf.AlienRaces" Class="HAR.AnimalBodyAddons">
 			<bodyAddons>
 				<li>
 					<path>Things/Pawn/test/default</path>
@@ -184,9 +187,9 @@
 					<inFrontOfBody>true</inFrontOfBody>
 					<layerInvert>false</layerInvert>
 					<scaleWithPawnDrawsize>true</scaleWithPawnDrawsize>
-				</li>
+				</li>-->
 				
-				<li>
+				<!--<li>
 					<path>				</path>
 					<bodyPart>			</bodyPart>
 					<inFrontOfBody>			</inFrontOfBody>
@@ -234,82 +237,27 @@
 						<li>	</li>
 					</prioritization>
 					<shaderType>		</shaderType>
-				</li>
-				
+				</li>-->
+				<!--
 			</bodyAddons>
 		</li>
 	</modExtensions>-->
-  <!--</ThingDef>-->
-  <!--<ThingDef ParentName="AnimalSleepingSpot">
-	<defName>MechSleepingSpot</defName>
-	<label>Mech sleeping spot</label>
-	<modExtensions>
-		<li Class="Horizon.MechBed"/>
-	</modExtensions>
-  </ThingDef>-->
-  
-  
-  <!--<ThingDef ParentName="HorizonBase">
-    <defName>Watcher</defName>
-    <label>Watcher</label>
-    <devNote>watcher</devNote>
-    <description>Watcher</description>
-    <race>
-	  <wildBiomes>
-		<ColdBog>1</ColdBog>
-		<BorealForest>1</BorealForest>
-		<Tundra>1</Tundra>				
-		<IceSheet>1</IceSheet>
-		<SeaIce>1</SeaIce>
-		<TemperateSwamp>1</TemperateSwamp>
-		<TemperateForest>1</TemperateForest>		
-		<TropicalSwamp>1</TropicalSwamp>					
-		<TropicalRainforest>1</TropicalRainforest>
-		<AridShrubland>1</AridShrubland>
-		<Desert>1</Desert>
-		<ExtremeDesert>1</ExtremeDesert>				
-	  </wildBiomes>
-      <body>Watcher</body>
-	  <herdAnimal>false</herdAnimal>
-	  <manhunterOnTameFailChance>0.30</manhunterOnTameFailChance>
-	  <manhunterOnDamageChance>0.50</manhunterOnDamageChance>
-    </race>
-    <tools>
-      <li>
-        <label>Leg Claw</label>
-        <capacities>
-          <li>Scratch</li>
-        </capacities>
-        <power>20</power>
-        <cooldownTime>2</cooldownTime>
-        <linkedBodyPartsGroup>Legs</linkedBodyPartsGroup>
-		<alwaysTreatAsWeapon>true</alwaysTreatAsWeapon>
-      </li>
-      <li>
-        <label>Eye Flash</label>
-        <capacities>
-          <li>Blunt</li>
-        </capacities>
-        <power>1</power>
-        <cooldownTime>1.5</cooldownTime>
-        <linkedBodyPartsGroup>HeadAttackTool</linkedBodyPartsGroup>
-        <ensureLinkedBodyPartsGroupAlwaysUsable>true</ensureLinkedBodyPartsGroupAlwaysUsable>
-        <chanceFactor>0.2</chanceFactor>
-      </li>
-    </tools>
   </ThingDef>
 
-  <PawnKindDef ParentName="AnimalKindBase">
+  <PawnKindDef ParentName="BaseMechanoidKind">
     <defName>Watcher</defName>
+	<defaultFactionType inherit= "false"/>
     <label>Watcher</label>
-    <race>Watcher</race>
+    <race>HorizonWatcher</race>
+	<forceNoDeathNotification>true</forceNoDeathNotification>
     <combatPower>150</combatPower>
-    <ecoSystemWeight>0.30</ecoSystemWeight>
+    <ecoSystemWeight>0.05</ecoSystemWeight>
     <lifeStages>
       <li>
         <bodyGraphicData>
           <texPath>Things/Pawn/Animal/Chicken/Chicken</texPath>
-          <drawSize>1.5</drawSize>
+          <maskPath>Things/Pawn/Mechanoid/AllegianceOverlays/MechMinimech</maskPath>
+		  <drawSize>1.5</drawSize>
 		  <shadowData>
             <volume>(0.4, 0.8, 0.4)</volume>
           </shadowData>
@@ -318,6 +266,7 @@
 	  <li>
         <bodyGraphicData>
           <texPath>Things/Pawn/Animal/Chicken/Chicken</texPath>
+		  <maskPath>Things/Pawn/Mechanoid/AllegianceOverlays/MechMinimech</maskPath>
           <drawSize>1.5</drawSize>
 		  <shadowData>
             <volume>(0.4, 0.8, 0.4)</volume>
@@ -325,130 +274,9 @@
         </bodyGraphicData>
       </li>
     </lifeStages>
-	<modExtensions>-->
-		<!--<li Class="Horizon.MechAnimal"/>-->
-	<!--</modExtensions>
-  </PawnKindDef>-->
-   
-	<HediffDef ParentName="ImplantHediffBase">
-		<defName>BlazeCan</defName>
-		<label>Blaze Canister</label>
-		<labelNoun>Blaze</labelNoun>
-		<causesNeed>MechBlaze</causesNeed>
-		<description>blaze fuel, reactive to flame/burn</description>
-		<descriptionHyperlinks>
-			<ThingDef>BionicArm</ThingDef>
-		</descriptionHyperlinks>
-		<comps>
-			<li Class="Horizon.HediffCompProperties_Refuelable">
-				<fullChargeAmount>10</fullChargeAmount>
-				<minChargeToActivate>5</minChargeToActivate>
-				<Need>MechBlaze</Need>
-			</li>
-			<li Class="Horizon.HediffCompProperties_Explosive">
-				<explosiveRadius>1.1</explosiveRadius>
-				<explosiveDamageType>Flame</explosiveDamageType>
-				<explosiveExpandPerStackcount>0.037</explosiveExpandPerStackcount>
-				<startWickOnDamageTaken>
-					<li>Flame</li>
-					<li>Burn</li>
-				</startWickOnDamageTaken>
-				<preExplosionSpawnThingDef>Filth_Fuel</preExplosionSpawnThingDef>
-				<preExplosionSpawnChance>1</preExplosionSpawnChance>
-				<wickTicks>70~150</wickTicks>
-			</li>
-		</comps>
-		<spawnThingOnRemoved>BionicArm</spawnThingOnRemoved>
-		<addedPartProps>
-			<solid>true</solid>
-			<betterThanNatural>true</betterThanNatural>
-		</addedPartProps>
-	</HediffDef>
-	
-	<HediffDef ParentName="ImplantHediffBase">
-		<defName>BlazeSac</defName>
-		<label>Blaze Sac</label>
-		<labelNoun>Blaze Sac</labelNoun>
-		<causesNeed>MechBlaze</causesNeed>
-		<description>blaze fuel sac, reactive to damage</description>
-		<descriptionHyperlinks>
-			<ThingDef>BionicArm</ThingDef>
-		</descriptionHyperlinks>
-		<comps>
-			<li Class="Horizon.HediffCompProperties_Refuelable">
-				<fullChargeAmount>20</fullChargeAmount>
-				<minChargeToActivate>5</minChargeToActivate>
-				<Need>MechBlaze</Need>
-			</li>
-			<li Class="Horizon.HediffCompProperties_Explosive">
-				<explosiveRadius>1.1</explosiveRadius>
-				<explosiveDamageType>Flame</explosiveDamageType>
-				<explosiveExpandPerStackcount>0.037</explosiveExpandPerStackcount>
-				<startWickHitPointsPercent>0.1</startWickHitPointsPercent>
-				<preExplosionSpawnThingDef>Filth_Fuel</preExplosionSpawnThingDef>
-				<preExplosionSpawnChance>1</preExplosionSpawnChance>
-				<wickTicks>70~150</wickTicks>
-			</li>
-		</comps>
-		<spawnThingOnRemoved>BionicArm</spawnThingOnRemoved>
-		<addedPartProps>
-			<solid>true</solid>
-			<betterThanNatural>true</betterThanNatural>
-		</addedPartProps>
-	</HediffDef>
-	
-	<NeedDef>
-		<defName>MechBlaze</defName>
-		<needClass>Horizon.Need_Refuelable</needClass>
-		<description>A reserve of chemical energy stored inside specially created organs</description>
-		<label>BlazeFuel</label>
-		<showOnNeedList>true</showOnNeedList>
-		<minIntelligence>ToolUser</minIntelligence>
-		<playerMechsOnly>false</playerMechsOnly>
-		<onlyIfCausedByHediff>true</onlyIfCausedByHediff>
-		<listPriority>9000</listPriority>
-		<freezeWhileSleeping>true</freezeWhileSleeping>
-		<showForCaravanMembers>true</showForCaravanMembers>
-		<major>true</major>
-		<modExtensions>
-			<li Class= "Horizon.FuelNeed">
-				<fuelDef>Chemfuel</fuelDef>
-			</li>
-		</modExtensions>
-	</NeedDef>
-	
-	<HediffDef ParentName="ImplantHediffBase">
-		<defName>ShockCan</defName>
-		<label>Sparker</label>
-		<labelNoun>Sparker</labelNoun>
-		<description>sparker, reactive to stun/emp/bullet</description>
-		<descriptionHyperlinks>
-			<ThingDef>BionicArm</ThingDef>
-		</descriptionHyperlinks>
-		<comps>
-			<li Class="Horizon.HediffCompProperties_Battery">
-				<fullChargeAmount>20</fullChargeAmount>
-			</li>
-			<li Class="Horizon.HediffCompProperties_Explosive">
-				<explosiveRadius>1.1</explosiveRadius>
-				<explosiveDamageType>Stun</explosiveDamageType>
-				<explosiveExpandPerStackcount>0.037</explosiveExpandPerStackcount>
-				<startWickOnDamageTaken>
-					<li>EMP</li>
-					<li>Stun</li>
-					<li>Bullet</li>
-				</startWickOnDamageTaken>
-				<preExplosionSpawnThingDef>Filth_MachineBits</preExplosionSpawnThingDef>
-				<preExplosionSpawnChance>1</preExplosionSpawnChance>
-				<wickTicks>70~150</wickTicks>
-			</li>
-		</comps>
-		<spawnThingOnRemoved>BionicArm</spawnThingOnRemoved>
-		<addedPartProps>
-			<solid>true</solid>
-			<betterThanNatural>true</betterThanNatural>
-		</addedPartProps>
-	</HediffDef>
-
+	<!--<modExtensions>
+		<li Class="Horizon.InitialHediff"/>
+	</modExtensions>-->
+  </PawnKindDef>
 	
 </Defs>

@@ -81,7 +81,7 @@ namespace Horizon
 				aimLineMote.Maintain();
 				Vector3 vector2 = TargetPos();
 				IntVec3 cell = vector2.ToIntVec3();
-				((MoteDualAttached)aimLineMote).UpdateTargets(this, new TargetInfo(cell, Map), Vector3.up * Height, vector2 - cell.ToVector3Shifted());
+				((MoteDualAttached)aimLineMote).UpdateTargets(this, new TargetInfo(cell, Map, true), Vector3.up * Height, vector2 - cell.ToVector3Shifted());
 			}
 			if (aimTargetMote != null)
 			{

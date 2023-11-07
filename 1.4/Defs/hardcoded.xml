@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+
+  <JobDef>
+	<defName>UseCommsConsoleItem</defName>
+	<driverClass>Horizon.JobDriver_UseCommsConsoleItem</driverClass>
+	<reportString>using comms console.</reportString>
+	<allowOpportunisticPrefix>true</allowOpportunisticPrefix>
+  </JobDef>
+  
+  <JobDef>
+	<defName>IngestProcess</defName>
+	<driverClass>Horizon.JobDriver_IngestProcess</driverClass>
+	<reportString>ingesting material for processing</reportString>
+	<allowOpportunisticPrefix>true</allowOpportunisticPrefix>
+  </JobDef>
+  
+  <JobDef>
+	<defName>EnterMechSuit</defName>
+	<driverClass>Horizon.JobDriver_EnterMechSuit</driverClass>
+	<reportString>entering Mech.</reportString>
+	<!--<taleOnCompletion>EnteredCryptosleep</taleOnCompletion>-->
+	<allowOpportunisticPrefix>true</allowOpportunisticPrefix>
+  </JobDef>
+  
+  <JobDef><!--NOT IMPLEMENTED-->
+	<defName>ExtractResources</defName>
+	<driverClass>Horizon.JobDriver_IngestProcess</driverClass>
+	<reportString>Extracting Resources</reportString>
+	<allowOpportunisticPrefix>true</allowOpportunisticPrefix>
+  </JobDef>
+  
+  <WorkGiverDef>
+    <defName>DoBillsMedicalMechanoidOperation</defName>
+	<label>operate on mechanoids</label>
+    <giverClass>WorkGiver_DoBill</giverClass>
+    <workType>Crafting</workType>
+    <priorityInType>110</priorityInType>
+    <billGiversAllMechanoids>true</billGiversAllMechanoids>
+    <billGiversAllMechanoidsCorpses>true</billGiversAllMechanoidsCorpses>
+	<canBeDoneWhileDrafted>true</canBeDoneWhileDrafted>
+    <verb>modify</verb>
+    <gerund>modifying</gerund>
+    <requiredCapacities>
+      <li>Manipulation</li>
+    </requiredCapacities>
+    <prioritizeSustains>true</prioritizeSustains>
+  </WorkGiverDef>
+  
+	<JobDef>
+		<defName>OperateDeepDrillSpot</defName>
+		<driverClass>Horizon.JobDriver_OperateDeepDrillSpot</driverClass>
+		<reportString>drilling at TargetA.</reportString>
+		<allowOpportunisticPrefix>true</allowOpportunisticPrefix>
+	</JobDef>
+    <WorkGiverDef>
+        <defName>Drill</defName>
+        <label>drill at drill spot</label>
+        <giverClass>Horizon.WorkGiver_RemoteDrill</giverClass>
+        <workType>Mining</workType>
+        <priorityInType>50</priorityInType>
+        <verb>drill</verb>
+        <gerund>drilling</gerund>
+        <requiredCapacities>
+            <li>Manipulation</li>
+        </requiredCapacities>
+        <canBeDoneByMechs>true</canBeDoneByMechs>
+    </WorkGiverDef>
+
+	<ThingDef ParentName="BuildingBase">
+		<defName>DrillSpot</defName>
+		<label>drilling spot</label>
+		<description>A deep-crust drilling spot for extracting minerals from deep under the surface. This spot can only be used by mechs or individuals that are integrated with the proper mining equipment. Use a ground-penetrating scanner to detect the resources. This drill spot will yield stone chunks if no resources are present.</description>
+		<graphicData>
+			<texPath>Things/Building/Production/CraftingSpot</texPath>
+			<graphicClass>Graphic_Single</graphicClass>
+			<drawSize>(1,1)</drawSize>
+		</graphicData>
+		<size>(1,1)</size>
+		<surfaceType>Item</surfaceType>
+		<altitudeLayer>FloorEmplacement</altitudeLayer>
+		<passability>Standable</passability>
+		<useHitPoints>false</useHitPoints>
+		<scatterableOnMapGen>false</scatterableOnMapGen>
+		<hasInteractionCell>true</hasInteractionCell>
+		<interactionCellOffset>(0,0,-1)</interactionCellOffset>
+		<designationCategory>Production</designationCategory>
+		<!--<designationHotKey>Misc12</designationHotKey>-->
+		<specialDisplayRadius>2.6</specialDisplayRadius>
+		<!-- 21 closest cells, must be in sync with CompDeepDrill -->
+		<rotatable>true</rotatable>
+		<terrainAffordanceNeeded>Light</terrainAffordanceNeeded>
+		<uiIconOffset>(0, 0.03)</uiIconOffset>
+		<uiIconScale>0.85</uiIconScale>
+		<building>
+			<sowTag>SupportPlantsOnly</sowTag>
+			<canPlaceOverImpassablePlant>false</canPlaceOverImpassablePlant>
+			<ai_chillDestination>false</ai_chillDestination>
+			<wakeDormantPawnsOnConstruction>false</wakeDormantPawnsOnConstruction>
+			<artificialForMeditationPurposes>false</artificialForMeditationPurposes>
+			<buildingTags>
+				<li>Production</li>
+			</buildingTags>
+		</building>
+		<placeWorkers>
+			<li>PlaceWorker_DeepDrill</li>
+			<li>PlaceWorker_PreventInteractionSpotOverlap</li>
+		</placeWorkers>
+		<drawPlaceWorkersWhileSelected>true</drawPlaceWorkersWhileSelected>
+		<statBases>
+			<WorkToBuild>0</WorkToBuild>
+		</statBases>
+		<comps>
+			<li Class="CompProperties_Forbiddable"/>
+			<li Class="CompProperties_DeepDrill"/>
+			<li Class="CompProperties_CreatesInfestations"/>
+		</comps>
+	</ThingDef>
+
+	
+</Defs>

@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+  <BodyPartDef>
+    <defName>Armor</defName>
+    <label>Armor Plate</label>
+    <permanentInjuryChanceFactor>0</permanentInjuryChanceFactor>
+    <skinCovered>false</skinCovered>
+    <solid>true</solid>
+    <alive>false</alive>
+    <bleedRate>0</bleedRate>
+    <hitPoints>30</hitPoints>
+	<destroyableByDamage>false</destroyableByDamage>
+  </BodyPartDef>
+	
+	<!--use for breakable parts, may become obsolete for generic part-->
+
+  <BodyPartDef>
+    <defName>ArmorChild</defName>
+    <label>Armor Plate</label>
+    <permanentInjuryChanceFactor>0</permanentInjuryChanceFactor>
+    <skinCovered>false</skinCovered>
+    <solid>true</solid>
+    <alive>false</alive>
+    <bleedRate>0</bleedRate>
+    <hitPoints>30</hitPoints>
+  </BodyPartDef>
+  
+
+  <BodyPartDef>
+	<defName>HeatBrainReactor</defName>
+	<label>Heat Core</label>
+	<hitPoints>20</hitPoints>
+	<permanentInjuryChanceFactor>0</permanentInjuryChanceFactor>
+	<skinCovered>false</skinCovered>
+	<solid>true</solid>
+	<alive>false</alive>
+	<bleedRate>0</bleedRate>
+	<tags>
+		<li>BloodPumpingSource</li>
+		<li>ConsciousnessSource</li>
+	</tags>
+	<hitChanceFactors>
+		<li>
+			<key>Burn</key>
+			<value>10</value>
+		</li>
+	</hitChanceFactors>
+  </BodyPartDef>
+  
+  <BodyPartDef>
+	<defName>HeatMechanicalToe</defName>
+	<label>stablizer</label>
+	<hitPoints>10</hitPoints>
+	<frostbiteVulnerability>2</frostbiteVulnerability>
+	<permanentInjuryChanceFactor>0</permanentInjuryChanceFactor>
+	<pawnGeneratorCanAmputate>true</pawnGeneratorCanAmputate>
+	<skinCovered>false</skinCovered>
+	<solid>true</solid>
+	<alive>false</alive>
+	<bleedRate>0</bleedRate>
+	<tags>
+		<li>MovingLimbDigit</li>
+	</tags>
+	<hitChanceFactors>
+		<li>
+			<key>Burn</key>
+			<value>10</value>
+		</li>
+	</hitChanceFactors>
+  </BodyPartDef>
+
+  <BodyPartDef>
+	<defName>CoolingRod</defName>
+	<label>Cooling rod</label>
+	<hitPoints>15</hitPoints>
+	<permanentInjuryChanceFactor>0</permanentInjuryChanceFactor>
+	<skinCovered>false</skinCovered>
+	<solid>true</solid>
+	<alive>false</alive>
+	<bleedRate>0</bleedRate>
+	<tags>
+		<li>BloodFiltrationLiver</li>
+	</tags>
+	<hitChanceFactors>
+		<li>
+			<key>Burn</key>
+			<value>10</value>
+		</li>
+	</hitChanceFactors>
+  </BodyPartDef>
+  
+  <BodyPartDef>
+	<defName>HeatSink</defName>
+	<label>Heatsink</label>
+	<hitPoints>15</hitPoints>
+	<permanentInjuryChanceFactor>0</permanentInjuryChanceFactor>
+	<skinCovered>false</skinCovered>
+	<solid>true</solid>
+	<alive>false</alive>
+	<bleedRate>0</bleedRate>
+	<tags>
+		<li>BloodFiltrationKidney</li>
+	</tags>
+	<hitChanceFactors>
+		<li>
+			<key>Burn</key>
+			<value>10</value>
+		</li>
+	</hitChanceFactors>
+  </BodyPartDef>
+
+  <BodyPartDef Name="horizonPart">
+    <defName>removeableBodyPart</defName>
+    <label>Deattachable Part</label>
+    <permanentInjuryChanceFactor>0</permanentInjuryChanceFactor>
+    <skinCovered>false</skinCovered>
+    <solid>true</solid>
+    <alive>false</alive>
+    <bleedRate>0</bleedRate>
+    <hitPoints>20</hitPoints>
+  </BodyPartDef>
+  
+    <!--obsolete, use generic part-->
+  <BodyPartDef ParentName="horizonPart">
+	<defName>explosiveBodyPart</defName>
+  </BodyPartDef>
+  
+    <!--obsolete, use weaponhardpoint-->
+  <BodyPartDef ParentName="horizonPart">
+	<defName>HorizonWeapon</defName>
+  </BodyPartDef>
+  
+  
+  <BodyPartDef ParentName="horizonPart">
+	<defName>WeaponHardpoint</defName>
+	<hitPoints>10</hitPoints>
+	<pawnGeneratorCanAmputate>true</pawnGeneratorCanAmputate>
+  </BodyPartDef>
+  
+    <!--obsolete, use generic part-->
+
+  <BodyPartDef ParentName="horizonPart">
+	<defName>Radar</defName>
+	<label>Radar</label>
+  </BodyPartDef>
+  
+    <!--obsolete, use armors-->
+  <BodyPartDef>
+    <defName>bodypartClamp</defName>
+    <label>Bodypart Clamp</label>
+    <permanentInjuryChanceFactor>0</permanentInjuryChanceFactor>
+    <skinCovered>false</skinCovered>
+    <solid>true</solid>
+    <alive>false</alive>
+    <bleedRate>0</bleedRate>
+    <hitPoints>20</hitPoints>
+  </BodyPartDef>
+
+  <!--obsolete, use generic part-->
+  <BodyPartDef>
+    <defName>cargoCrate</defName>
+    <label>Cargo Crate</label>
+    <permanentInjuryChanceFactor>0</permanentInjuryChanceFactor>
+    <skinCovered>false</skinCovered>
+    <solid>true</solid>
+    <alive>false</alive>
+    <bleedRate>0</bleedRate>
+    <hitPoints>40</hitPoints>
+  </BodyPartDef>
+  <!--obsolete, use armors-->
+  <BodyPartDef>
+    <defName>canisterStorage</defName>
+    <label>Canister Storage</label>
+    <hitPoints>40</hitPoints>
+    <permanentInjuryChanceFactor>0</permanentInjuryChanceFactor>
+    <skinCovered>false</skinCovered>
+    <solid>true</solid>
+    <alive>false</alive>
+    <bleedRate>0</bleedRate>
+	<destroyableByDamage>false</destroyableByDamage>
+  </BodyPartDef>
+  
+  <BodyPartDef Name="canister">
+    <defName>Canister</defName>
+    <label>Canister</label>
+    <hitPoints>10</hitPoints>
+    <permanentInjuryChanceFactor>0</permanentInjuryChanceFactor>
+    <skinCovered>false</skinCovered>
+    <solid>true</solid>
+    <alive>false</alive>
+    <bleedRate>0</bleedRate>
+  </BodyPartDef>
+  
+  
+  <BodyPartGroupDef>
+	<defName>TailAttackTool</defName>
+	<label>tail</label>
+  </BodyPartGroupDef>
+  <!--potentially obsolete-->
+  <BodyPartGroupDef>
+	<defName>OverheadAttackTool</defName>
+	<label>overhead Weapon</label>
+  </BodyPartGroupDef>
+  
+  <!--
+  <BodyPartDef ParentName="canister">
+	<defName>Canister1</defName>
+  </BodyPartDef>
+  
+  <BodyPartDef ParentName="canister">
+	<defName>Canister2</defName>
+  </BodyPartDef>
+  
+  <BodyPartDef ParentName="canister">
+	<defName>Canister3</defName>
+  </BodyPartDef>-->
+  
+</Defs>

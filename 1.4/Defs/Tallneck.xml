@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<Defs>
+
+  <ThingDef ParentName="MechCenturion">
+	<defName>TallneckMech_Centurion</defName>
+	<label>Tallneck Centurion</label>
+	<comps>
+		<li Class="Horizon.CompProperties_CommsTower"/>
+		<li Class="CompProperties_Usable" MayRequire="Ludeon.RimWorld.Biotech">
+			<useJob>TriggerObject</useJob>
+			<useLabel>Summon diabolus threat</useLabel>
+			<useDuration>900</useDuration>
+			<floatMenuOptionPriority>SummonThreat</floatMenuOptionPriority>
+			<floatMenuFactionIcon>Mechanoid</floatMenuFactionIcon>
+			<ignoreOtherReservations>true</ignoreOtherReservations>
+		</li>
+		<li Class="CompProperties_Useable_CallBossgroup" MayRequire="Ludeon.RimWorld.Biotech">
+			<bossgroupDef>Diabolus</bossgroupDef>
+			<spawnLetterLabelKey>LetterLabelCommsConsoleSpawned</spawnLetterLabelKey>
+			<spawnLetterTextKey>LetterCommsConsoleSpawned</spawnLetterTextKey>
+			<effecterDef>CommsConsoleBossgroupSummoned</effecterDef>
+			<delayTicks>120</delayTicks>
+		</li>
+		<li Class="CompProperties_ScannerMineralsDeep">
+			<scanSpeedStat>ResearchSpeed</scanSpeedStat>
+			<scanFindMtbDays>3</scanFindMtbDays>
+			<scanFindGuaranteedDays>6</scanFindGuaranteedDays>
+			<soundWorking>ScannerGroundPenetrating_Ambience</soundWorking>
+		</li>
+		<li Class="CompProperties_LongRangeMineralScanner">
+			<scanSpeedStat>ResearchSpeed</scanSpeedStat>
+			<scanFindMtbDays>4</scanFindMtbDays>
+			<scanFindGuaranteedDays>8</scanFindGuaranteedDays>
+			<soundWorking>ScannerLongRangeMineral_Ambience</soundWorking>
+		</li>
+	</comps>
+  </ThingDef>
+  <PawnKindDef ParentName="MechCenturionKind">
+	<defName>TallneckMech_Centurion</defName>
+	<race>TallneckMech_Centurion</race>
+  </PawnKindDef>
+  
+</Defs>

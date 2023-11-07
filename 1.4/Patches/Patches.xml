@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+
+<Patch>
+
+	<Operation Class="PatchOperationInsert">
+		<xpath>Defs/ThinkTreeDef[defName="Mechanoid"]/thinkRoot/subNodes/li[treeDef="LordDuty"]</xpath>
+		<order>Append</order> 
+		<value>
+			<li Class="Horizon.ThinkNode_ConditionalPlayerNoPilotMechSuit" MayRequire="Ludeon.RimWorld.Biotech">
+				<subNodes>
+					<li Class="JobGiver_SelfShutdown" />
+				</subNodes>
+			</li>
+		</value>
+	</Operation>
+	<Operation Class="PatchOperationAdd">
+		<xpath>Defs/BodyDef//li[def="MechanicalHead"]/groups</xpath>
+		<value>
+			<li>FullHead</li>
+		</value>
+	</Operation>
+</Patch>

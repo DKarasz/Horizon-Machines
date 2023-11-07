@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+	
+	
+	<HediffDef ParentName="ImplantHediffBase">
+		<defName>ShockCan</defName>
+		<label>Sparker</label>
+		<labelNoun>Sparker</labelNoun>
+		<description>sparker, reactive to stun/emp/bullet</description>
+		<descriptionHyperlinks>
+			<ThingDef>ComponentIndustrial</ThingDef>
+		</descriptionHyperlinks>
+		<comps>
+			<li Class="Horizon.HediffCompProperties_Battery">
+				<fullChargeAmount>20</fullChargeAmount>
+			</li>
+			<li Class="Horizon.HediffCompProperties_Explosive">
+				<explosiveRadius>1.1</explosiveRadius>
+				<explosiveDamageType>Stun</explosiveDamageType>
+				<explosiveExpandPerStackcount>0.037</explosiveExpandPerStackcount>
+				<startWickOnDamageTaken>
+					<li>EMP</li>
+					<li>Stun</li>
+					<li>Bullet</li>
+				</startWickOnDamageTaken>
+				<preExplosionSpawnThingDef>Filth_MachineBits</preExplosionSpawnThingDef>
+				<preExplosionSpawnChance>1</preExplosionSpawnChance>
+				<wickTicks>70~150</wickTicks>
+			</li>
+		</comps>
+		<spawnThingOnRemoved>ComponentIndustrial</spawnThingOnRemoved>
+		<addedPartProps>
+			<solid>true</solid>
+			<betterThanNatural>true</betterThanNatural>
+		</addedPartProps>
+	</HediffDef>
+	
+	<HediffDef ParentName="ImplantHediffBase">
+		<defName>MechGenerator</defName>
+		<label>Generator</label>
+		<labelNoun>Generator</labelNoun>
+		<description>Mechanical organ which passively generates power for a pawn</description>
+		<descriptionHyperlinks>
+			<ThingDef>ComponentSpacer</ThingDef>
+		</descriptionHyperlinks>
+		<comps>
+			<li Class="Horizon.HediffCompProperties_Generator">
+				<baseOutput>6</baseOutput>
+				<!--<needDef>MechEnergy</needDef>-->
+			</li>
+		</comps>
+		<spawnThingOnRemoved>ComponentSpacer</spawnThingOnRemoved>
+		<addedPartProps>
+			<solid>true</solid>
+			<betterThanNatural>true</betterThanNatural>
+		</addedPartProps>
+	</HediffDef>
+	
+	<HediffDef ParentName="ImplantHediffBase">
+		<defName>MechSolarPanel</defName>
+		<label>Solar Panel</label>
+		<labelNoun>Solar Panel</labelNoun>
+		<description>Mechanical organ which passively generates power for a pawn while in sunlight</description>
+		<descriptionHyperlinks>
+			<ThingDef>ComponentIndustrial</ThingDef>
+		</descriptionHyperlinks>
+		<comps>
+			<li Class="Horizon.HediffCompProperties_Solar">
+				<baseOutput>6</baseOutput>
+			</li>
+		</comps>
+		<spawnThingOnRemoved>ComponentIndustrial</spawnThingOnRemoved>
+		<addedPartProps>
+			<solid>true</solid>
+			<betterThanNatural>true</betterThanNatural>
+		</addedPartProps>
+	</HediffDef>
+ 
+
+	
+</Defs>

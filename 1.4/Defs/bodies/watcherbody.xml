@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+
+  <BodyDef>
+    <defName>Watcher</defName>
+    <label>Watcher</label>
+    <corePart>
+      <def>MechanicalThoraxCanManipulate</def>
+	  <customLabel>Torso</customLabel>
+      <height>Middle</height>
+      <depth>Outside</depth>
+      <groups>
+        <li>Torso</li>
+      </groups>
+      <parts>
+        <li>
+          <def>MechanicalThorax</def>
+		  <customLabel>Tail</customLabel>
+          <coverage>0.15</coverage>
+          <depth>Outside</depth>
+        </li>
+		<li>
+			<def>Reactor</def>
+			<customLabel>heart</customLabel>
+			<coverage>0.025</coverage>
+			<depth>Inside</depth>
+		</li>
+		<li>
+			<def>FluidReprocessor</def>
+			<customLabel>circulator</customLabel>
+			<coverage>0.025</coverage>
+			<depth>Inside</depth>
+		</li>
+		<li>
+            <def>Armor</def>
+			<customLabel>Left torso armor plate</customLabel>
+            <coverage>0.10</coverage>
+        </li>
+		<li>
+            <def>Armor</def>
+			<customLabel>Right torso armor plate</customLabel>
+            <coverage>0.10</coverage>
+        </li>
+		<li>
+            <def>Armor</def>
+			<customLabel>Central torso armor plate</customLabel>
+            <coverage>0.10</coverage>
+        </li>
+        <li>
+          <def>MechanicalNeck</def>
+          <coverage>0.20</coverage>
+          <height>Top</height>
+          <parts>
+            <li>
+              <def>MechanicalHead</def>
+              <coverage>0.50</coverage>
+              <parts>
+                <li>
+                  <def>Armor</def>
+				  <customLabel>Left Face Armor Plate</customLabel>
+                  <coverage>0.30</coverage>
+                </li>
+				<li>
+                  <def>Armor</def>
+				  <customLabel>Right Face Armor Plate</customLabel>
+                  <coverage>0.30</coverage>
+                </li>
+				<li>
+                  <def>SightSensor</def>
+				  <customLabel>Eye</customLabel>
+                  <coverage>0.35</coverage>
+				  <groups>
+					<li>HeadAttackTool</li>
+				  </groups>
+				  <parts>
+					<li>
+						<def>ArtificialBrain</def>
+						<coverage>0.01</coverage>
+						<depth>Inside</depth>
+					</li>
+					<li>
+						<def>HearingSensor</def>
+						<coverage>0.01</coverage>
+						<depth>Inside</depth>
+					</li>
+   				  </parts>
+                </li>
+              </parts>
+            </li>
+          </parts>
+        </li>
+        <li>
+          <def>MechanicalLeg</def>
+          <customLabel>left leg</customLabel>
+          <coverage>0.14</coverage>
+          <height>Bottom</height>
+		  <groups>
+            <li>Legs</li>
+          </groups>
+          <parts>
+            <li>
+              <def>Armor</def>
+              <customLabel>Left Leg armor plate</customLabel>
+              <coverage>0.99</coverage>
+            </li>
+          </parts>
+        </li>
+        <li>
+          <def>MechanicalLeg</def>
+          <customLabel>right leg</customLabel>
+          <coverage>0.14</coverage>
+          <height>Bottom</height>
+		  <groups>
+            <li>Legs</li>
+          </groups>
+          <parts>
+            <li>
+              <def>Armor</def>
+              <customLabel>Right Leg armor plate</customLabel>
+              <coverage>0.99</coverage>
+            </li>
+          </parts>
+        </li>
+      </parts>
+    </corePart>
+  </BodyDef>
+  
+  </Defs>

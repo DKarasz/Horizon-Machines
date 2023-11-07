@@ -199,16 +199,20 @@ namespace Horizon
             //num = ((verbProps.beamFullWidthRange > 0f) ? Mathf.Min(magnitude / verbProps.beamFullWidthRange, 1f) : 1f);//beam is at full width at this range, remap to beam width being an angle, full width being number of segments
             //num2 = (verbProps.beamWidth + 1f) * num / (float)ShotsPerBurst;//path broken up into burst segments
             Vector3 vector3a = caster.Position.ToVector3Shifted().Yto0() + normalized * verbProps.minRange;//initial beam location, 1/2 beam length at given distance in perpendicular direction
+
+            //can modify here in future for custom defined pathways, instead of multiplying by verbprops.minrange, we take the progress, feed it into a distance and angle curve defaulted to range values and 0 angle
+
             path.Add(vector3a);//initial path node
             for (int i = 0; i < verbProps.beamFullWidthRange; i++)
             {
                 Vector3 vector4 = vector2 * (Rand.Value * verbProps.beamMaxDeviation) - vector2 / 2f;//take random deviation amplitude, subtract .5?
                 Vector3 vector5 = Mathf.Sin(((float)i / verbProps.beamFullWidthRange + 0.5f) * (float)Math.PI * 57.29578f) * verbProps.beamCurvature * -vector2 - vector2 * verbProps.beamMaxDeviation / 2f;//fit sin curve to path points, curvature being amplitude, adjust deviation back down from previous increase
                 float CurrentMag= Mathf.Tan((angle/360)*Mathf.PI)* ((vector3a - caster.Position.ToVector3Shifted()).Yto0()).magnitude;
-                path.Add(vector3a + (vector4 + vector5) * CurrentMag);//original path, plus vertical deviation
-                vector3a += normalized * segment;//move horizontally by x burst unit
+                path.Add(vector3a + (vector4 + vector5) * CurrentMag);//original path, plus vertical deviation, can add rotation later
+                vector3a += normalized * segment;//move horizontally by x burst unit, can rotate later based on burst number. rotate normalized by angle, and mult segment by interpolated value of length 
+                //change to vector3a= original 3a+ normalized.rotatedby(lerped angle) + range difference*lerped distance
             }
-
+            //use progress of shot total, fed into min to max range distance value, coupled with corresponding 
 
 
 

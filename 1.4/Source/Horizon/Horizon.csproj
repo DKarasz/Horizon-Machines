@@ -34,7 +34,11 @@
     <Compile Include="Addons.cs" />
     <Compile Include="BladelinkPatches.cs" />
     <Compile Include="CompGearStatOffset.cs" />
+    <Compile Include="CompProjectileInterceptorCustomDamage.cs" />
+    <Compile Include="Comp_NeedDonor.cs" />
     <Compile Include="Comp_CommsTower.cs" />
+    <Compile Include="Comp_ShieldCustom.cs" />
+    <Compile Include="Comp_Terraforming.cs" />
     <Compile Include="DigPeriodicallyNeed.cs" />
     <Compile Include="HediffCompSolar.cs" />
     <Compile Include="HediffCompGenerator.cs" />
@@ -45,11 +49,16 @@
     <Compile Include="MechBed.cs" />
     <Compile Include="MechCaravan.cs" />
     <Compile Include="MechSuit.cs" />
+    <Compile Include="modExtensionInitialHediff.cs" />
+    <Compile Include="MVCFCustomTurret.cs" />
     <Compile Include="Need_Refuelable.cs" />
     <Compile Include="ProcessingComp.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ThunderJawLauncher.cs" />
     <Compile Include="Verb_ShootBeamAngle.cs" />
+    <Compile Include="Verb_SpewDamage.cs" />
+    <Compile Include="WorkGiverFertilize.cs" />
+    <Compile Include="WorkGiverRemoteDrill.cs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Krafs.Rimworld.Ref">
@@ -58,6 +67,11 @@
     <PackageReference Include="Lib.Harmony">
       <Version>2.2.2</Version>
     </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="MVCF">
+      <HintPath>..\..\..\..\VanillaExpandedFramework\1.4\Assemblies\MVCF.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

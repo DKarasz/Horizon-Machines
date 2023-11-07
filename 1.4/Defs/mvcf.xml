@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<Defs>
+
+	<MVCF.ModDef>
+		<defName>Horizon</defName>
+		<label>Horizon Core</label>
+		<description>Horizon code framework</description>
+		<ActivateFeatures>
+			<li>AdditionalVerbProps</li>
+			<li>VerbComps</li>
+			<li>ExtraEquipmentVerbs</li>
+			<li>Drawing</li>
+			<li>IndependentFire</li>
+			<li>RangedAnimals</li>
+			<li>HediffVerbs</li>
+			<li>IntegratedToggle</li>
+		</ActivateFeatures>
+	</MVCF.ModDef>
+
+</Defs>

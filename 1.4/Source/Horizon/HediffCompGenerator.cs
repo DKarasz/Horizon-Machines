@@ -15,9 +15,10 @@ namespace Horizon
     {
 		public static void Postfix(ref Need __instance, ref Pawn ___pawn)
         {
+			NeedDef def = __instance.def;
 			IEnumerable<HediffComp_Generator> t = from a in ___pawn.health.hediffSet.hediffs
 												   where a is HediffWithComps x && x.TryGetComp<HediffComp_Generator>() != null
-												   select a.TryGetComp<HediffComp_Generator>();
+												  select a.TryGetComp<HediffComp_Generator>();
 			foreach (HediffComp_Generator comp in t)
 			{
 				__instance.CurLevel += comp.output/400;

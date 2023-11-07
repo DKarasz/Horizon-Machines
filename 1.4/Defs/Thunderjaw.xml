@@ -1,0 +1,414 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+
+<Defs>
+
+  <ThingDef ParentName="HorizonBase">
+    <defName>HorizonThunderjaw</defName>
+    <label>Thunderjaw</label>
+    <devNote>Thunderjaw</devNote>
+    <description>Thunderjaw</description>
+    <race>
+	  <wildBiomes>
+		<BorealForest>0.1</BorealForest>
+		<Tundra>0.1</Tundra>				
+		<IceSheet>0.1</IceSheet>
+		<SeaIce>0.1</SeaIce>
+		<AridShrubland>0.1</AridShrubland>
+		<Desert>0.1</Desert>
+		<ExtremeDesert>0.1</ExtremeDesert>				
+	  </wildBiomes>
+      <body>Thunderjaw</body>
+	  <baseHealthScale>4.5</baseHealthScale>
+	  <mechWeightClass>UltraHeavy</mechWeightClass>
+    </race>
+	<statBases>
+		<MarketValue>1600</MarketValue>
+		<ControlTakingTime>30</ControlTakingTime>
+		<BandwidthCost>5</BandwidthCost>
+		<ArmorRating_Blunt>0.25</ArmorRating_Blunt>
+		<ArmorRating_Sharp>0.75</ArmorRating_Sharp>
+		<PsychicSensitivity>0.75</PsychicSensitivity>
+		<MechEnergyLossPerHP>0.15</MechEnergyLossPerHP>
+	</statBases>
+
+	<butcherProducts Inherit="False">
+		<Steel>50</Steel>
+		<Plasteel>20</Plasteel>
+	</butcherProducts>
+    <tools>
+      <li>
+        <label>Leg Stomp</label>
+        <capacities>
+          <li>Demolish</li>
+		  <li>Blunt</li>
+        </capacities>
+        <power>20</power>
+        <cooldownTime>2</cooldownTime>
+        <linkedBodyPartsGroup>Legs</linkedBodyPartsGroup>
+		<alwaysTreatAsWeapon>true</alwaysTreatAsWeapon>
+      </li>
+      <li>
+        <label>head</label>
+        <capacities>
+          <li>Blunt</li>
+        </capacities>
+        <power>15</power>
+        <cooldownTime>2.6</cooldownTime>
+        <linkedBodyPartsGroup>HeadAttackTool</linkedBodyPartsGroup>
+        <ensureLinkedBodyPartsGroupAlwaysUsable>true</ensureLinkedBodyPartsGroupAlwaysUsable>
+        <chanceFactor>0.2</chanceFactor>
+      </li>
+    </tools>
+	<verbs>
+			<li>
+				<label>MouthLaser</label>
+				<verbClass>Horizon.Verb_ShootBeamAngle</verbClass>
+				<hasStandardCommand>true</hasStandardCommand>
+				<warmupTime>1.0</warmupTime>
+				<range>24.9</range>
+				<minRange>3.9</minRange>
+				<accuracyTouch>0.60</accuracyTouch>
+				<accuracyShort>0.70</accuracyShort>
+				<accuracyMedium>0.65</accuracyMedium>
+				<accuracyLong>0.55</accuracyLong>
+				<beamFullWidthRange>22</beamFullWidthRange><!--number of path segments-->
+				<burstShotCount>7</burstShotCount><!--number of beams-->
+				<beamWidth>60</beamWidth><!--total angle-->
+				<ticksBetweenBurstShots>7</ticksBetweenBurstShots><!--total number of ticks per segment, match with number of tiles to hit-->
+				<beamDamageDef>Beam</beamDamageDef>
+				<soundCastTail>GunTail_Medium</soundCastTail>
+				<muzzleFlashScale>9</muzzleFlashScale>
+				<soundCastBeam>BeamGraser_Shooting</soundCastBeam>
+				<beamGroundFleckDef>Fleck_BeamBurn</beamGroundFleckDef>
+				<beamFleckChancePerTick>0.32</beamFleckChancePerTick>
+				<beamMaxDeviation>1.5</beamMaxDeviation>
+				<beamCurvature>0.6</beamCurvature>
+				<beamMoteDef>Mote_GraserBeamBase</beamMoteDef>
+				<beamEndEffecterDef>GraserBeam_End</beamEndEffecterDef>
+				<beamChanceToStartFire>0.85</beamChanceToStartFire>
+				<beamChanceToAttachFire>0.85</beamChanceToAttachFire>
+				<beamFireSizeRange>0.55~0.85</beamFireSizeRange>
+				<beamLineFleckDef>Fleck_BeamSpark</beamLineFleckDef>
+				<beamStartOffset>0.8</beamStartOffset>
+				<beamLineFleckChanceCurve>
+					<points>
+						<li>(0, 0)</li>
+						<li>(0.65, 0.4)</li>
+						<li>(1, 0.75)</li>
+					</points>
+				</beamLineFleckChanceCurve>
+				<linkedBodyPartsGroup>HeadAttackTool</linkedBodyPartsGroup>
+				<ensureLinkedBodyPartsGroupAlwaysUsable>true</ensureLinkedBodyPartsGroupAlwaysUsable>
+				<defaultCooldownTime>5</defaultCooldownTime>
+			</li>
+			<li>
+				<label>cheekChargeBlaster</label>
+				<verbClass>Verb_Shoot</verbClass>
+				<hasStandardCommand>true</hasStandardCommand>
+				<defaultProjectile>Bullet_ChargeBlasterHeavy</defaultProjectile>
+				<warmupTime>1.25</warmupTime>
+				<range>26.9</range>
+				<accuracyTouch>0.18</accuracyTouch>
+				<accuracyShort>0.26</accuracyShort>
+				<accuracyMedium>0.26</accuracyMedium>
+				<accuracyLong>0.18</accuracyLong>
+				<ticksBetweenBurstShots>5</ticksBetweenBurstShots>
+				<burstShotCount>24</burstShotCount>
+				<soundCast>Shot_ChargeBlaster</soundCast>
+				<soundCastTail>GunTail_Heavy</soundCastTail>
+				<muzzleFlashScale>9</muzzleFlashScale>
+				<linkedBodyPartsGroup>TuskAttackTool</linkedBodyPartsGroup>
+				<defaultCooldownTime>7.4</defaultCooldownTime>
+			</li>
+			<li>
+				<label>diskLauncher</label>
+				<verbClass>Verb_Shoot</verbClass>
+				<hasStandardCommand>true</hasStandardCommand>
+				<defaultProjectile>Bullet_HellsphereCannonDisk</defaultProjectile>
+				<warmupTime>2.0</warmupTime>
+				<forcedMissRadius>1.0</forcedMissRadius>
+				<range>18.9</range>
+				<soundCast>Shot_HellsphereCannonGun</soundCast>
+				<soundCastTail>GunTail_Heavy</soundCastTail>
+				<muzzleFlashScale>9</muzzleFlashScale>
+				<ai_AvoidFriendlyFireRadius>6</ai_AvoidFriendlyFireRadius>
+				<ai_RangedAlawaysShootGroundBelowTarget>true</ai_RangedAlawaysShootGroundBelowTarget>
+				<ai_ProjectileLaunchingIgnoresMeleeThreats>true</ai_ProjectileLaunchingIgnoresMeleeThreats>
+				<ai_IsBuildingDestroyer>true</ai_IsBuildingDestroyer>
+				<ai_TargetHasRangedAttackScoreOffset>50</ai_TargetHasRangedAttackScoreOffset>
+				<minRange>5.9</minRange>
+				<targetParams>
+					<canTargetLocations>true</canTargetLocations>
+					<canTargetPawns>true</canTargetPawns>
+				</targetParams>
+				<burstShotCount>3</burstShotCount>
+				<ticksBetweenBurstShots>20</ticksBetweenBurstShots>
+				<beamTargetsGround>true</beamTargetsGround>
+				<canGoWild>false</canGoWild>
+				<linkedBodyPartsGroup>Shoulders</linkedBodyPartsGroup>
+				<defaultCooldownTime>10</defaultCooldownTime>
+			</li>
+	</verbs>
+	<comps>
+		<li Class= "MVCF.Comps.CompProperties_VerbProps">
+			<compClass>MVCF.Comps.Comp_VerbProps</compClass>
+			<verbProps>
+			<li>
+			  <label>diskLauncher</label>
+			  <!--<draw>false</draw>-->
+			  <canBeToggled>true</canBeToggled>
+			  <comps>
+				<li Class="MVCF.VerbComps.VerbCompProperties_Turret">
+				  <compClass>MVCF.VerbComps.VerbComp_Turret</compClass>
+				  <invisible>true</invisible>
+				  <uniqueTargets>true</uniqueTargets>
+				</li>
+			  </comps>
+			</li>
+			<li>
+			  <label>MouthLaser</label>
+			  <canBeToggled>true</canBeToggled>
+			  <comps>
+				<li Class="MVCF.VerbComps.VerbCompProperties_Turret">
+				  <compClass>MVCF.VerbComps.VerbComp_Turret</compClass>	
+				  <invisible>true</invisible>
+				  <uniqueTargets>true</uniqueTargets>
+				</li>
+			  </comps>
+			</li>
+			<li>
+			  <label>cheekChargeBlaster</label>
+			  <canBeToggled>true</canBeToggled>
+			  <comps>
+				<li Class="MVCF.VerbComps.VerbCompProperties_Turret">
+				  <compClass>MVCF.VerbComps.VerbComp_Turret</compClass>
+				  <invisible>true</invisible>
+				  <uniqueTargets>true</uniqueTargets>
+				</li>
+			  </comps>
+			</li>
+			</verbProps>
+		</li>
+	</comps>
+	<!--<modExtensions>
+		
+	</modExtensions>-->
+  </ThingDef>
+
+  <PawnKindDef ParentName="BaseMechanoidKind">
+    <defName>Thunderjaw</defName>
+	<defaultFactionType inherit= "false"/>
+    <label>Thunderjaw</label>
+    <race>HorizonThunderjaw</race>
+    <combatPower>500</combatPower>
+    <ecoSystemWeight>0.05</ecoSystemWeight>
+    <lifeStages>
+      <li>
+        <bodyGraphicData>
+          <texPath>Things/Pawn/Fido</texPath>
+          <maskPath>Things/Pawn/Mechanoid/AllegianceOverlays/MechMinimech</maskPath>
+		  <drawSize>4.5</drawSize>
+		  <shadowData>
+            <volume>(0.4, 0.8, 0.4)</volume>
+          </shadowData>
+        </bodyGraphicData>
+      </li>
+	  <li>
+        <bodyGraphicData>
+          <texPath>Things/Pawn/Fido</texPath>
+		  <maskPath>Things/Pawn/Mechanoid/AllegianceOverlays/MechMinimech</maskPath>
+          <drawSize>4.5</drawSize>
+		  <shadowData>
+            <volume>(0.4, 0.8, 0.4)</volume>
+          </shadowData>
+        </bodyGraphicData>
+      </li>
+    </lifeStages>
+	<!--<modExtensions>
+		<li Class="Horizon.InitialHediff"/>
+	</modExtensions>-->
+  </PawnKindDef>
+  <!--mouth laser-->
+	<ThingDef ParentName="BaseGun">
+		<defName>Gun_BeamShotgun</defName>
+		<label>beam shotgun</label>
+		<description>A high-energy gamma ray laser which fires a sweeping beam that pierces thick armor and burns targets. Because of the health risks, grasers are usually only used by mechanoids. This one was made to interface directly with a mechanoid wielder and draw from its power source.</description>
+		<tradeability>None</tradeability>
+		<destroyOnDrop>true</destroyOnDrop>
+		<relicChance>0</relicChance>
+		<graphicData>
+			<texPath>Things/Item/Equipment/WeaponRanged/BeamGraser</texPath>
+			<graphicClass>Graphic_Single</graphicClass>
+		</graphicData>
+		<statBases>
+			<WorkToMake>40000</WorkToMake>
+			<Mass>4</Mass>
+			<accuracyTouch>0.60</accuracyTouch>
+			<accuracyShort>0.70</accuracyShort>
+			<accuracyMedium>0.65</accuracyMedium>
+			<accuracyLong>0.55</accuracyLong>
+			<RangedWeapon_Cooldown>1.70</RangedWeapon_Cooldown>
+		</statBases>
+		<verbs>
+			<li>
+				<verbClass>Horizon.Verb_ShootBeamAngle</verbClass>
+				<hasStandardCommand>true</hasStandardCommand>
+				<warmupTime>1.0</warmupTime>
+				<range>24.9</range>
+				<minRange>3.9</minRange>
+				<beamFullWidthRange>22</beamFullWidthRange><!--number of path segments-->
+				<burstShotCount>5</burstShotCount><!--number of beams-->
+				<beamWidth>60</beamWidth><!--total angle-->
+				<ticksBetweenBurstShots>7</ticksBetweenBurstShots><!--total number of ticks per segment, match with number of tiles to hit-->
+				<beamDamageDef>Beam</beamDamageDef>
+				<soundCastTail>GunTail_Medium</soundCastTail>
+				<muzzleFlashScale>9</muzzleFlashScale>
+				<soundCastBeam>BeamGraser_Shooting</soundCastBeam>
+				<beamGroundFleckDef>Fleck_BeamBurn</beamGroundFleckDef>
+				<beamFleckChancePerTick>0.32</beamFleckChancePerTick>
+				<beamMaxDeviation>1.5</beamMaxDeviation>
+				<beamCurvature>0.6</beamCurvature>
+				<beamMoteDef>Mote_GraserBeamBase</beamMoteDef>
+				<beamEndEffecterDef>GraserBeam_End</beamEndEffecterDef>
+				<beamChanceToStartFire>0.85</beamChanceToStartFire>
+				<beamChanceToAttachFire>0.85</beamChanceToAttachFire>
+				<beamFireSizeRange>0.55~0.85</beamFireSizeRange>
+				<beamLineFleckDef>Fleck_BeamSpark</beamLineFleckDef>
+				<beamStartOffset>0.8</beamStartOffset>
+				<beamLineFleckChanceCurve>
+					<points>
+						<li>(0, 0)</li>
+						<li>(0.65, 0.4)</li>
+						<li>(1, 0.75)</li>
+					</points>
+				</beamLineFleckChanceCurve>
+			</li>
+		</verbs>
+		<weaponTags>
+			<li>BeamGraserGun</li>
+		</weaponTags>
+		<tools>
+			<li>
+				<label>barrel</label>
+				<capacities>
+					<li>Blunt</li>
+					<li>Poke</li>
+				</capacities>
+				<power>9</power>
+				<cooldownTime>2</cooldownTime>
+			</li>
+		</tools>
+	</ThingDef>
+
+<!--disk launcher-->
+	<!--<ThingDef ParentName="BaseGun">
+		<defName>Gun_HellsphereLauncher</defName>
+		<label>hellsphere Launcher</label>
+		<description>A ultra-high-power energy pulse projector designed for siegebreaking. The hellsphere cannon must hold a bead on its target for several seconds while charging, before it releases a devastating tsunami of power. The explosion is capable of melting concrete in its blast radius. The heat of the explosion will ignite anything nearby. It cannot fire at close-up targets.</description>
+		<techLevel>Spacer</techLevel>
+		<graphicData>
+			<texPath>Things/Item/Equipment/WeaponRanged/HellsphereCannon</texPath>
+			<graphicClass>Graphic_Single</graphicClass>
+		</graphicData>
+		<tradeability>None</tradeability>
+		<destroyOnDrop>true</destroyOnDrop>
+		<relicChance>0</relicChance>
+		<statBases>
+			<MarketValue>1400</MarketValue>
+			<Mass>20</Mass>
+			<accuracyTouch>1</accuracyTouch>
+			<accuracyShort>1</accuracyShort>
+			<accuracyMedium>1</accuracyMedium>
+			<accuracyLong>1</accuracyLong>
+			<RangedWeapon_Cooldown>.5</RangedWeapon_Cooldown>
+		</statBases>
+		<weaponTags>
+			<li>HellsphereCannonGun</li>
+		</weaponTags>
+		<verbs>
+			<li>
+				<verbClass>Verb_Shoot</verbClass>
+				<hasStandardCommand>true</hasStandardCommand>
+				<defaultProjectile>Bullet_HellsphereCannonDisk</defaultProjectile>
+				<warmupTime>2.0</warmupTime>
+				<forcedMissRadius>1.0</forcedMissRadius>
+				<range>18.9</range>
+				<soundCast>Shot_HellsphereCannonGun</soundCast>
+				<soundCastTail>GunTail_Heavy</soundCastTail>
+				<muzzleFlashScale>9</muzzleFlashScale>
+				<ai_AvoidFriendlyFireRadius>6</ai_AvoidFriendlyFireRadius>
+				<ai_RangedAlawaysShootGroundBelowTarget>true</ai_RangedAlawaysShootGroundBelowTarget>
+				<ai_ProjectileLaunchingIgnoresMeleeThreats>true</ai_ProjectileLaunchingIgnoresMeleeThreats>
+				<ai_IsBuildingDestroyer>true</ai_IsBuildingDestroyer>
+				<ai_TargetHasRangedAttackScoreOffset>50</ai_TargetHasRangedAttackScoreOffset>
+				<minRange>5.9</minRange>
+				<targetParams>
+					<canTargetLocations>true</canTargetLocations>
+					<canTargetPawns>true</canTargetPawns>
+				</targetParams>
+				<burstShotCount>3</burstShotCount>
+				<ticksBetweenBurstShots>20</ticksBetweenBurstShots>
+				<beamTargetsGround>true</beamTargetsGround>
+				<canGoWild>false</canGoWild>
+			</li>
+		</verbs>
+		<tools>
+			<li>
+				<label>barrel</label>
+				<capacities>
+					<li>Blunt</li>
+					<li>Poke</li>
+				</capacities>
+				<power>9</power>
+				<cooldownTime>2.6</cooldownTime>
+			</li>
+		</tools>
+	</ThingDef>-->
+
+	<ThingDef ParentName="BaseBullet">
+		<defName>Bullet_HellsphereCannonDisk</defName>
+		<label>hellsphere cannon disk</label>
+		<thingClass>Horizon.Projectile_ThunderJawDisk</thingClass>
+		<graphicData>
+			<texPath>Things/Projectile/HellsphereCannon</texPath>
+			<graphicClass>Graphic_Single</graphicClass>
+			<shaderType>MoteGlow</shaderType>
+			<drawSize>(1.5, 3)</drawSize>
+		</graphicData>
+		<modExtensions>
+			<li Class= "Horizon.LauncherExtension">
+				<heightCurve>
+					<points>
+						<li>(0,0)</li>
+						<li>(.15,2)</li>
+						<li>(.85,2)</li>
+						<li>(1,0)</li>
+					</points>
+				</heightCurve>
+				<distanceCurve>
+					<points>
+						<li>(0,0)</li>
+						<li>(.15,.15)</li>
+						<li>(.85,.15)</li>
+						<li>(1,1)</li>
+					</points>
+				</distanceCurve>
+				<aimingLineMote>Mote_HellsphereCannon_Aim</aimingLineMote>
+				<aimingChargeMote>Mote_HellsphereCannon_Charge</aimingChargeMote>
+				<aimingChargeMoteOffset>1.07</aimingChargeMoteOffset>
+				<aimingLineMoteFixedLength>15.9</aimingLineMoteFixedLength>
+				<aimingTargetMote>Mote_HellsphereCannon_Target</aimingTargetMote>
+			</li>
+		</modExtensions>
+		<projectile>
+			<soundAmbient>HellsphereCannon_Aiming</soundAmbient>
+			<soundImpactAnticipate>Shot_HellsphereCannonGun</soundImpactAnticipate>
+			<damageDef>Vaporize</damageDef>
+			<speed>10</speed>
+			<explosionRadius>1.9</explosionRadius>
+			<screenShakeFactor>0.5</screenShakeFactor>
+		</projectile>
+	</ThingDef>
+  
+</Defs>

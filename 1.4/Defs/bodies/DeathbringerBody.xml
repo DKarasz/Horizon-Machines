@@ -1,0 +1,368 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+
+  <BodyDef>
+    <defName>Deathbringer</defName>
+    <label>Deathbringer</label>
+    <corePart>
+      <def>MechanicalThoraxCanManipulate</def>
+	  <customLabel>Central Torso</customLabel>
+      <height>Middle</height>
+      <depth>Outside</depth>
+	  <groups>
+        <li>Torso</li>
+      </groups>
+      <parts>
+        <li>
+          <def>MechanicalArm</def>
+		  <customLabel>Left Torso</customLabel>
+          <coverage>0.20</coverage>
+          <depth>Outside</depth>
+		  <height>Middle</height>
+		  <groups>
+			<li>Torso</li>
+			<li>Shoulders</li>
+		  </groups>
+		  <parts>
+            <li>
+				<def>WeaponHardpoint</def>
+				<customLabel>Left Upper Weapon Hardpoint</customLabel>
+				<coverage>0.20</coverage>
+				<depth>Outside</depth>
+				<height>Top</height>
+				<groups>
+					<li>Torso</li>
+				</groups>
+			</li>
+			<li>
+				<def>WeaponHardpoint</def>
+				<customLabel>Left Lower Weapon Hardpoint</customLabel>
+				<coverage>0.20</coverage>
+				<depth>Outside</depth>
+				<height>Middle</height>
+				<groups>
+					<li>Torso</li>
+				</groups>
+			</li>
+			<li>
+				<def>HeatSink</def>
+				<customLabel>Left Rear Exhaust</customLabel>
+				<coverage>0.10</coverage>
+				<depth>Outside</depth>
+				<groups>
+					<li>Torso</li>
+				</groups>
+			</li>
+			<li>
+				<def>HeatSink</def>
+				<customLabel>Left Rear Heatsink</customLabel>
+				<coverage>0.05</coverage>
+				<depth>Inside</depth>
+				<groups>
+					<li>Torso</li>
+				</groups>
+			</li>
+			<li>
+				<def>HeatSink</def>
+				<customLabel>Left Forward Heatsink</customLabel>
+				<coverage>0.05</coverage>
+				<depth>Inside</depth>
+			</li>
+			<li>
+				<def>CoolingRod</def>
+				<customLabel>Left Upper Cooling Rod</customLabel>
+				<coverage>0.05</coverage>
+				<depth>Inside</depth>
+				<height>Top</height>
+				<groups>
+					<li>Torso</li>
+				</groups>
+			</li>
+			<li>
+				<def>CoolingRod</def>
+				<customLabel>Left Lower Cooling Rod</customLabel>
+				<coverage>0.05</coverage>
+				<depth>Inside</depth>
+				<height>Bottom</height>
+				<groups>
+					<li>Torso</li>
+				</groups>
+			</li>
+          </parts>
+        </li>
+		<li>
+          <def>MechanicalArm</def>
+		  <customLabel>Right Torso</customLabel>
+          <coverage>0.20</coverage>
+          <depth>Outside</depth>
+		  <height>Middle</height>
+		  <groups>
+			<li>Torso</li>
+			<li>Shoulders</li>
+		  </groups>
+		  <parts>
+            <li>
+				<def>WeaponHardpoint</def>
+				<customLabel>Right Upper Weapon Hardpoint</customLabel>
+				<coverage>0.20</coverage>
+				<depth>Outside</depth>
+				<height>Top</height>
+				<groups>
+					<li>Torso</li>
+				</groups>
+			</li>
+			<li>
+				<def>WeaponHardpoint</def>
+				<customLabel>Right Lower Weapon Hardpoint</customLabel>
+				<coverage>0.20</coverage>
+				<depth>Outside</depth>
+				<height>Middle</height>
+				<groups>
+					<li>Torso</li>
+				</groups>
+			</li>
+			<li>
+				<def>HeatSink</def>
+				<customLabel>Right Rear Exhaust</customLabel>
+				<coverage>0.10</coverage>
+				<depth>Outside</depth>
+				<groups>
+					<li>Torso</li>
+				</groups>
+			</li>
+			<li>
+				<def>HeatSink</def>
+				<customLabel>Right Rear Heatsink</customLabel>
+				<coverage>0.05</coverage>
+				<depth>Inside</depth>
+				<groups>
+					<li>Torso</li>
+				</groups>
+			</li>
+			<li>
+				<def>HeatSink</def>
+				<customLabel>Right Forward Heatsink</customLabel>
+				<coverage>0.05</coverage>
+				<depth>Inside</depth>
+			</li>
+			<li>
+				<def>CoolingRod</def>
+				<customLabel>Right Upper Cooling Rod</customLabel>
+				<coverage>0.05</coverage>
+				<depth>Inside</depth>
+				<height>Top</height>
+				<groups>
+					<li>Torso</li>
+				</groups>
+			</li>
+			<li>
+				<def>CoolingRod</def>
+				<customLabel>Right Lower Cooling Rod</customLabel>
+				<coverage>0.05</coverage>
+				<depth>Inside</depth>
+				<height>Bottom</height>
+				<groups>
+					<li>Torso</li>
+				</groups>
+			</li>
+          </parts>
+        </li>
+		<li>
+          <def>HeatBrainReactor</def>
+          <coverage>0.01</coverage>
+          <depth>Inside</depth>
+        </li>
+		<li>
+            <def>MechanicalHead</def>
+            <coverage>0.10</coverage>
+            <groups>
+              <li>HeadAttackTool</li>
+            </groups>
+            <parts>
+                <li>
+					<def>WeaponHardpoint</def>
+					<customLabel>Forward Weapon Hardpoint</customLabel>
+					<coverage>0.20</coverage>
+					<depth>Outside</depth>
+                </li>
+				<li>
+					<def>HeatSink</def>
+					<customLabel>Forward Heatsink</customLabel>
+					<coverage>0.05</coverage>
+					<depth>Inside</depth>
+				</li>
+				<li>
+					<def>HearingSensor</def>
+					<customLabel>left sound sensor</customLabel>
+					<coverage>0.1</coverage>
+					<depth>Inside</depth>
+				</li>
+				<li>
+					<def>HearingSensor</def>
+					<customLabel>right sound sensor</customLabel>
+					<coverage>0.1</coverage>
+					<depth>Inside</depth>
+				</li>
+				<li>
+					<def>SightSensor</def>
+					<customLabel>Left Upper optical sensor array</customLabel>
+					<coverage>0.1</coverage>
+				</li>
+				<li>
+					<def>SightSensor</def>
+					<customLabel>Left Lower optical sensor array</customLabel>
+					<coverage>0.1</coverage>
+				</li>
+				<li>
+					<def>SightSensor</def>
+					<customLabel>Right Upper optical sensor array</customLabel>
+					<coverage>0.1</coverage>
+				</li>
+				<li>
+					<def>SightSensor</def>
+					<customLabel>Right Lower optical sensor array</customLabel>
+					<coverage>0.1</coverage>
+				</li>
+            </parts>
+        </li>
+		<li>
+			<def>WeaponHardpoint</def>
+			<customLabel>Rear Weapon Hardpoint</customLabel>
+			<coverage>0.10</coverage>
+			<depth>Outside</depth>
+			<height>Top</height>
+			<groups>
+				<li>Torso</li>
+			</groups>
+		</li>
+		<li>
+          <def>MechanicalLeg</def>
+          <customLabel>left front leg</customLabel>
+          <coverage>0.05</coverage>
+          <height>Bottom</height>
+		  <groups>
+				<li>Legs</li>
+		  </groups>
+          <parts>
+			<li>
+              <def>HeatMechanicalToe</def>
+			  <customLabel>left front stabilizer</customLabel>
+              <coverage>0.2</coverage>
+            </li>
+			<li>
+              <def>MechanicalFoot</def>
+			  <customLabel>left front foot</customLabel>
+              <coverage>0.3</coverage>
+			</li>
+          </parts>
+        </li>
+        <li>
+          <def>MechanicalLeg</def>
+          <customLabel>left middle leg</customLabel>
+          <coverage>0.05</coverage>
+          <height>Bottom</height>
+		  <groups>
+				<li>Legs</li>
+		  </groups>
+          <parts>
+			<li>
+              <def>HeatMechanicalToe</def>
+			  <customLabel>left middle stabilizer</customLabel>
+              <coverage>0.2</coverage>
+            </li>
+			<li>
+              <def>MechanicalFoot</def>
+			  <customLabel>left middle foot</customLabel>
+              <coverage>0.3</coverage>
+			</li>
+          </parts>
+        </li>
+		<li>
+          <def>MechanicalLeg</def>
+          <customLabel>left rear leg</customLabel>
+          <coverage>0.05</coverage>
+          <height>Bottom</height>
+		  <groups>
+				<li>Legs</li>
+		  </groups>
+          <parts>
+			<li>
+              <def>HeatMechanicalToe</def>
+			  <customLabel>left rear stabilizer</customLabel>
+              <coverage>0.2</coverage>
+            </li>
+			<li>
+              <def>MechanicalFoot</def>
+			  <customLabel>left rear foot</customLabel>
+              <coverage>0.3</coverage>
+			</li>
+          </parts>
+        </li>
+		<li>
+          <def>MechanicalLeg</def>
+          <customLabel>right front leg</customLabel>
+          <coverage>0.05</coverage>
+          <height>Bottom</height>
+		  <groups>
+				<li>Legs</li>
+		  </groups>
+          <parts>
+			<li>
+              <def>HeatMechanicalToe</def>
+			  <customLabel>right front stabilizer</customLabel>
+              <coverage>0.2</coverage>
+            </li>
+			<li>
+              <def>MechanicalFoot</def>
+			  <customLabel>right front foot</customLabel>
+              <coverage>0.3</coverage>
+			</li>
+          </parts>
+        </li>
+		<li>
+          <def>MechanicalLeg</def>
+          <customLabel>right middle leg</customLabel>
+          <coverage>0.05</coverage>
+          <height>Bottom</height>
+		  <groups>
+				<li>Legs</li>
+		  </groups>
+          <parts>
+			<li>
+              <def>HeatMechanicalToe</def>
+			  <customLabel>right middle stabilizer</customLabel>
+              <coverage>0.2</coverage>
+            </li>
+			<li>
+              <def>MechanicalFoot</def>
+			  <customLabel>right middle foot</customLabel>
+              <coverage>0.3</coverage>
+			</li>
+          </parts>
+        </li>
+		<li>
+          <def>MechanicalLeg</def>
+          <customLabel>right rear leg</customLabel>
+          <coverage>0.05</coverage>
+          <height>Bottom</height>
+		  <groups>
+				<li>Legs</li>
+		  </groups>
+          <parts>
+			<li>
+              <def>HeatMechanicalToe</def>
+			  <customLabel>right rear stabilizer</customLabel>
+              <coverage>0.2</coverage>
+            </li>
+			<li>
+              <def>MechanicalFoot</def>
+			  <customLabel>right rear foot</customLabel>
+              <coverage>0.3</coverage>
+			</li>
+          </parts>
+        </li>
+      </parts>
+    </corePart>
+  </BodyDef>
+  
+  </Defs>

@@ -1,0 +1,380 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+
+  <BodyDef>
+    <defName>Sawtooth</defName>
+    <label>Sawtooth</label>
+    <corePart>
+      <def>MechanicalThoraxCanManipulate</def>
+	  <customLabel>Torso</customLabel>
+      <height>Middle</height>
+      <depth>Outside</depth>
+      <groups>
+        <li>Torso</li>
+      </groups>
+      <parts>
+		<li>
+            <def>Armor</def>
+			<customLabel>Left torso armor plate</customLabel>
+            <coverage>0.075</coverage>
+        </li>
+		<li>
+            <def>Armor</def>
+			<customLabel>Right torso armor plate</customLabel>
+            <coverage>0.075</coverage>
+        </li>
+		<li>
+            <def>Armor</def>
+			<customLabel>Rear armor plate</customLabel>
+            <coverage>0.05</coverage>
+        </li>
+		<li>
+			<def>Reactor</def>
+			<customLabel>heart</customLabel>
+			<coverage>0.025</coverage>
+			<depth>Inside</depth>
+		</li>
+		<li>
+			<def>FluidReprocessor</def>
+			<customLabel>circulator</customLabel>
+			<coverage>0.025</coverage>
+			<depth>Inside</depth>
+		</li>
+		<li>
+			<def>Canister</def>
+			<customLabel>Chest Canister</customLabel>
+			<coverage>0.05</coverage>
+			<height>Bottom</height>
+			<parts>
+				<li>
+					<def>Armor</def>
+					<customLabel>Left Chest Canister Armor</customLabel>
+					<coverage>0.49</coverage>
+				</li>
+				<li>
+					<def>Armor</def>
+					<customLabel>Right Chest Canister Armor</customLabel>
+					<coverage>0.49</coverage>
+				</li>
+			</parts>
+		</li>
+		<li>
+			<def>HearingSensor</def>
+			<customLabel>Left Attenna</customLabel>
+			<coverage>0.025</coverage>
+		</li>
+		<li>
+			<def>HearingSensor</def>
+			<customLabel>Right Attenna</customLabel>
+			<coverage>0.025</coverage>
+		</li>
+        <li>
+          <def>MechanicalNeck</def>
+          <coverage>0.30</coverage>
+          <height>Top</height>
+          <parts>
+            <li>
+              <def>MechanicalHead</def>
+              <coverage>0.30</coverage>
+              <parts>
+                <li>
+                  <def>Armor</def>
+				  <customLabel>Left Jaw Armor Plate</customLabel>
+                  <coverage>0.20</coverage>
+                </li>
+				<li>
+                  <def>Armor</def>
+				  <customLabel>Right Jaw Armor Plate</customLabel>
+                  <coverage>0.20</coverage>
+                </li>
+				<li>
+                  <def>Armor</def>
+				  <customLabel>Upper Head Armor Plate</customLabel>
+                  <coverage>0.15</coverage>
+                </li>
+				<li>
+                  <def>Armor</def>
+				  <customLabel>Forward Head Armor Plate</customLabel>
+                  <coverage>0.15</coverage>
+                </li>
+				<li>
+					<def>ArtificialBrain</def>
+					<coverage>0.0</coverage>
+					<depth>Inside</depth>
+				</li>
+				<li>
+                  <def>SightSensor</def>
+				  <customLabel>Left Ocular Array</customLabel>
+                  <coverage>0.05</coverage>
+                </li>
+				<li>
+                  <def>SightSensor</def>
+				  <customLabel>Right Ocular Array</customLabel>
+                  <coverage>0.05</coverage>
+                </li>
+              </parts>
+            </li>
+			<li>
+                <def>Armor</def>
+				<customLabel>First Spinal Plate</customLabel>
+                <coverage>0.05</coverage>
+            </li>
+			<li>
+                <def>Armor</def>
+				<customLabel>Second Spinal Plate</customLabel>
+                <coverage>0.03</coverage>
+            </li>
+			<li>
+                <def>Armor</def>
+				<customLabel>Third Spinal Plate</customLabel>
+                <coverage>0.03</coverage>
+            </li>
+			<li>
+                <def>Armor</def>
+				<customLabel>Fourth Spinal Plate</customLabel>
+                <coverage>0.03</coverage>
+            </li>
+			<li>
+                <def>Armor</def>
+				<customLabel>Left First Neck Plate</customLabel>
+                <coverage>0.05</coverage>
+            </li>
+			<li>
+                <def>Armor</def>
+				<customLabel>Left Second Neck Plate</customLabel>
+                <coverage>0.05</coverage>
+            </li>
+			<li>
+                <def>Armor</def>
+				<customLabel>Left Third Neck Plate</customLabel>
+                <coverage>0.05</coverage>
+            </li>
+			<li>
+                <def>Armor</def>
+				<customLabel>Left First Mane Plate</customLabel>
+                <coverage>0.06</coverage>
+            </li>
+			<li>
+                <def>Armor</def>
+				<customLabel>Left Second Mane Plate</customLabel>
+                <coverage>0.06</coverage>
+            </li>
+			<li>
+                <def>Armor</def>
+				<customLabel>Right First Neck Plate</customLabel>
+                <coverage>0.05</coverage>
+            </li>
+			<li>
+                <def>Armor</def>
+				<customLabel>Right Second Neck Plate</customLabel>
+                <coverage>0.05</coverage>
+            </li>
+			<li>
+                <def>Armor</def>
+				<customLabel>Right Third Neck Plate</customLabel>
+                <coverage>0.05</coverage>
+            </li>
+			<li>
+                <def>Armor</def>
+				<customLabel>Right First Mane Plate</customLabel>
+                <coverage>0.06</coverage>
+            </li>
+			<li>
+                <def>Armor</def>
+				<customLabel>Right Second Mane Plate</customLabel>
+                <coverage>0.06</coverage>
+            </li>
+          </parts>
+        </li>
+        <li>
+          <def>MechanicalShoulder</def>
+          <customLabel>left shoulder</customLabel>
+          <coverage>0.10</coverage>
+          <height>Bottom</height>
+		  <groups>
+            <li>Legs</li>
+          </groups>
+          <parts>
+			<li>
+              <def>Armor</def>
+              <customLabel>Left shoulder forward armor plate</customLabel>
+              <coverage>0.15</coverage>
+            </li>
+			<li>
+              <def>Armor</def>
+              <customLabel>Left shoulder rear armor plate</customLabel>
+              <coverage>0.15</coverage>
+            </li>
+			<li>
+			  <def>MechanicalLeg</def>
+			  <customLabel>Left front leg</customLabel>
+			  <coverage>0.60</coverage>
+			  <parts>
+				<li>
+					<def>Armor</def>
+					<customLabel>Left front leg forward armor plate</customLabel>
+					<coverage>0.15</coverage>
+				</li>
+				<li>
+					<def>Armor</def>
+					<customLabel>Left front leg side armor plate</customLabel>
+					<coverage>0.15</coverage>
+				</li>
+				<li>
+					<def>Armor</def>
+					<customLabel>Left front leg lower forward armor plate</customLabel>
+					<coverage>0.15</coverage>
+				</li>
+				<li>
+					<def>Armor</def>
+					<customLabel>Left front leg lower rear armor plate</customLabel>
+					<coverage>0.15</coverage>
+				</li>
+				<li>
+					<def>MechanicalFoot</def>
+					<customLabel>Left front claw</customLabel>
+					<coverage>0.20</coverage>
+					<parts>
+						<li>
+							<def>Armor</def>
+							<customLabel>Left front ankle armor plate</customLabel>
+							<coverage>0.50</coverage>
+						</li>
+					</parts>
+				</li>
+			  </parts>
+			</li>
+          </parts>
+        </li>
+		<li>
+		  <def>MechanicalLeg</def>
+		  <customLabel>Left back leg</customLabel>
+		  <coverage>0.05</coverage>
+		  <parts>
+			<li>
+				<def>Armor</def>
+				<customLabel>Left back leg forward armor plate</customLabel>
+				<coverage>0.25</coverage>
+			</li>
+			<li>
+				<def>Armor</def>
+				<customLabel>Left back leg rear armor plate</customLabel>
+				<coverage>0.25</coverage>
+			</li>
+			<li>
+				<def>Armor</def>
+				<customLabel>Left back leg lower armor plate</customLabel>
+				<coverage>0.10</coverage>
+			</li>
+			<li>
+				<def>MechanicalFoot</def>
+				<customLabel>Left back claw</customLabel>
+				<coverage>0.30</coverage>
+				<parts>
+					<li>
+						<def>Armor</def>
+						<customLabel>Left back ankle armor plate</customLabel>
+						<coverage>0.50</coverage>
+					</li>
+				</parts>
+			</li>
+		  </parts>
+		</li>
+		<li>
+          <def>MechanicalShoulder</def>
+          <customLabel>Right shoulder</customLabel>
+          <coverage>0.10</coverage>
+          <height>Bottom</height>
+		  <groups>
+            <li>Legs</li>
+          </groups>
+          <parts>
+			<li>
+              <def>Armor</def>
+              <customLabel>Right shoulder forward armor plate</customLabel>
+              <coverage>0.15</coverage>
+            </li>
+			<li>
+              <def>Armor</def>
+              <customLabel>Right shoulder rear armor plate</customLabel>
+              <coverage>0.15</coverage>
+            </li>
+			<li>
+			  <def>MechanicalLeg</def>
+			  <customLabel>Right front leg</customLabel>
+			  <coverage>0.60</coverage>
+			  <parts>
+				<li>
+					<def>Armor</def>
+					<customLabel>Right front leg forward armor plate</customLabel>
+					<coverage>0.15</coverage>
+				</li>
+				<li>
+					<def>Armor</def>
+					<customLabel>Right front leg side armor plate</customLabel>
+					<coverage>0.15</coverage>
+				</li>
+				<li>
+					<def>Armor</def>
+					<customLabel>Right front leg lower forward armor plate</customLabel>
+					<coverage>0.15</coverage>
+				</li>
+				<li>
+					<def>Armor</def>
+					<customLabel>Right front leg lower rear armor plate</customLabel>
+					<coverage>0.15</coverage>
+				</li>
+				<li>
+					<def>MechanicalFoot</def>
+					<customLabel>Right front claw</customLabel>
+					<coverage>0.20</coverage>
+					<parts>
+						<li>
+							<def>Armor</def>
+							<customLabel>Right front ankle armor plate</customLabel>
+							<coverage>0.50</coverage>
+						</li>
+					</parts>
+				</li>
+			  </parts>
+			</li>
+          </parts>
+        </li>
+		<li>
+		  <def>MechanicalLeg</def>
+		  <customLabel>Right back leg</customLabel>
+		  <coverage>0.05</coverage>
+		  <parts>
+			<li>
+				<def>Armor</def>
+				<customLabel>Right back leg forward armor plate</customLabel>
+				<coverage>0.25</coverage>
+			</li>
+			<li>
+				<def>Armor</def>
+				<customLabel>Right back leg rear armor plate</customLabel>
+				<coverage>0.25</coverage>
+			</li>
+			<li>
+				<def>Armor</def>
+				<customLabel>Right back leg lower armor plate</customLabel>
+				<coverage>0.10</coverage>
+			</li>
+			<li>
+				<def>MechanicalFoot</def>
+				<customLabel>Right back claw</customLabel>
+				<coverage>0.30</coverage>
+				<parts>
+					<li>
+						<def>Armor</def>
+						<customLabel>Right back ankle armor plate</customLabel>
+						<coverage>0.50</coverage>
+					</li>
+				</parts>
+			</li>
+		  </parts>
+		</li>
+      </parts>
+    </corePart>
+  </BodyDef>
+</Defs>

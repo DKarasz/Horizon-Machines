@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+
+  <BodyDef>
+    <defName>Shellwalker</defName>
+    <label>Shellwalker</label>
+    <corePart>
+      <def>MechanicalThorax</def>
+      <height>Middle</height>
+      <depth>Outside</depth>
+      <groups>
+        <li>Torso</li>
+      </groups>
+      <parts>
+        <li>
+          <def>bodypartClamp</def>
+		  <customLabel>Shellwalker Crate Holders</customLabel>
+          <coverage>0.20</coverage>
+          <depth>Outside</depth>
+		  <height>Top</height>
+		  <parts>
+			<li>
+				<def>cargoCrate</def>
+				<customLabel>Shellwalker Crate</customLabel>
+				<coverage>0.85</coverage>
+			</li>
+		  </parts>
+        </li>
+		<li>
+            <def>MechanicalShoulder</def>
+			<customLabel>Left Shoulder</customLabel>
+            <coverage>0.10</coverage>
+			<parts>
+				<li>
+					<def>Armor</def>
+					<customLabel>Left Front Upper Arm Plate</customLabel>
+					<coverage>0.17</coverage>
+				</li>
+				<li>
+					<def>Armor</def>
+					<customLabel>Left Rear Upper Arm Plate</customLabel>
+					<coverage>0.17</coverage>
+				</li>
+				<li>
+					<def>MechanicalArm</def>
+					<customLabel>Left Arm</customLabel>
+					<coverage>0.65</coverage>
+					<parts>
+						<li>
+							<def>Armor</def>
+							<customLabel>Left Front Lower Arm Plate</customLabel>
+							<coverage>0.24</coverage>
+						</li>
+						<li>
+							<def>Armor</def>
+							<customLabel>Left Rear Lower Arm Plate</customLabel>
+							<coverage>0.24</coverage>
+						</li>
+						<li>
+							<def>MechanicalHand</def>
+							<customLabel>Shield Generator</customLabel>
+							<coverage>0.50</coverage>
+						</li>
+					</parts>
+				</li>
+			</parts>
+        </li>
+		<li>
+            <def>MechanicalShoulder</def>
+			<customLabel>Right Shoulder</customLabel>
+            <coverage>0.10</coverage>
+			<parts>
+				<li>
+					<def>Armor</def>
+					<customLabel>Right Front Upper Arm Plate</customLabel>
+					<coverage>0.17</coverage>
+				</li>
+				<li>
+					<def>Armor</def>
+					<customLabel>Right Rear Upper Arm Plate</customLabel>
+					<coverage>0.17</coverage>
+				</li>
+				<li>
+					<def>MechanicalArm</def>
+					<customLabel>Right Arm</customLabel>
+					<coverage>0.65</coverage>
+					<parts>
+						<li>
+							<def>Armor</def>
+							<customLabel>Right Front Lower Arm Plate</customLabel>
+							<coverage>0.24</coverage>
+						</li>
+						<li>
+							<def>Armor</def>
+							<customLabel>Right Rear Lower Arm Plate</customLabel>
+							<coverage>0.24</coverage>
+						</li>
+						<li>
+							<def>MechanicalHand</def>
+							<customLabel>Lightning Gun</customLabel>
+							<coverage>0.50</coverage>
+						</li>
+					</parts>
+				</li>
+			</parts>
+        </li>
+		<li>
+			<def>explosiveBodyPart</def>
+			<customLabel>power generator</customLabel>
+			<coverage>0.05</coverage>
+			<height>Bottom</height>
+		</li>
+        <li>
+          <def>SightSensor</def>
+		  <customLabel>Left Optical Sensor Cluster</customLabel>
+          <coverage>0.04</coverage>
+          <height>Middle</height>
+        </li>
+		<li>
+          <def>SightSensor</def>
+		  <customLabel>Right Optical Sensor Cluster</customLabel>
+          <coverage>0.04</coverage>
+          <height>Middle</height>
+        </li>
+		<li>
+		  <def>HearingSensor</def>
+		  <customLabel>Attenna</customLabel>
+		  <coverage>0.01</coverage>
+		  <height>middle</height>
+		</li>
+		<li>
+			<def>ArtificialBrain</def>
+			<coverage>0.025</coverage>
+		</li>
+		<li>
+			<def>Reactor</def>
+			<customLabel>heart</customLabel>
+			<coverage>0.025</coverage>
+			<depth>Inside</depth>
+		</li>
+		<li>
+			<def>FluidReprocessor</def>
+			<customLabel>circulator</customLabel>
+			<coverage>0.025</coverage>
+			<depth>Inside</depth>
+		</li>
+		<li>
+			<def>Armor</def>
+			<customLabel>Left Face Plate</customLabel>
+			<coverage>0.05</coverage>
+		</li>
+		<li>
+			<def>Armor</def>
+			<customLabel>Right Face Plate</customLabel>
+			<coverage>0.05</coverage>
+		</li>
+		<li>
+			<def>Armor</def>
+			<customLabel>Central Face Plate</customLabel>
+			<coverage>0.05</coverage>
+		</li>
+        <li>
+          <def>MechanicalLeg</def>
+          <customLabel>left front leg</customLabel>
+          <coverage>0.04</coverage>
+          <height>Bottom</height>
+		  <groups>
+            <li>Legs</li>
+          </groups>
+          <parts>
+            <li>
+              <def>Armor</def>
+              <customLabel>left front leg armor plate</customLabel>
+              <coverage>0.99</coverage>
+            </li>
+          </parts>
+        </li>
+		<li>
+          <def>MechanicalLeg</def>
+          <customLabel>left middle leg</customLabel>
+          <coverage>0.04</coverage>
+          <height>Bottom</height>
+		  <groups>
+            <li>Legs</li>
+          </groups>
+          <parts>
+            <li>
+              <def>Armor</def>
+              <customLabel>left middle leg armor plate</customLabel>
+              <coverage>0.99</coverage>
+            </li>
+          </parts>
+        </li>
+		<li>
+          <def>MechanicalLeg</def>
+          <customLabel>left back leg</customLabel>
+          <coverage>0.04</coverage>
+          <height>Bottom</height>
+		  <groups>
+            <li>Legs</li>
+          </groups>
+          <parts>
+            <li>
+              <def>Armor</def>
+              <customLabel>left back leg armor plate</customLabel>
+              <coverage>0.99</coverage>
+            </li>
+          </parts>
+        </li>
+        <li>
+          <def>MechanicalLeg</def>
+          <customLabel>right front leg</customLabel>
+          <coverage>0.04</coverage>
+          <height>Bottom</height>
+		  <groups>
+            <li>Legs</li>
+          </groups>
+          <parts>
+            <li>
+              <def>Armor</def>
+              <customLabel>right front leg armor plate</customLabel>
+              <coverage>0.99</coverage>
+            </li>
+          </parts>
+        </li>
+		<li>
+          <def>MechanicalLeg</def>
+          <customLabel>right middle leg</customLabel>
+          <coverage>0.04</coverage>
+          <height>Bottom</height>
+		  <groups>
+            <li>Legs</li>
+          </groups>
+          <parts>
+            <li>
+              <def>Armor</def>
+              <customLabel>right middle leg armor plate</customLabel>
+              <coverage>0.99</coverage>
+            </li>
+          </parts>
+        </li>
+		<li>
+          <def>MechanicalLeg</def>
+          <customLabel>right back leg</customLabel>
+          <coverage>0.04</coverage>
+          <height>Bottom</height>
+		  <groups>
+            <li>Legs</li>
+          </groups>
+          <parts>
+            <li>
+              <def>Armor</def>
+              <customLabel>right back leg armor plate</customLabel>
+              <coverage>0.99</coverage>
+            </li>
+          </parts>
+        </li>
+      </parts>
+    </corePart>
+  </BodyDef>
+  
+  </Defs>
